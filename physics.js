@@ -39,19 +39,21 @@ function playerDeath() {
     gameState = 'DYING';
     player.dyingTimer = 0;
 
-    // Mega-Man Scatter Matrix!
-    for (let i = 0; i < 40; i++) {
-        let angle = Math.random() * Math.PI * 2;
-        let speed = 50 + Math.random() * 200;
+    // 4 Quadrant Fragmentation Matrix!
+    for (let i = 0; i < 4; i++) {
+        let qx = (i % 2 === 0) ? 0 : 0.5;
+        let qy = (i < 2) ? 0 : 0.5;
         particles.push({
-            x: player.x + player.width / 2,
-            y: player.y + player.height / 2,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life: 1.0 + Math.random(),
+            type: 'playerQuad',
+            qx: qx,
+            qy: qy,
+            x: player.x + (qx * player.width) + (player.width / 4),
+            y: player.y + (qy * player.height) + (player.height / 4),
+            vx: (qx === 0 ? -1 : 1) * (150 + Math.random() * 50),
+            vy: (qy === 0 ? -1 : 1) * (150 + Math.random() * 50) - 100,
+            life: 1.5,
             maxLife: 2.0,
-            size: 4 + Math.random() * 6,
-            color: Math.random() > 0.5 ? '#ff2222' : '#f1c40f'
+            flip: player.lastDir === -1
         });
     }
 

@@ -378,6 +378,21 @@ function render() {
             ctx.translate(p.x, p.y);
             ctx.rotate(Date.now() / 150 + p.vx); // Spin dynamically explicitly natively!
             drawSprite(ctx, sprGear, -8, -8, 16, 16, false);
+        } else if (p.type === 'playerQuad') {
+            ctx.translate(p.x, p.y);
+            ctx.rotate(Date.now() / 200 * (p.qx === 0 ? -1 : 1));
+            
+            let w = player.width;
+            let h = player.height;
+            
+            ctx.beginPath();
+            ctx.rect(-w/4, -h/4, w/2, h/2);
+            ctx.clip();
+            
+            let sx = -(p.qx * w + w/4);
+            let sy = -(p.qy * h + h/4);
+            
+            drawSprite(ctx, sprHeroDead, sx, sy, w, h, p.flip);
         } else {
             // Standard square shrapnel explicitly safely cleanly securely!
             ctx.fillStyle = p.color || `rgb(180, 180, 180)`;
@@ -396,14 +411,12 @@ function render() {
     if (player.vx > 0) player.lastDir = 1;
     if (player.vx === 0) playerFlip = player.lastDir === -1;
 
-    let pSpr = (gameState === 'DYING') ? sprHeroDead : sprHero;
-    let wY = (player.isOnGround && player.vx !== 0 && Math.floor(timerAcc*10)%2===0) ? 2 : 0; // walk bob
-
     if (gameState !== 'DYING') {
+        let pSpr = sprHero;
+        let wY = (player.isOnGround && player.vx !== 0 && Math.floor(timerAcc*10)%2===0) ? 2 : 0; // walk bob
         drawGlow(ctx, player.x + 12, player.y + 16, 40, 'rgba(255, 150, 0, 0.25)'); // Organic warm player glow
+        drawSprite(ctx, pSpr, player.x, player.y + wY, player.width, player.height, playerFlip);
     }
-
-    drawSprite(ctx, pSpr, player.x, player.y + wY, player.width, player.height, playerFlip);
     
     // -- End World Space --
     ctx.restore();

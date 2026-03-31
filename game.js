@@ -304,6 +304,17 @@ function updateGame(dt) {
     }
 
     updatePhysics(dt);
+    
+    // Global Particle update natively dynamically bypassing state bounds!
+    for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.life -= dt;
+        p.size *= 0.95; 
+        if (p.life <= 0) particles.splice(i, 1);
+    }
+    
     if (gameState !== 'PLAYING') return;
 
     // Camera follow player (clamped)
@@ -458,16 +469,6 @@ function updateGame(dt) {
             plat.x = plat.minX;
             plat.vx *= -1;
         }
-    }
-
-    // Particle update
-    for (let i = particles.length - 1; i >= 0; i--) {
-        let p = particles[i];
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        p.life -= dt;
-        p.size *= 0.95; // Shrink slightly
-        if (p.life <= 0) particles.splice(i, 1);
     }
 }
 
