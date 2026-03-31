@@ -208,6 +208,9 @@ function parseMap(resetEntities = true) {
         platforms = [];
     }
     particles = [];
+    isMapCached = false;
+    offscreenMapCanvas.width = mapCols * TILE_SIZE;
+    offscreenMapCanvas.height = mapRows * TILE_SIZE;
 
     for (let row = 0; row < mapRows; row++) {
         let rowData = [];

@@ -295,7 +295,78 @@ function render() {
     ctx.save();
     ctx.translate(-Math.floor(camera.x), -Math.floor(camera.y));
 
-    // Draw Map (Culling optimization)
+    // Hardware-Accelerated Static Map Pre-Rendering identically correctly!
+    if (!isMapCached) {
+        offscreenMapCtx.clearRect(0, 0, offscreenMapCanvas.width, offscreenMapCanvas.height);
+        
+        for (let row = 0; row < mapRows; row++) {
+            for (let col = 0; col < mapCols; col++) {
+                let tile = map[row][col];
+                let tx = col * TILE_SIZE;
+                let ty = row * TILE_SIZE;
+
+                if (tile === 1 || tile === 6) {
+                    offscreenMapCtx.fillStyle = '#2f2c2b'; 
+                    offscreenMapCtx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
+                    
+                    offscreenMapCtx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                    for(let g=4; g<TILE_SIZE-4; g+=4) {
+                        offscreenMapCtx.fillRect(tx + 4, ty + g, TILE_SIZE - 8, 2);
+                    }
+                    if ((row * 13 + col * 7) % 5 === 0) {
+                        offscreenMapCtx.fillStyle = 'rgba(139, 69, 19, 0.3)';
+                        offscreenMapCtx.fillRect(tx + 2, ty + 2, TILE_SIZE/2, TILE_SIZE/2);
+                        offscreenMapCtx.fillRect(tx + TILE_SIZE/2, ty + TILE_SIZE/2, TILE_SIZE/2 - 2, TILE_SIZE/2 - 2);
+                    }
+
+                    offscreenMapCtx.strokeStyle = '#1a1818';
+                    offscreenMapCtx.lineWidth = 2;
+                    offscreenMapCtx.strokeRect(tx + 2, ty + 2, TILE_SIZE - 4, TILE_SIZE - 4);
+                    
+                    offscreenMapCtx.fillStyle = '#0a0a0a'; 
+                    offscreenMapCtx.fillRect(tx+4, ty+4, 2, 2);
+                    offscreenMapCtx.fillRect(tx+TILE_SIZE-6, ty+4, 2, 2);
+                    offscreenMapCtx.fillRect(tx+4, ty+TILE_SIZE-6, 2, 2);
+                    offscreenMapCtx.fillRect(tx+TILE_SIZE-6, ty+TILE_SIZE-6, 2, 2);
+                }
+                
+                if (tile === 2 || tile === 6) {
+                    offscreenMapCtx.fillStyle = '#4a3d38';
+                    offscreenMapCtx.fillRect(tx + 10, ty, 5, TILE_SIZE);
+                    offscreenMapCtx.fillRect(tx + 25, ty, 5, TILE_SIZE);
+                    for (let i = 0; i < 4; i++) {
+                        offscreenMapCtx.fillStyle = '#78432a';
+                        offscreenMapCtx.fillRect(tx + 10, ty + i * 10 + 5, 20, 3);
+                        offscreenMapCtx.fillStyle = '#b75c32';
+                        offscreenMapCtx.fillRect(tx + 12, ty + i * 10 + 5, 16, 1);
+                    }
+                } else if (tile === 3) {
+                    let spikeGrad = offscreenMapCtx.createLinearGradient(0, ty + TILE_SIZE, 0, ty);
+                    spikeGrad.addColorStop(0, '#332a22');
+                    spikeGrad.addColorStop(1, '#ff3300');
+                    offscreenMapCtx.fillStyle = spikeGrad;
+                    
+                    offscreenMapCtx.beginPath();
+                    let spikesCount = 4;
+                    let w = TILE_SIZE / spikesCount;
+                    for (let s = 0; s < spikesCount; s++) {
+                        offscreenMapCtx.moveTo(tx + s * w + w/2, ty + TILE_SIZE/2);
+                        offscreenMapCtx.lineTo(tx + (s+1) * w, ty + TILE_SIZE);
+                        offscreenMapCtx.lineTo(tx + s * w, ty + TILE_SIZE);
+                    }
+                    offscreenMapCtx.fill();
+
+                    drawGlow(offscreenMapCtx, tx + TILE_SIZE/2, ty + TILE_SIZE/2 + 4, 30, 'rgba(255, 30, 0, 0.3)');
+                }
+            }
+        }
+        isMapCached = true;
+    }
+
+    // Instantly blast the cached buffer to the active screen explicitly efficiently safely cleanly!
+    ctx.drawImage(offscreenMapCanvas, 0, 0);
+
+    // Draw Only Animated Entities natively accurately structurally!
     let startCol = Math.max(0, Math.floor(camera.x / TILE_SIZE));
     let endCol = Math.min(mapCols - 1, Math.floor((camera.x + canvas.width) / TILE_SIZE));
     let startRow = Math.max(0, Math.floor(camera.y / TILE_SIZE));
@@ -307,68 +378,7 @@ function render() {
             let tx = col * TILE_SIZE;
             let ty = row * TILE_SIZE;
 
-            if (tile === 1 || tile === 6) {
-                // Gritty War-Torn scrap metal blocks
-                ctx.fillStyle = '#2f2c2b'; 
-                ctx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
-                
-                // Industrial Grating
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-                for(let g=4; g<TILE_SIZE-4; g+=4) {
-                    ctx.fillRect(tx + 4, ty + g, TILE_SIZE - 8, 2);
-                }
-                
-                // Heavy Brown Rust detailing pseudo-randomly
-                if ((row * 13 + col * 7) % 5 === 0) {
-                    ctx.fillStyle = 'rgba(139, 69, 19, 0.3)';
-                    ctx.fillRect(tx + 2, ty + 2, TILE_SIZE/2, TILE_SIZE/2);
-                    ctx.fillRect(tx + TILE_SIZE/2, ty + TILE_SIZE/2, TILE_SIZE/2 - 2, TILE_SIZE/2 - 2);
-                }
-
-                ctx.strokeStyle = '#1a1818';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(tx + 2, ty + 2, TILE_SIZE - 4, TILE_SIZE - 4);
-                
-                ctx.fillStyle = '#0a0a0a'; // Rivets
-                ctx.fillRect(tx+4, ty+4, 2, 2);
-                ctx.fillRect(tx+TILE_SIZE-6, ty+4, 2, 2);
-                ctx.fillRect(tx+4, ty+TILE_SIZE-6, 2, 2);
-                ctx.fillRect(tx+TILE_SIZE-6, ty+TILE_SIZE-6, 2, 2);
-            }
-            
-            if (tile === 2 || tile === 6) {
-                // Rusty Metal Ladder
-                ctx.fillStyle = '#4a3d38'; // Oxidized dark iron rails
-                ctx.fillRect(tx + 10, ty, 5, TILE_SIZE);
-                ctx.fillRect(tx + 25, ty, 5, TILE_SIZE);
-                for (let i = 0; i < 4; i++) {
-                    ctx.fillStyle = '#78432a'; // Rusty orange-brown rungs
-                    ctx.fillRect(tx + 10, ty + i * 10 + 5, 20, 3);
-                    
-                    ctx.fillStyle = '#b75c32'; // Fresh bright rust highlight
-                    ctx.fillRect(tx + 12, ty + i * 10 + 5, 16, 1);
-                }
-            } else if (tile === 3) {
-                // Multi-Serrated Rusted Spikes
-                let spikeGrad = ctx.createLinearGradient(0, ty + TILE_SIZE, 0, ty);
-                spikeGrad.addColorStop(0, '#332a22'); // Rusted base
-                spikeGrad.addColorStop(1, '#ff3300'); // Glowing orange/red tip
-                ctx.fillStyle = spikeGrad;
-                
-                ctx.beginPath();
-                let spikesCount = 4;
-                let w = TILE_SIZE / spikesCount;
-                for (let s = 0; s < spikesCount; s++) {
-                    ctx.moveTo(tx + s * w + w/2, ty + TILE_SIZE/2);
-                    ctx.lineTo(tx + (s+1) * w, ty + TILE_SIZE);
-                    ctx.lineTo(tx + s * w, ty + TILE_SIZE);
-                }
-                ctx.fill();
-
-                // Soft ominous localized glow across the serrations
-                drawGlow(ctx, tx + TILE_SIZE/2, ty + TILE_SIZE/2 + 4, 30, 'rgba(255, 30, 0, 0.3)');
-            } else if (tile === 5) {
-                // Time Portal (Pulsing and Undulating)
+            if (tile === 5) {
                 let pulse = 1 + Math.sin(Date.now() / 150) * 0.1;
                 let undulate = 1 + Math.cos(Date.now() / 120) * 0.1;
                 let pWidth = TILE_SIZE * pulse;

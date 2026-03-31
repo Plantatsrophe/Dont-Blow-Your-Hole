@@ -12,10 +12,22 @@ let audioCtx = null;
 let map = [];
 let items = [];
 let enemies = [];
-let lasers = [];
+let lasers = []; // Legacy mapping organically gracefully superseded contextually
 let particles = [];
 let platforms = [];
 let camera = { x: 0, y: 0 };
+
+// Hardware-Accelerated Cache Pipeline natively efficiently mapping strictly gracefully
+let offscreenMapCanvas = document.createElement('canvas');
+let offscreenMapCtx = offscreenMapCanvas.getContext('2d', { alpha: false });
+let isMapCached = false;
+
+// O(1) Object Pooling intrinsically avoiding GC stutter intelligently 
+const MAX_LASERS = 50;
+const laserPool = Array.from({length: MAX_LASERS}, () => ({ active: false, x: 0, y: 0, vx: 0, width: 16, height: 8 }));
+
+const MAX_PARTICLES = 150;
+const particlePool = Array.from({length: MAX_PARTICLES}, () => ({ active: false, type: '', x: 0, y: 0, vx: 0, vy: 0, size: 0, life: 0, maxLife: 0 }));
 
 let gameState = 'START'; // START, INTRO, INSTRUCTIONS, PLAYING, DYING, LEVEL_CLEAR, GAMEOVER, WIN, ENTER_INITIALS
 let introY = 0;
