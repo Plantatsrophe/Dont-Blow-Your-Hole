@@ -61,84 +61,134 @@ function render() {
 
     // Contextual Sub-Parallax Execution!
     if (bId === 0) {
-        // Biome 0: Slums - City Skyline
-        ctx.fillStyle = '#05050f';
+        // Biome 0: Slums - City Skyline with Windows
         let px = camera.x * 0.2; // 20% parallax speed
         for (let i = 0; i < 30; i++) {
             let h = 80 + (Math.sin(i * 999) * 40);
             let w = 40 + (Math.cos(i * 777) * 20);
             let x = ((i * 60) - px) % (canvas.width + 100);
             if (x < -100) x += canvas.width + 200;
+            ctx.fillStyle = '#05050f';
             ctx.fillRect(x, canvas.height - h, w, h);
+            
+            // Illuminated Windows
+            ctx.fillStyle = '#f1c40f'; // Yellow window light
+            for (let wy = canvas.height - h + 10; wy < canvas.height - 10; wy += 15) {
+                for (let wx = x + 5; wx < x + w - 5; wx += 10) {
+                    if (Math.sin(i * wx * wy) > 0.5) {
+                        ctx.fillRect(wx, wy, Math.sin(wx)>0?2:1, Math.sin(wy)>0?2:1);
+                    }
+                }
+            }
         }
         // Drones
+        ctx.fillStyle = '#05050f';
         let d1 = (Date.now() / 40) % (canvas.width + 200) - 100;
         ctx.fillRect(canvas.width - d1, 60 + Math.sin(Date.now()/700)*15, 6, 2);
     } else if (bId === 1) {
-        // Biome 1: Acid - Falling Toxic Rain and Silhouette Pipes
-        ctx.fillStyle = '#0a210f';
+        // Biome 1: Acid - Deep Sewer Tunnels
         let px = camera.x * 0.3;
+        ctx.lineWidth = 20;
         for(let i = 0; i < 5; i++) {
-            let x = ((i * 150) - px) % (canvas.width + 100);
-            if(x < -100) x += canvas.width + 200;
-            ctx.fillRect(x, 0, 30, canvas.height);
+            let x = ((i * 250) - px) % (canvas.width + 200);
+            if(x < -200) x += canvas.width + 400;
+            ctx.beginPath();
+            ctx.strokeStyle = '#051208'; // Dark outer arch
+            ctx.arc(x, canvas.height + 20, 180, Math.PI, 0);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.strokeStyle = '#0a210f'; // Inner arch lip
+            ctx.arc(x, canvas.height + 20, 160, Math.PI, 0);
+            ctx.stroke();
         }
-        ctx.fillStyle = 'rgba(62, 232, 85, 0.4)';
-        for(let i = 0; i < 40; i++) {
-            let dropX = ((i * 200) - camera.x * 0.5) % canvas.width;
-            if (dropX < 0) dropX += canvas.width;
-            let dropY = (Date.now() / 15 * (1 + (i%3)*0.5) + i * 50) % canvas.height;
-            ctx.fillRect(dropX, dropY, 2, 8);
+        // Horizontal Base Sludge River
+        ctx.fillStyle = '#07170a';
+        ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+        ctx.fillStyle = '#1b5c21';
+        let sOff = (Date.now() / 30) % 30;
+        for (let i = 0; i < canvas.width; i += 30) {
+            ctx.fillRect(i - sOff, canvas.height - 35, 15, 3);
+            ctx.fillRect(i - sOff + 10, canvas.height - 25, 20, 3);
         }
     } else if (bId === 2) {
-        // Biome 2: Shaft - Vertical Steel Beams
-        ctx.fillStyle = '#170c24';
+        // Biome 2: Shaft - Diagonal Chain Mesh & Gears
         let py = camera.y * 0.4; // Vertical Parallax!
-        for(let i = 0; i < 8; i++) {
-            let x = i * 100 + 40;
-            let y = (-py + i * 200) % (canvas.height + 200);
-            if (y < -100) y += canvas.height + 200;
-            ctx.fillRect(x, y, 40, canvas.height + 100);
-            ctx.fillStyle = '#221333';
-            ctx.fillRect(x-5, y+50, 50, 20); // crossbeams
-            ctx.fillStyle = '#170c24';
-        }
-    } else if (bId === 3) {
-        // Biome 3: Laser Factory - Cyberpunk Network
-        ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
-        ctx.lineWidth = 1;
-        let px = camera.x * 0.1;
-        let offsetX = -px % 40;
+        ctx.strokeStyle = '#221333';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        for (let x = offsetX; x < canvas.width; x += 40) {
-            ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height);
-        }
-        for (let y = 0; y < canvas.height; y += 40) {
-            ctx.moveTo(0, y); ctx.lineTo(canvas.width, y);
+        for (let i = -10; i < 20; i++) {
+            let offset = (i * 50 + py) % (canvas.height + 500);
+            if (offset < -300) offset += canvas.height + 600;
+            ctx.moveTo(0, offset); ctx.lineTo(canvas.width, offset + canvas.width);
+            ctx.moveTo(canvas.width, offset); ctx.lineTo(0, offset + canvas.width);
         }
         ctx.stroke();
-        // Pulsing Nodes
-        for(let i = 0; i < 15; i++) {
-            let nx = ((i * 123) - px) % canvas.width;
-            if (nx < 0) nx += canvas.width;
-            let ny = (i * 87) % canvas.height;
-            let glow = 0.2 + Math.abs(Math.sin(Date.now() / 300 + i)) * 0.5;
+        
+        for (let i = 0; i < 4; i++) {
+            let gy = (-py * 0.6 + i * 250) % (canvas.height + 150);
+            if (gy < -150) gy += canvas.height + 300;
+            let gx = 80 + (i * 140) % canvas.width;
+            ctx.save();
+            ctx.translate(gx, gy);
+            ctx.rotate(Date.now() / (800 + i*300));
+            ctx.globalAlpha = 0.2;
+            ctx.scale(3, 3); // Giant gears
+            drawSprite(ctx, sprGear, -12, -12, 24, 24, false);
+            ctx.restore();
+        }
+    } else if (bId === 3) {
+        // Biome 3: Laser Factory - Angled Circuit Traces
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
+        ctx.lineWidth = 4;
+        let px = camera.x * 0.15;
+        for (let i = 0; i < 9; i++) {
+            let sY = 50 + i * 50;
+            let sX = ((i * 140) - px) % (canvas.width + 300);
+            if (sX < -150) sX += canvas.width + 400;
+            
+            ctx.beginPath();
+            ctx.moveTo(sX, sY);
+            ctx.lineTo(sX + 60, sY);
+            ctx.lineTo(sX + 100, sY + (i%2===0?40:-40));
+            ctx.lineTo(sX + 220, sY + (i%2===0?40:-40));
+            ctx.stroke();
+            
+            let glow = 0.3 + Math.abs(Math.sin(Date.now() / 250 + i)) * 0.7;
             ctx.fillStyle = `rgba(0, 255, 255, ${glow})`;
-            ctx.fillRect(nx, ny, 4, 4);
+            ctx.beginPath();
+            ctx.arc(sX + 220, sY + (i%2===0?40:-40), 8, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#050f14';
+            ctx.beginPath();
+            ctx.arc(sX + 220, sY + (i%2===0?40:-40), 4, 0, Math.PI * 2);
+            ctx.fill();
         }
     } else if (bId === 4) {
-        // Biome 4: Goliath - Thunder and Apocalypse
+        // Biome 4: Goliath - Cracked Moon and Clouds
         if (Math.random() > 0.95) {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.25)'; // Lightning strike
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        ctx.fillStyle = '#210202';
-        let px = camera.x * 0.5;
-        for (let i = 0; i < 20; i++) {
-            let x = ((i * 110) - px) % (canvas.width + 100);
-            if (x < -100) x += canvas.width + 200;
-            let y = canvas.height - 100 - (i % 3) * 50;
-            ctx.fillRect(x, y, 30 + (i%2)*20, 200);
+        let px = camera.x * 0.05; // Extreme distance
+        let mX = (canvas.width * 0.75 - px) % (canvas.width + 400);
+        if (mX < -250) mX += canvas.width + 600;
+        
+        ctx.fillStyle = '#db2323';
+        ctx.beginPath(); ctx.arc(mX, 180, 120, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#7a0505';
+        ctx.beginPath(); ctx.arc(mX - 30, 130, 25, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(mX + 45, 220, 35, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(mX - 50, 240, 15, 0, Math.PI * 2); ctx.fill();
+        
+        // Fast horizontal jagged clouds
+        ctx.fillStyle = 'rgba(43, 2, 2, 0.85)';
+        let cx = camera.x * 0.4;
+        for (let i = 0; i < 7; i++) {
+            let cX = ((i * 180) - cx - (Date.now()/12 % canvas.width)) % (canvas.width + 300);
+            if (cX < -200) cX += canvas.width + 500;
+            let cY = 70 + i * 60;
+            ctx.fillRect(cX, cY, 160 + (i%4)*60, 25);
+            ctx.fillRect(cX + 30, cY - 10, 100, 10); // Jagged edge
         }
     }
 
