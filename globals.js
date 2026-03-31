@@ -26,37 +26,35 @@ let currentLevel = 0;
 let initials = ['A', 'A', 'A'];
 let initialIndex = 0;
 
-let defaultScores = [
-    { name: 'Hotdog', score: 9999999 },
-    { name: 'Fudge', score: 919919 },
-    { name: 'Barry', score: 80085 },
-    { name: 'Jill9000', score: 9000 },
-    { name: 'Darby', score: 1337 }
-];
+let gameStartTime = 0; // Tracks play duration for security validation natively!
 
-let highScores = JSON.parse(localStorage.getItem('8bitScores_v2') || '[]');
-highScores = highScores.filter(hs => hs.name !== 'CAZ' && hs.score !== 9191191 && hs.score !== 919919919);
-localStorage.setItem('8bitScores_v2', JSON.stringify(highScores));
+// Synchronous default state preventing UI crashing natively during backend payload lag
+let highScores = Array(10).fill({ name: 'LOADING...', score: 0 });
 
-defaultScores.forEach(ds => {
-    if (!highScores.some(hs => hs.name === ds.name && hs.score === ds.score)) {
-        highScores.push(ds);
+// Securely binds to the DB module asynchronously purely when available gracefully
+window.refreshLeaderboard = async function() {
+    if (window.fetchHighScores) {
+        let scores = await window.fetchHighScores();
+        highScores = scores.map(s => ({ name: s.initials, score: s.score }));
     }
-});
-highScores.sort((a, b) => b.score - a.score);
+};
 
-while (highScores.length < 10) {
-    highScores.push({ name: '---', score: 0 });
-}
-highScores = highScores.slice(0, 10);
-
-function saveScore() {
+// Safe wrapper natively migrating from localStorage completely to Firebase APIs elegantly
+window.saveScore = async function() {
     let name = initials.join('');
+    let playtimeMs = new Date().getTime() - gameStartTime;
+    
+    // Immediate visual update locally sequentially avoiding UI freeze natively!
     highScores.push({ name: name, score: player.score });
     highScores.sort((a, b) => b.score - a.score);
     highScores = highScores.slice(0, 10);
-    localStorage.setItem('8bitScores_v2', JSON.stringify(highScores));
-}
+
+    // Blast payload directly to the Firebase engine dynamically securely!
+    if (window.submitHighScore) {
+        await window.submitHighScore(name, player.score, playtimeMs);
+        window.refreshLeaderboard(); // Resync true global states securely
+    }
+};
 
 let player = {
     x: 0,

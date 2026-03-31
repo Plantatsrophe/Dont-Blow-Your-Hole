@@ -255,6 +255,7 @@ function resetFullGame() {
     timer = 60;
     parseMap();
     resetPlayerPosition();
+    gameStartTime = new Date().getTime(); // Anchor runtime securely
 }
 
 function updateGame(dt) {
