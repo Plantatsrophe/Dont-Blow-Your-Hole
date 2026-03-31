@@ -116,7 +116,12 @@ function render() {
         
         // Right flank (Enemy & Gear)
         drawSprite(ctx, sprBot, canvas.width/2 + 160, sbY, 38, 38, !sprFlip);
-        drawSprite(ctx, sprGear, canvas.width/2 + 167, sbY + 70, 24, 24, sprFlip);
+        
+        ctx.save();
+        ctx.translate(canvas.width/2 + 167 + 12, sbY + 70 + 12);
+        ctx.rotate(Date.now() / 250); // Smooth mechanical radial spin
+        drawSprite(ctx, sprGear, -12, -12, 24, 24, false);
+        ctx.restore();
         
         return;
     } else if (gameState === 'INTRO') {
