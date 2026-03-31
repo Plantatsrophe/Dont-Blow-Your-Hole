@@ -1,18 +1,18 @@
-const CACHE_NAME = 'dont-die-v33';
+const CACHE_NAME = 'dont-die-v34';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon.svg',
-  '/assets.js',
-  '/audio.js',
-  '/db.js',
-  '/game.js',
-  '/globals.js',
-  '/levels.js',
-  '/physics.js',
-  '/render.js',
-  'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'
+  './',
+  './index.html',
+  './manifest.json',
+  './icon.svg',
+  './style.css',
+  './assets.js',
+  './audio.js',
+  './db.js',
+  './game.js',
+  './globals.js',
+  './levels.js',
+  './physics.js',
+  './render.js'
 ];
 
 self.addEventListener('install', (e) => {
