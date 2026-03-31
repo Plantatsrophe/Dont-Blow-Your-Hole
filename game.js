@@ -251,8 +251,10 @@ function parseMap(resetEntities = true) {
                 rowData.push(0);
                 // Spawn logically defaults locally in strings!
             } else if (char === '7' || (row === 12 && col === 1)) {
-                player.startX = col * TILE_SIZE + 6;
-                player.startY = (row + 1) * TILE_SIZE - player.height;
+                if (resetEntities) {
+                    player.startX = col * TILE_SIZE + 6;
+                    player.startY = (row + 1) * TILE_SIZE - player.height;
+                }
                 rowData.push(0);
             } else if (tile === 8) {
                 if (resetEntities) {
