@@ -226,7 +226,7 @@ function parseMap(resetEntities = true) {
                     items.push({ x: col * TILE_SIZE + 8, y: row * TILE_SIZE + 8, width: 24, height: 24, collected: false, type: 'hotdog' });
                 }
                 rowData.push(0);
-            } else if (tile === 12) {
+            } else if (char === 'P') {
                 if (resetEntities) {
                     platforms.push({
                         x: col * TILE_SIZE,
