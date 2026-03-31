@@ -1,6 +1,7 @@
 window.addEventListener('keydown', (e) => {
-    document.getElementById('touch-controls').style.display = 'none'; // Auto-hide on Desktop
-    
+    if (e.isTrusted) {
+        document.getElementById('touch-controls').style.display = 'none'; // Auto-hide on genuine Desktop keys
+    }
     if (!audioCtx) initAudio();
     
     if (gameState === 'START' && !isMusicPlaying) {
