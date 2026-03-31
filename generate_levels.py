@@ -16,18 +16,24 @@ def generate_slums(i, tier):
         c += random.randint(2, 4)
         if c >= 94: break
         choice = random.random()
-        if choice < 0.3 + (tier * 0.05):
+        
+        # Determine explicit scalable probabilities correctly!
+        spike_prob = min(0.3 + (tier * 0.03), 0.55)
+        plat_prob = spike_prob + 0.25
+        enemy_prob = plat_prob + 0.15
+
+        if choice < spike_prob:
             w = random.randint(1, min(3, 94 - c))
             for dx in range(w): level[13][c+dx] = "3"
             c += w
-        elif choice < 0.6:
+        elif choice < plat_prob:
             h = random.randint(7, 10)
             w = random.randint(2, 4)
             for dx in range(w):
                 level[h][c+dx] = "1"
                 level[13][c+dx] = "3"
             c += w
-        elif choice < 0.8:
+        elif choice < enemy_prob:
             level[12][c] = "L" if (i >= 9 and random.random() < 0.3) else "8"
     return level
 
@@ -87,7 +93,15 @@ def generate_shaft(i, tier):
     level[3][11] = "1"
     level[3][13] = "1"
     
-    y = 57
+    # Establish First Platform and Ladder Bridge smoothly safely!
+    level[54][4] = "1"
+    level[54][5] = "1"
+    level[54][6] = "1"
+    level[54][4] = "6"
+    for lr in range(55, 60):
+        level[lr][4] = "2"
+    
+    y = 54
     while y > 5:
         y -= random.randint(3, 4)
         side = random.choice([1, 2, 3])
