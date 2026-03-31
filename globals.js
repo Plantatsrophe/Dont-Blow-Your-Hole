@@ -19,7 +19,7 @@ let camera = { x: 0, y: 0 };
 
 // Hardware-Accelerated Cache Pipeline natively efficiently mapping strictly gracefully
 let offscreenMapCanvas = document.createElement('canvas');
-let offscreenMapCtx = offscreenMapCanvas.getContext('2d', { alpha: false });
+let offscreenMapCtx = offscreenMapCanvas.getContext('2d');
 let isMapCached = false;
 
 // O(1) Object Pooling intrinsically avoiding GC stutter intelligently 
