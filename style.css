@@ -113,3 +113,10 @@ canvas {
     background: rgba(255, 255, 255, 0.5);
     transform: scale(0.95);
 }
+
+.space-btn {
+    width: 140px; /* Wide pill specifically for Space functionality */
+    border-radius: 20px;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
