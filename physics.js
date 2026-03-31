@@ -199,12 +199,20 @@ function updatePhysics(dt) {
     let tilesAfterX = getCollidingTiles(player);
     for (let t of tilesAfterX) {
         if (t.type === 1) { // Wall
-            if (player.vx > 0) { // moving right
-                player.x = t.rect.x - player.width;
-            } else if (player.vx < 0) { // moving left
-                player.x = t.rect.x + t.rect.width;
+            let isFloating = t.col > 0 && t.col < mapCols - 1;
+            if (mapRows === 15) {
+                isFloating = isFloating && t.row > 0 && t.row < 13;
+            } else if (mapRows === 60) {
+                isFloating = isFloating && t.row > 0 && t.row < 59;
             }
-            player.vx = 0;
+            if (!isFloating) {
+                if (player.vx > 0) { // moving right
+                    player.x = t.rect.x - player.width;
+                } else if (player.vx < 0) { // moving left
+                    player.x = t.rect.x + t.rect.width;
+                }
+                player.vx = 0;
+            }
         }
     }
 
@@ -237,14 +245,33 @@ function updatePhysics(dt) {
     for (let t of tilesAfterY) {
         if (onPlatform) break; // Disable subsequent down-collisions if securely anchored!
         if (t.type === 1) { // Wall
-            if (player.vy > 0) { // moving down
-                player.y = t.rect.y - player.height;
-                player.isOnGround = true;
-                player.doubleJump = false;
-                player.vy = 0;
-            } else if (player.vy < 0) { // moving up
-                player.y = t.rect.y + t.rect.height;
-                player.vy = 0;
+            let isFloating = t.col > 0 && t.col < mapCols - 1;
+            if (mapRows === 15) {
+                isFloating = isFloating && t.row > 0 && t.row < 13;
+            } else if (mapRows === 60) {
+                isFloating = isFloating && t.row > 0 && t.row < 59;
+            }
+            
+            if (isFloating) {
+                if (player.vy > 0 && !player.droppingThrough) { // moving down cleanly structurally seamlessly!
+                    let prevBottom = player.y - player.vy * dt + player.height;
+                    if (prevBottom <= t.rect.y + 0.1) {
+                        player.y = t.rect.y - player.height;
+                        player.isOnGround = true;
+                        player.doubleJump = false;
+                        player.vy = 0;
+                    }
+                }
+            } else {
+                if (player.vy > 0) { // moving down mathematically explicitly!
+                    player.y = t.rect.y - player.height;
+                    player.isOnGround = true;
+                    player.doubleJump = false;
+                    player.vy = 0;
+                } else if (player.vy < 0) { // moving up inherently natively explicitly natively nicely optimally!
+                    player.y = t.rect.y + t.rect.height;
+                    player.vy = 0;
+                }
             }
         } else if (t.type === 6) { // Ladder Top
             if (player.vy > 0 && !keys.ArrowDown) { // moving down, and NOT pressing down to climb

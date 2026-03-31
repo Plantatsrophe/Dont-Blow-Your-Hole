@@ -1,3 +1,18 @@
+let lastDownPressTime = 0;
+
+function processDownInput(el) {
+    if (!keys.ArrowDown) {
+        let now = Date.now();
+        if (now - lastDownPressTime < 300) {
+            player.droppingThrough = true;
+            setTimeout(() => { player.droppingThrough = false; }, 200);
+        }
+        lastDownPressTime = now;
+    }
+    keys.ArrowDown = true;
+    if (el) el.classList.add('active');
+}
+
 window.addEventListener('keydown', (e) => {
     document.getElementById('touch-controls').style.display = 'none'; // Auto-hide on Desktop
 
@@ -10,7 +25,7 @@ window.addEventListener('keydown', (e) => {
     if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.ArrowLeft = true;
     if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.ArrowRight = true;
     if (e.code === 'ArrowUp' || e.code === 'KeyW') keys.ArrowUp = true;
-    if (e.code === 'ArrowDown' || e.code === 'KeyS') keys.ArrowDown = true;
+    if (e.code === 'ArrowDown' || e.code === 'KeyS') processDownInput(null);
     if (e.code === 'Space') {
         if (!spacePressed) {
             handleJump();
@@ -150,7 +165,7 @@ function handleTouch(e) {
             if (el.id === 'btn-left') { keys.ArrowLeft = true; el.classList.add('active'); }
             else if (el.id === 'btn-right') { keys.ArrowRight = true; el.classList.add('active'); }
             else if (el.id === 'btn-up') { keys.ArrowUp = true; el.classList.add('active'); }
-            else if (el.id === 'btn-down') { keys.ArrowDown = true; el.classList.add('active'); }
+            else if (el.id === 'btn-down') { processDownInput(el); }
             else if (el.id === 'btn-jump') { currentlyPressingSpace = true; el.classList.add('active'); }
         }
     } 
@@ -162,7 +177,7 @@ function handleTouch(e) {
                 if (el.id === 'btn-left') { keys.ArrowLeft = true; el.classList.add('active'); }
                 else if (el.id === 'btn-right') { keys.ArrowRight = true; el.classList.add('active'); }
                 else if (el.id === 'btn-up') { keys.ArrowUp = true; el.classList.add('active'); }
-                else if (el.id === 'btn-down') { keys.ArrowDown = true; el.classList.add('active'); }
+                else if (el.id === 'btn-down') { processDownInput(el); }
                 else if (el.id === 'btn-jump') { currentlyPressingSpace = true; el.classList.add('active'); }
             }
         }

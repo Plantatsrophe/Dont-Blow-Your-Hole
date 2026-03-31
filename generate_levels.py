@@ -9,9 +9,9 @@ def generate_slums(i, tier):
         
     level[12][98] = "5" 
     if i == 0 or (i + 1) % 5 == 0: level[12][3] = "H"
+    level[12][50] = "C" # Strictly locked to the solid floor mathematically safe implicitly
 
     c = 5
-    placed_cp = False
     while c < 94:
         c += random.randint(2, 4)
         if c >= 94: break
@@ -24,19 +24,19 @@ def generate_slums(i, tier):
 
         if choice < spike_prob:
             w = random.randint(1, min(3, 94 - c))
-            for dx in range(w): level[13][c+dx] = "3"
+            for dx in range(w): 
+                # Never override Checkpoint or Portal floor tiles natively structurally safely!
+                if c+dx != 50 and c+dx != 98:
+                    level[13][c+dx] = "3"
             c += w
         elif choice < plat_prob:
-            h = random.randint(7, 10)
+            h = random.randint(9, 11) # Cap max reach strictly organically
             w = random.randint(2, 4)
             for dx in range(w):
                 level[h][c+dx] = "1"
                 level[13][c+dx] = "3"
             if random.random() < 0.3:
                 level[h-1][c+1] = "4" # Cash Item dynamically over the spike pit
-            if c >= 45 and not placed_cp:
-                level[h-1][c] = "C"
-                placed_cp = True
             c += w
         elif choice < enemy_prob:
             level[12][c] = "L" if (i >= 9 and random.random() < 0.3) else "8"
@@ -63,8 +63,8 @@ def generate_acid(i, tier):
         ptype = random.random()
         if ptype < 0.4:
             w = random.randint(2, 3)
-            # Bound height tightly to previous platform safely mapping organically
-            h = min(12, max(8, last_h + random.randint(-2, 1))) 
+            # Bound height tightly to `-1, 1` guaranteeing physical jump math organically safely explicitly!
+            h = min(12, max(8, last_h + random.randint(-1, 1))) 
             for dx in range(w):
                 if c+dx < 96: level[h][c+dx] = "1"
                 
@@ -82,7 +82,7 @@ def generate_acid(i, tier):
             last_h = h
             c += w
         elif ptype < 0.8:
-            h = min(12, max(8, last_h + random.randint(-2, 1)))
+            h = min(12, max(8, last_h + random.randint(-1, 1)))
             level[h][c+1] = "P"
             last_h = h
             c += 4
@@ -123,10 +123,13 @@ def generate_shaft(i, tier):
     
     y = 54
     placed_cp = False
+    side = 2 # Start in the middle securely explicitly natively
     while y > 5:
         # Cap vertical jump demands natively! Double jumps easily cleanly explicitly clear 3!
         y -= random.randint(2, 3)
-        side = random.choice([1, 2, 3])
+        # Lock side shifting to mathematically adjacent jumps (No Cross-shaft leaps!) fluently smoothly optimally uniquely explicitly securely dynamically
+        side = max(1, min(3, side + random.randint(-1, 1)))
+        
         if side == 1:
             level[y][1] = "1"
             level[y][2] = "1"
@@ -170,7 +173,8 @@ def generate_laser_factory(i, tier):
     c = 5
     placed_cp = False
     while c < 94:
-        c += random.randint(3, 5)
+        # Cap horizontal leaps dynamically perfectly safely explicitly organically natively dependably functionally efficiently
+        c += random.randint(3, 4)
         if c >= 94: break
         if random.random() < 0.6:
             level[12][c] = "1"
@@ -206,7 +210,8 @@ def generate_goliath(i, tier):
     placed_cp_1 = False
     placed_cp_2 = False
     while c < 190:
-        c += random.randint(2, 5)
+        # Cap Goliath max gaps linearly safely beautifully
+        c += random.randint(2, 4)
         if c >= 190: break
         choice = random.random()
         if choice < 0.4:
@@ -215,7 +220,7 @@ def generate_goliath(i, tier):
                 if c+dx < 196: level[13][c+dx] = "3"
             c += w
         elif choice < 0.7:
-            h = random.randint(8, 11)
+            h = random.randint(9, 11) # Cap max reach strictly explicitly organically
             level[h][c] = "1"
             level[h][c+1] = "1"
             if random.random() < 0.4: level[h-1][c] = "4"
