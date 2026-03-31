@@ -306,6 +306,9 @@ function resetPlayerPosition() {
     player.y = player.startY;
     player.vx = 0;
     player.vy = 0;
+    player.droppingThrough = false;
+    player.isOnGround = false;
+    player.isClimbing = false;
 }
 
 function resetFullGame() {
@@ -364,9 +367,9 @@ function updateGame(dt) {
                 player.lives++;
                 playSound('powerup');
             } else if (i.type === 'checkpoint') {
-                if (player.startX !== i.x + 8 || player.startY !== i.y + 8) {
+                if (player.startX !== i.x + 8 || player.startY !== i.y + TILE_SIZE - player.height) {
                     player.startX = i.x + 8;
-                    player.startY = i.y + 8;
+                    player.startY = i.y + TILE_SIZE - player.height; 
                     playSound('powerup');
                     
                     // Blast 20 particles explicitly visually denoting Checkpoint Grab
