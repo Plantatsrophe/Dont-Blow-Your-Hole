@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dont-die-v13';
+const CACHE_NAME = 'dont-die-v33';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
