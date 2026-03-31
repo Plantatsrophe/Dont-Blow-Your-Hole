@@ -46,6 +46,14 @@ with open("levels.js", "w") as f:
                 if random.random() < 0.3:
                     level[hR-1][c+1] = "4" # Cash
                     
+            # Moving Platform Sequence 
+            if random.random() < 0.25 + (tier * 0.02):
+                hP = random.randint(8, 11)
+                level[hP][c] = "P"
+                if random.random() < 0.3:
+                    level[hP-1][c] = "4" 
+                    
+                    
             # Vertical Ladder Sequence 
             if random.random() < ladder_prob:
                 hR = random.randint(5, 8)
