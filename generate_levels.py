@@ -32,6 +32,8 @@ def generate_slums(i, tier):
             for dx in range(w):
                 level[h][c+dx] = "1"
                 level[13][c+dx] = "3"
+            if random.random() < 0.3:
+                level[h-1][c+1] = "4" # Cash Item dynamically over the spike pit
             if c >= 45 and not placed_cp:
                 level[h-1][c] = "C"
                 placed_cp = True
@@ -50,6 +52,7 @@ def generate_acid(i, tier):
     for c in range(0, 4): level[13][c] = "1"
     for c in range(96, 100): level[13][c] = "1"
     level[12][98] = "5"
+    if i == 0 or (i + 1) % 5 == 0: level[12][3] = "H"
     
     c = 4
     last_h = 13
@@ -64,6 +67,15 @@ def generate_acid(i, tier):
             h = min(12, max(8, last_h + random.randint(-2, 1))) 
             for dx in range(w):
                 if c+dx < 96: level[h][c+dx] = "1"
+                
+            # Randomly place Cash floating securely above the gap!
+            if c >= 6 and random.random() < 0.4:
+                level[min(h, last_h) - 2][c - 1] = "4"
+                
+            # Randomly place a marching bot on the platform strictly securely natively dynamically
+            if w == 3 and random.random() < 0.2 + (tier * 0.1):
+                level[h-1][c+1] = "8"
+                
             if c >= 45 and not placed_cp:
                 level[h-1][c] = "C"
                 placed_cp = True
@@ -94,6 +106,7 @@ def generate_shaft(i, tier):
         level[59][c] = "1"
         
     level[58][2] = "7" 
+    if i == 0 or (i + 1) % 5 == 0: level[57][3] = "H"
     
     level[2][12] = "5"
     level[3][12] = "1"
@@ -118,14 +131,20 @@ def generate_shaft(i, tier):
             level[y][1] = "1"
             level[y][2] = "1"
             level[y][3] = "1"
+            if random.random() < 0.2 + (tier*0.05): level[y-1][2] = "4"
+            if random.random() < 0.15 + (tier*0.05): level[y-1][1] = "8"
         elif side == 2:
             level[y][6] = "1"
             level[y][7] = "1"
             level[y][8] = "1"
+            if random.random() < 0.2 + (tier*0.05): level[y-1][7] = "4"
+            if random.random() < 0.15 + (tier*0.05): level[y-1][6] = "8"
         else:
             level[y][11] = "1"
             level[y][12] = "1"
             level[y][13] = "1"
+            if random.random() < 0.2 + (tier*0.05): level[y-1][12] = "4"
+            if random.random() < 0.15 + (tier*0.05): level[y-1][13] = "8"
             
         if y <= 30 and not placed_cp:
             level[y-1][(side * 5) - 3] = "C" # Automatically anchor sequentially
@@ -146,6 +165,7 @@ def generate_laser_factory(i, tier):
         level[13][c] = "1"
         level[14][c] = "1"
     level[12][98] = "5"
+    if i == 0 or (i + 1) % 5 == 0: level[12][3] = "H"
     
     c = 5
     placed_cp = False
@@ -155,7 +175,7 @@ def generate_laser_factory(i, tier):
         if random.random() < 0.6:
             level[12][c] = "1"
             level[11][c] = "1"
-            level[10][c] = "L" if tier > 2 and random.random() < 0.4 else "1"
+            level[10][c] = "L" if tier > 3 and random.random() < 0.1 else "1"
             if c >= 45 and not placed_cp:
                 level[9][c] = "C"
                 placed_cp = True
@@ -164,10 +184,12 @@ def generate_laser_factory(i, tier):
                 level[12][c] = "C"
                 placed_cp = True
             else:
-                level[12][c] = "L"
+                l_prob = 0.1 + (tier * 0.05) # Scaled down natively!
+                level[12][c] = "L" if random.random() < l_prob else ("4" if random.random() < 0.4 else "0")
             for dx in range(4):
                 if c+dx < 96: level[13][c+dx] = "3"
             level[9][c+1] = "P"
+            if random.random() < 0.5: level[8][c+1] = "4"
             c += 3
     return level
 
@@ -178,6 +200,7 @@ def generate_goliath(i, tier):
         level[13][c] = "1"
         level[14][c] = "1"
     level[12][198] = "5"
+    if i == 0 or (i + 1) % 5 == 0: level[12][3] = "H"
     
     c = 5
     placed_cp_1 = False
@@ -195,6 +218,7 @@ def generate_goliath(i, tier):
             h = random.randint(8, 11)
             level[h][c] = "1"
             level[h][c+1] = "1"
+            if random.random() < 0.4: level[h-1][c] = "4"
             if c >= 60 and not placed_cp_1:
                 level[h-1][c] = "C"
                 placed_cp_1 = True
@@ -203,7 +227,13 @@ def generate_goliath(i, tier):
                 placed_cp_2 = True
             c += 2
         else:
-            level[12][c] = "L" if random.random() < 0.5 else "8"
+            obj_choice = random.random()
+            if obj_choice < 0.15 + (tier * 0.05):
+                level[12][c] = "L"
+            elif obj_choice < 0.4 + (tier * 0.05):
+                level[12][c] = "8"
+            elif obj_choice < 0.7:
+                level[12][c] = "4"
     return level
 
 with open("levels.js", "w") as f:
