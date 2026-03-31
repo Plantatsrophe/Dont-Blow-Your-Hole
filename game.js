@@ -112,10 +112,14 @@ function handleTouch(e) {
     // Reset inputs structurally iterating all active touches elegantly
     keys.ArrowLeft = false;
     keys.ArrowRight = false;
+    keys.ArrowUp = false;
+    keys.ArrowDown = false;
     let currentlyPressingSpace = false;
 
     document.getElementById('btn-left').classList.remove('active');
     document.getElementById('btn-right').classList.remove('active');
+    document.getElementById('btn-up').classList.remove('active');
+    document.getElementById('btn-down').classList.remove('active');
     document.getElementById('btn-jump').classList.remove('active');
 
     // Handle Native Multi-touch inputs structurally
@@ -125,16 +129,11 @@ function handleTouch(e) {
             let el = document.elementFromPoint(touch.clientX, touch.clientY);
             if (!el) continue;
 
-            if (el.id === 'btn-left') {
-                keys.ArrowLeft = true;
-                el.classList.add('active');
-            } else if (el.id === 'btn-right') {
-                keys.ArrowRight = true;
-                el.classList.add('active');
-            } else if (el.id === 'btn-jump') {
-                currentlyPressingSpace = true;
-                el.classList.add('active');
-            }
+            if (el.id === 'btn-left') { keys.ArrowLeft = true; el.classList.add('active'); }
+            else if (el.id === 'btn-right') { keys.ArrowRight = true; el.classList.add('active'); }
+            else if (el.id === 'btn-up') { keys.ArrowUp = true; el.classList.add('active'); }
+            else if (el.id === 'btn-down') { keys.ArrowDown = true; el.classList.add('active'); }
+            else if (el.id === 'btn-jump') { currentlyPressingSpace = true; el.classList.add('active'); }
         }
     } 
     // Handle fallback generic Desktop Mouse Tracking seamlessly!
@@ -144,6 +143,8 @@ function handleTouch(e) {
             if (el) {
                 if (el.id === 'btn-left') { keys.ArrowLeft = true; el.classList.add('active'); }
                 else if (el.id === 'btn-right') { keys.ArrowRight = true; el.classList.add('active'); }
+                else if (el.id === 'btn-up') { keys.ArrowUp = true; el.classList.add('active'); }
+                else if (el.id === 'btn-down') { keys.ArrowDown = true; el.classList.add('active'); }
                 else if (el.id === 'btn-jump') { currentlyPressingSpace = true; el.classList.add('active'); }
             }
         }

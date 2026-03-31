@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>8-Bit Platformer Alpha</title>
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 
@@ -19,19 +19,25 @@
         
         <!-- Ergonomic Virtual Touch Joypad decoupled dynamically -->
         <div id="touch-controls">
-            <div id="btn-left" class="touch-btn">&lt;</div>
-            <div id="btn-right" class="touch-btn">&gt;</div>
+            <div class="dpad">
+                <div id="btn-up" class="touch-btn">˄</div>
+                <div class="dpad-row">
+                    <div id="btn-left" class="touch-btn">&lt;</div>
+                    <div id="btn-down" class="touch-btn">˅</div>
+                    <div id="btn-right" class="touch-btn">&gt;</div>
+                </div>
+            </div>
             <div id="btn-space"></div>
-            <div id="btn-jump" class="touch-btn">˄</div>
+            <div id="btn-jump" class="touch-btn" style="font-size: 16px;">(J)</div>
         </div>
     </div>
-    <script src="globals.js?v=3"></script>
-    <script src="levels.js?v=3"></script>
-    <script src="assets.js?v=3"></script>
-    <script src="audio.js?v=3"></script>
-    <script src="physics.js?v=3"></script>
-    <script src="render.js?v=3"></script>
-    <script src="game.js?v=3"></script>
+    <script src="globals.js?v=5"></script>
+    <script src="levels.js?v=5"></script>
+    <script src="assets.js?v=5"></script>
+    <script src="audio.js?v=5"></script>
+    <script src="physics.js?v=5"></script>
+    <script src="render.js?v=5"></script>
+    <script src="game.js?v=5"></script>
 </body>
 
 </html>

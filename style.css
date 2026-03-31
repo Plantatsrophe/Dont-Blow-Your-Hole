@@ -51,11 +51,11 @@ canvas {
     display: none; /* Managed seamlessly by engine dynamically */
     width: 100%;
     max-width: 800px;
-    height: 110px;
+    height: 155px; /* Safely accommodates stacked directional pads elegantly */
     flex-shrink: 0; /* Strictly preserve button legibility */
     justify-content: space-between; 
     align-items: center;
-    padding: 10px 20px;
+    padding: 10px 30px;
     box-sizing: border-box;
     margin-top: 10px;
 }
@@ -78,21 +78,34 @@ canvas {
     flex-grow: 1;
 }
 
+.dpad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* Classic tight dpad spacing natively */
+}
+
+.dpad-row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px; /* Internal tight alignment horizontally */
+}
+
 .touch-btn {
-    width: 70px;
-    height: 70px;
+    width: 55px;
+    height: 55px;
     background: rgba(255, 255, 255, 0.15);
     border: 3px solid rgba(255, 255, 255, 0.4);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    font-size: 20px;
     color: rgba(255, 255, 255, 0.7);
     user-select: none;
     touch-action: manipulation;
     pointer-events: auto; 
-    margin: 0 10px;
+    margin: 0;
     transition: background 0.1s ease;
 }
 
