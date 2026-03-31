@@ -230,6 +230,10 @@ function render() {
         drawSprite(ctx, sprHotdog, 480, 200, 24, 24, false);
         ctx.fillText("HOTDOG: +1 LIFE", 520, 218);
 
+        let whistle = Math.floor(Date.now() / 400) % 2 === 0;
+        drawSprite(ctx, sprRef, 480, 240, 24, 24, whistle);
+        ctx.fillText("FUDGE (CHECKPOINT): SAVES GAME", 520, 258);
+
         ctx.textAlign = 'center';
         ctx.fillStyle = '#f1c40f';
         ctx.font = '18px "Press Start 2P"';
