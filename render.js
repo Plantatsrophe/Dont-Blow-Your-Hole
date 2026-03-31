@@ -232,7 +232,7 @@ function render() {
 
         let whistle = Math.floor(Date.now() / 400) % 2 === 0;
         drawSprite(ctx, sprRef, 480, 240, 24, 24, whistle);
-        ctx.fillText("FUDGE (CHECKPOINT): SAVES GAME", 520, 258);
+        ctx.fillText("FUDGE: CHECKPOINT", 520, 258);
 
         ctx.textAlign = 'center';
         ctx.fillStyle = '#f1c40f';
