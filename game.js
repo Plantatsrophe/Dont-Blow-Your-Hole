@@ -1,4 +1,6 @@
 window.addEventListener('keydown', (e) => {
+    document.getElementById('touch-controls').style.display = 'none'; // Auto-hide on Desktop
+    
     if (!audioCtx) initAudio();
     
     if (gameState === 'START' && !isMusicPlaying) {
@@ -67,6 +69,77 @@ window.addEventListener('keyup', (e) => {
     if (e.code === 'ArrowDown' || e.code === 'KeyS') keys.ArrowDown = false;
     if (e.code === 'Space') spacePressed = false;
 });
+
+// --- TOUCH CONTROLS ---
+let isTouchMode = false;
+
+document.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // Stop double-tap zoom strictly natively!
+    if (!isTouchMode) {
+        isTouchMode = true;
+        document.getElementById('touch-controls').style.display = 'flex';
+        // Auto-Fullscreen specifically if on mobile
+        if(document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(()=>{});
+        }
+    }
+    
+    // Apple iOS strict Audio bypass tracking structurally
+    if (!audioCtx) initAudio();
+    if (gameState === 'START' && !isMusicPlaying) startBackgroundMusic();
+    
+    // Simulate Enter if on UI screens!
+    if (gameState === 'WIN' || gameState === 'GAMEOVER' || gameState === 'START' || gameState === 'INSTRUCTIONS' || gameState === 'ENTER_INITIALS') {
+        window.dispatchEvent(new KeyboardEvent('keydown', {'code': 'Enter'}));
+        return; // Break cleanly
+    }
+
+    handleTouch(e);
+}, { passive: false });
+
+document.addEventListener('touchmove', handleTouch, { passive: false });
+document.addEventListener('touchend', handleTouch, { passive: false });
+document.addEventListener('touchcancel', handleTouch, { passive: false });
+
+function handleTouch(e) {
+    if(gameState !== 'PLAYING') return;
+    
+    // Reset inputs structurally iterating all active touches elegantly
+    keys.ArrowLeft = false;
+    keys.ArrowRight = false;
+    let currentlyPressingSpace = false;
+    
+    document.getElementById('btn-left').classList.remove('active');
+    document.getElementById('btn-right').classList.remove('active');
+    document.getElementById('btn-jump').classList.remove('active');
+
+    for(let i = 0; i < e.touches.length; i++) {
+        let touch = e.touches[i];
+        let el = document.elementFromPoint(touch.clientX, touch.clientY);
+        if(!el) continue;
+        
+        if(el.id === 'btn-left') {
+            keys.ArrowLeft = true;
+            el.classList.add('active');
+        } else if(el.id === 'btn-right') {
+            keys.ArrowRight = true;
+            el.classList.add('active');
+        } else if(el.id === 'btn-jump') {
+            currentlyPressingSpace = true;
+            el.classList.add('active');
+        }
+    }
+    
+    if (currentlyPressingSpace) {
+        if (!spacePressed) {
+            handleJump();
+            spacePressed = true;
+        }
+    } else {
+        spacePressed = false;
+    }
+}
+// ----------------------
 
 function handleJump() {
     if (gameState !== 'PLAYING') return;

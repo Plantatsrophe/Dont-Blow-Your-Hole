@@ -16,6 +16,10 @@ body, html {
     box-shadow: 0 0 30px rgba(0, 0, 0, 1);
     border: 4px solid #333;
     background-color: #000;
+    max-width: 100vw;
+    max-height: 100vh;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
 }
 
 canvas {
@@ -23,4 +27,48 @@ canvas {
     /* Ensures scaled up pixels stay crisp and blocky */
     image-rendering: pixelated; 
     image-rendering: crisp-edges;
+    width: 100%;
+    height: 100%;
+}
+
+#touch-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    display: none; 
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 0 15px;
+    box-sizing: border-box;
+    z-index: 100;
+    pointer-events: none;
+}
+
+#btn-space {
+    flex-grow: 1;
+}
+
+.touch-btn {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.7);
+    user-select: none;
+    touch-action: manipulation;
+    pointer-events: auto; 
+    margin: 0 10px;
+    transition: background 0.1s ease;
+}
+
+.touch-btn.active {
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(0.95);
 }
