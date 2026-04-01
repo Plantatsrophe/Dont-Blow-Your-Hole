@@ -1,4 +1,4 @@
-const CACHE_NAME = 'platformer-cache-v73';
+const CACHE_NAME = 'platformer-cache-v75';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const ASSETS_TO_CACHE = [
   './audio.js',
   './db.js',
   './game.js',
+  './logo.js',
   './globals.js',
   './levels.js',
   './physics.js',

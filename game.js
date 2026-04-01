@@ -113,8 +113,21 @@ function executeTouchStart(e) {
         let cy = (cY - rect.top) * (canvas.height / rect.height);
         
         if (cx >= canvas.width / 2 - 120 && cx <= canvas.width / 2 + 120 && cy >= canvas.height - 80 && cy <= canvas.height - 40) {
-            let encodedStr = encodeURIComponent(`I just scored ${player.score} in Don't Die! Can you out-survive me?`);
-            window.open('https://twitter.com/intent/tweet?text=' + encodedStr, '_blank');
+            try {
+                canvas.toBlob(blob => {
+                    if (blob) {
+                        const item = new ClipboardItem( { 'image/png': blob } );
+                        navigator.clipboard.write([item]).then(() => {
+                            alert('Highscore Screenshot copied to clipboard! You can now paste it directly.');
+                        }).catch(err => {
+                            console.error('Failed to copy image:', err);
+                            alert('Unable to copy screenshot to clipboard.');
+                        });
+                    }
+                }, 'image/png');
+            } catch (e) {
+                console.error("Clipboard export failed", e);
+            }
             return; // Explicitly halt state transition organically
         }
     }

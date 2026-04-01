@@ -316,7 +316,11 @@ function render() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // --- Pixelated Background Logo ---
-        let logoImg = document.getElementById('logoImg');
+        if (!window.logoLoaded && typeof logoBase64 !== 'undefined') {
+            window.logoLoaded = new Image();
+            window.logoLoaded.src = logoBase64;
+        }
+        let logoImg = window.logoLoaded;
         if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
             if (!window.logoOsc) {
                 // Calculate native 8-bit downscaling ratio to accurately square pixels
@@ -1015,7 +1019,7 @@ function render() {
     
     // Draw Global Share UX Button
     if (gameState === 'GAMEOVER' || gameState === 'WIN' || gameState === 'ENTER_INITIALS') {
-        ctx.fillStyle = '#1da1f2';
+        ctx.fillStyle = '#b75c32'; // Match the rusty orange aesthetic instead of twitter blue!
         ctx.fillRect(canvas.width / 2 - 120, canvas.height - 80, 240, 40);
         ctx.fillStyle = 'white';
         ctx.font = '12px "Press Start 2P"';
