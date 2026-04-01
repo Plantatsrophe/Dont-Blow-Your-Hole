@@ -346,6 +346,9 @@ function resetPlayerPosition() {
     player.y = player.startY;
     player.vx = 0;
     player.vy = 0;
+    player.droppingThrough = false;
+    player.isOnGround = false;
+    player.isClimbing = false;
 }
 
 function resetFullGame() {
