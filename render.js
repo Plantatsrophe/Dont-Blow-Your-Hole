@@ -771,7 +771,7 @@ function render() {
     // Draw Bombs (TNT Bundles)
     for (let b of bombs) {
         let bx = b.x;
-        let by = b.y;
+        let by = b.y + 10; // Anchor TNT exactly 10 pixels downwards directly onto surface layer
         
         ctx.fillStyle = '#2b1a10';
         ctx.fillRect(bx + 6, by + 10, 20, 4);
@@ -785,12 +785,10 @@ function render() {
         ctx.fillStyle = '#5D4037';
         ctx.fillRect(bx + 15, by - 4, 2, 8); 
         
-        if (b.active || (Math.floor(Date.now()/200)%2===0)) {
-            ctx.fillStyle = '#FFC107'; 
-            ctx.beginPath(); ctx.arc(bx + 16 + (Math.random()-0.5)*4, by - 4 + (Math.random()-0.5)*4, 3, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#FF5722'; 
-            ctx.beginPath(); ctx.arc(bx + 16, by - 4, 2, 0, Math.PI*2); ctx.fill();
-        }
+        ctx.fillStyle = '#FFC107'; 
+        ctx.beginPath(); ctx.arc(bx + 16 + (Math.random()-0.5)*4, by - 4 + (Math.random()-0.5)*4, 3, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#FF5722'; 
+        ctx.beginPath(); ctx.arc(bx + 16, by - 4, 2, 0, Math.PI*2); ctx.fill();
     }
 
     // Draw Particles Pool seamlessly securely efficiently!

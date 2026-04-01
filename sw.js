@@ -1,4 +1,4 @@
-const CACHE_NAME = 'platformer-cache-v64';
+const CACHE_NAME = 'platformer-cache-v69';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
