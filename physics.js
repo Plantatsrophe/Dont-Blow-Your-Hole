@@ -43,6 +43,13 @@ function playerDeath() {
     for (let l of laserPool) {
         l.active = false;
     }
+    
+    // Stop Masticator immediately upon player death correctly smoothly gracefully!
+    if (boss && boss.active && boss.type === 'masticator') {
+        boss.phase = 0;
+        boss.vx = 0;
+        boss.hasSeenPlayer = false;
+    }
 
     // 4 Quadrant Fragmentation Matrix! dynamically allocated via strict pooling seamlessly!
     for (let i = 0; i < 4; i++) {
@@ -323,41 +330,76 @@ function updateBoss(dt) {
     if (boss.type === 'masticator') {
         if (boss.phase === 0) { // Idle/Waiting
             boss.vx = 0;
-            // Activate when visible on screen
-            if (boss.x > camera.x && boss.x < camera.x + 800) {
+            // Activate when visible on screen or if already triggered implicitly natively!
+            if (boss.hasSeenPlayer || (boss.x > camera.x && boss.x < camera.x + 800)) {
+                boss.hasSeenPlayer = true;
                 boss.phase = 1;
-                boss.vx = (player.x < boss.x) ? -280 : 280;
+                boss.vx = (player.x < boss.x) ? -300 : 300; // Sped down explicitly safely natively!
                 playSound('shoot'); // Charge sound!
             }
         } else if (boss.phase === 1) { // Charging securely implicitly!
             boss.x += boss.vx * dt;
-            let tX = (boss.vx < 0) ? boss.x : boss.x + boss.width;
-            let cCol = Math.floor(tX / TILE_SIZE);
-            let cRow = Math.floor((boss.y + boss.height/2) / TILE_SIZE);
             
-            if (map[cRow] && map[cRow][cCol] === 1) {
-                // Hit wall fluently naturally!
+            let startCol = Math.floor(boss.x / TILE_SIZE);
+            let endCol = Math.floor((boss.x + boss.width) / TILE_SIZE);
+            let startRow = Math.floor(boss.y / TILE_SIZE);
+            let endRow = Math.floor((boss.y + boss.height) / TILE_SIZE);
+            
+            let hitPillar = false;
+            let hitCol = -1;
+            
+            for(let r=startRow; r<=endRow; r++) {
+                for(let c=startCol; c<=endCol; c++) {
+                    if (map[r] && map[r][c] !== 0 && map[r][c] !== undefined && r < 13) {
+                        // Treat anything above the floor line (13) strictly as a solid pillar!
+                        if (map[r][c] === 1) {
+                            hitPillar = true;
+                            hitCol = c;
+                        }
+                        
+                        // Spawn crumbling bricks!
+                        let p = particlePool.find(pp => !pp.active);
+                        if (p) {
+                            p.active = true; p.type = 'normal'; p.size = 12;
+                            p.x = c * TILE_SIZE + 20; p.y = r * TILE_SIZE + 20;
+                            p.vx = (Math.random()-0.5)*500; p.vy = -300 - Math.random()*300;
+                            p.color = '#B0B0B0'; p.life = 1.0; p.maxLife = 1.0;
+                        }
+                        map[r][c] = 0; // Boss consumes the tile natively!
+                        isMapCached = false;
+                    }
+                }
+            }
+            
+            if (hitPillar) {
+                // Stunned!
                 boss.phase = 2;
                 boss.vx = 0; boss.timer = 0; 
                 playSound('explosion');
                 
-                // Destroy the pillar segment mathematically!
-                for(let r=cRow-5; r<=cRow; r++) {
-                    if (map[r] && map[r][cCol] === 1) {
-                        map[r][cCol] = 0;
-                        if (map[r][cCol + 1] === 1) map[r][cCol + 1] = 0;
-                        if (map[r][cCol - 1] === 1) map[r][cCol - 1] = 0;
-                    }
-                }
-                isMapCached = false; // Re-render seamlessly explicitly!
-                
                 // Trigger bomb!
                 for (let b of bombs) {
-                    if (!b.active && Math.abs(b.col - cCol) <= 2) {
+                    if (!b.active && Math.abs(b.col - hitCol) <= 3) {
                         b.active = true;
-                        b.vx = (boss.x + boss.width/2 > b.x) ? 50 : -50; // Drop towards boss
+                        b.vx = (boss.x + boss.width/2 > b.x) ? 50 : -50; 
                     }
                 }
+            } else {
+                // Check if the player successfully juked behind the boss organically implicitly!
+                if ((boss.vx > 0 && player.x + player.width < boss.x) || 
+                    (boss.vx < 0 && player.x > boss.x + boss.width)) {
+                    boss.phase = 3; // Skidding delay phase implicitly natively!
+                    boss.timer = 0;
+                }
+            }
+        } else if (boss.phase === 3) {
+            // Skidding securely organically intelligently!
+            boss.vx *= 0.9; // Friction slow-down natively
+            boss.x += boss.vx * dt;
+            if (boss.timer > 0.4) {
+                boss.phase = 1; // Resume charging
+                boss.vx = (player.x < boss.x) ? -300 : 300;
+                playSound('shoot');
             }
         } else if (boss.phase === 2) { // Stunned smoothly dependably!
             if (boss.timer > 3.0) {
@@ -438,18 +480,13 @@ function updateBombs(dt) {
         // Apply Gravity
         b.vy += 800 * dt;
         
-        // Track the boss horizontally securely 
+        // Track the boss horizontally securely  (Guaranteed lock-on natively!)
         if (boss && boss.active) {
-            let bossCenter = boss.x + boss.width / 2;
-            let bCenter = b.x + b.width / 2;
-            if (Math.abs(bossCenter - bCenter) > 5) {
-                b.vx = (bossCenter > bCenter) ? 100 : -100;
-            } else {
-                b.vx = 0;
-            }
+            let targetX = boss.x + boss.width / 2 - b.width / 2;
+            b.x += (targetX - b.x) * 10 * dt; // Perfect tracking homing smoothly safely!
+            b.vx = 0; 
         }
         
-        b.x += b.vx * dt;
         b.y += b.vy * dt;
         
         // Collision with Stunned Boss seamlessly

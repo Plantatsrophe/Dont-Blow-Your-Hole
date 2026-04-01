@@ -303,7 +303,8 @@ function parseMap(resetEntities = true) {
                         active: true, type: bType,
                         x: col * TILE_SIZE, y: row * TILE_SIZE,
                         width: TILE_SIZE * 2, height: TILE_SIZE * 2,
-                        hp: 3, maxHp: 3, phase: 0, timer: 0,
+                        hp: (bType === 'masticator' ? 4 : 3), maxHp: (bType === 'masticator' ? 4 : 3), 
+                        phase: 0, timer: 0,
                         vx: 0, vy: 0, hurtTimer: 0
                     };
                 }

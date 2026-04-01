@@ -7,13 +7,12 @@ def generate_slums(i, tier):
             level[0][c] = "1"
             level[13][c] = "1"
             level[14][c] = "1"
-        level[12][98] = "5"
+        level[12][98] = "0" # Removed portal 5 temporarily!
         level[12][3] = "H"
-        level[12][50] = "B" # Masticator
-        for px in [25, 75]:
+        level[11][50] = "B" # Masticator (Spawns correctly on top of the floor)
+        for px in [15, 35, 65, 85]:
             for y in range(8, 13):
                 level[y][px] = "1"
-                level[y][px+1] = "1"
             level[7][px] = "M" # Bomb
         return level
 
@@ -68,7 +67,7 @@ def generate_acid(i, tier):
         for c in range(0, 15): level[13][c] = "1"
         for c in range(85, 100): level[13][c] = "1"
         level[12][3] = "H"
-        level[12][98] = "5"
+        level[12][98] = "0"
         level[12][50] = "B" # Sludge Queen
         for c in range(40, 60): level[10][c] = "1"
         level[8][25] = "V"
@@ -139,7 +138,7 @@ def generate_shaft(i, tier):
             level[59][c] = "1"
         level[58][7] = "H"
         level[58][6] = "B" # Warden Drone
-        level[2][12] = "5"
+        level[2][12] = "0"
         y = 54
         side = 1
         while y > 5:
@@ -228,7 +227,7 @@ def generate_laser_factory(i, tier):
             level[13][c] = "1"
             level[14][c] = "1"
         level[12][3] = "H"
-        level[12][98] = "5"
+        level[12][98] = "0"
         level[6][50] = "B" # Core CPU
         level[12][20] = "V"
         level[12][80] = "V"
@@ -284,10 +283,10 @@ def generate_goliath(i, tier):
         level[12][5] = "H"
         level[12][3] = "B" # Goliath Prime
         
-        if i >= 90:
+        if i >= 49: # Fix: Last level detonator correctly
             level[12][198] = "D" # Detonator!
         else:
-            level[12][198] = "5"
+            level[12][198] = "0"
             
         c = 20
         while c < 185:
