@@ -63,7 +63,7 @@ def generate_slums(i, difficulty):
             c += w
         elif choice < enemy_prob:
             if c != 50 and c != 98:
-                level[12][c] = "L" if (i >= 9 and random.random() < 0.3) else "8"
+                level[12][c] = "8"
     return level
 
 def generate_acid(i, difficulty):
