@@ -47,7 +47,7 @@ window.addEventListener('keydown', (e) => {
             initials[initialIndex] = String.fromCharCode(code);
         }
         if (e.code === 'Enter') handleUIAccept();
-    } else if (gameState === 'START' || gameState === 'INTRO' || gameState === 'GAMEOVER' || gameState === 'WIN' || gameState === 'INSTRUCTIONS') {
+    } else if (gameState === 'START' || gameState === 'INTRO' || gameState === 'GAMEOVER' || gameState === 'WIN' || gameState === 'INSTRUCTIONS' || gameState === 'CREDITS') {
         if (e.code === 'Enter') handleUIAccept();
     }
 });
@@ -64,7 +64,7 @@ function handleUIAccept() {
         parseMap();
         resetPlayerPosition();
         gameState = 'PLAYING';
-    } else if (gameState === 'GAMEOVER') {
+    } else if (gameState === 'GAMEOVER' || gameState === 'CREDITS') {
         gameState = 'ENTER_INITIALS';
     } else if (gameState === 'START') {
         introY = document.getElementById('gameCanvas').height * 0.66;
@@ -119,7 +119,7 @@ function executeTouchStart(e) {
         }
     }
 
-    if (gameState === 'WIN' || gameState === 'GAMEOVER' || gameState === 'START' || gameState === 'INTRO' || gameState === 'INSTRUCTIONS' || gameState === 'ENTER_INITIALS') {
+    if (gameState === 'WIN' || gameState === 'GAMEOVER' || gameState === 'START' || gameState === 'INTRO' || gameState === 'INSTRUCTIONS' || gameState === 'ENTER_INITIALS' || gameState === 'CREDITS') {
         handleUIAccept();
         return;
     }
@@ -221,12 +221,15 @@ function parseMap(resetEntities = true) {
         enemies = [];
         lasers = [];
         platforms = [];
+        bombs = [];
+        boss = { active: false };
     }
     particles = [];
     isMapCached = false;
     offscreenMapCanvas.width = mapCols * TILE_SIZE;
     offscreenMapCanvas.height = mapRows * TILE_SIZE;
 
+    let spawnFound = false;
     for (let row = 0; row < mapRows; row++) {
         let rowData = [];
         for (let col = 0; col < mapCols; col++) {
@@ -265,10 +268,11 @@ function parseMap(resetEntities = true) {
                 }
                 rowData.push(0);
                 // Spawn logically defaults locally in strings!
-            } else if (char === '7' || (row === 12 && col === 1)) {
+            } else if (char === '7' || (row === 12 && col === 1 && !spawnFound)) {
                 if (resetEntities) {
                     player.startX = col * TILE_SIZE + 6;
                     player.startY = (row + 1) * TILE_SIZE - player.height;
+                    spawnFound = true;
                 }
                 rowData.push(0);
             } else if (tile === 8) {
@@ -290,6 +294,42 @@ function parseMap(resetEntities = true) {
                         y: (row + 1) * TILE_SIZE - 24,
                         width: 24, height: 24,
                         vx: 0, dir: -1, cooldown: 1.0
+                    });
+                }
+                rowData.push(0);
+            } else if (char === 'B') {
+                if (resetEntities) {
+                    let biome = Math.floor(currentLevel / 20) % 5;
+                    let bType = ['masticator', 'sludge', 'warden', 'core', 'goliath'][biome];
+                    boss = {
+                        active: true, type: bType,
+                        x: col * TILE_SIZE, y: row * TILE_SIZE,
+                        width: TILE_SIZE * 2, height: TILE_SIZE * 2,
+                        hp: (bType === 'masticator' ? 4 : 3), maxHp: (bType === 'masticator' ? 4 : 3), 
+                        phase: 0, timer: 0,
+                        vx: 0, vy: 0, hurtTimer: 0
+                    };
+                }
+                rowData.push(0);
+            } else if (char === 'V') {
+                if (resetEntities) {
+                    items.push({ x: col * TILE_SIZE, y: row * TILE_SIZE, width: 32, height: 32, collected: false, type: 'valve' });
+                }
+                rowData.push(0);
+            } else if (char === 'D') {
+                if (resetEntities) {
+                    items.push({ x: col * TILE_SIZE, y: row * TILE_SIZE, width: 32, height: 32, collected: false, type: 'detonator' });
+                }
+                rowData.push(0);
+            } else if (char === 'M') {
+                if (resetEntities) {
+                    bombs.push({
+                        active: false,
+                        x: col * TILE_SIZE + 4,
+                        y: row * TILE_SIZE,
+                        width: 32, height: 32,
+                        vx: 0, vy: 0,
+                        col: col, row: row // Track native grid coordinates explicitly natively!
                     });
                 }
                 rowData.push(0);
@@ -367,9 +407,9 @@ function updateGame(dt) {
                 player.lives++;
                 playSound('powerup');
             } else if (i.type === 'checkpoint') {
-                if (player.startX !== i.x + 8 || player.startY !== i.y + TILE_SIZE - player.height) {
+                if (player.startX !== i.x + 8 || player.startY !== i.y - 2) {
                     player.startX = i.x + 8;
-                    player.startY = i.y + TILE_SIZE - player.height; 
+                    player.startY = i.y - 2; // Spawn cleanly above and naturally drop on the platform
                     playSound('powerup');
                     
                     // Blast 20 particles explicitly visually denoting Checkpoint Grab
@@ -387,6 +427,21 @@ function updateGame(dt) {
                             p.maxLife = 1.0;
                         }
                     }
+                }
+            } else if (i.type === 'valve') {
+                playSound('powerup');
+                if (boss && boss.active) {
+                    boss.hp--;
+                    boss.hurtTimer = 0.5;
+                    playSound('explosion');
+                    if (boss.hp <= 0) bossExplode();
+                }
+            } else if (i.type === 'detonator') {
+                playSound('powerup');
+                if (boss && boss.active) {
+                    bossExplode();
+                    player.cutsceneTimer = 0;
+                    gameState = 'CREDITS_CUTSCENE';
                 }
             } else {
                 player.score += 1000;
@@ -551,6 +606,15 @@ function gameLoop(timestamp) {
         if (introY < -600) {
             handleUIAccept(); // Auto-advance logically securely naturally
         }
+    } else if (gameState === 'CREDITS_CUTSCENE') {
+        player.cutsceneTimer += dt;
+        if (player.cutsceneTimer > 5.0) {
+            gameState = 'CREDITS';
+            player.cutsceneTimer = 0;
+            playSound('win'); // Epic closing credits!
+        }
+    } else if (gameState === 'CREDITS') {
+        player.cutsceneTimer += dt;
     }
 
     render();

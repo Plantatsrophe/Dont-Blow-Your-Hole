@@ -40,8 +40,98 @@ function drawGlow(ctx, x, y, radius, colorStr) {
     ctx.restore();
 }
 
+function drawMasticator(ctx, boss) {
+    let cx = boss.x;
+    let cy = boss.y;
+    let bw = boss.width;
+    let bh = boss.height;
+
+    let dir = boss.vx < 0 ? -1 : 1; 
+
+    // Short Legs
+    ctx.fillStyle = '#888';
+    ctx.fillRect(cx + 10, cy + bh, 15, 15);
+    ctx.fillRect(cx + bw - 25, cy + bh, 15, 15);
+    // Feet
+    ctx.fillStyle = '#555';
+    ctx.fillRect(cx + 5, cy + bh + 10, 20, 5);
+    ctx.fillRect(cx + bw - 30, cy + bh + 10, 20, 5);
+
+    // Short Arms
+    ctx.fillStyle = '#888';
+    ctx.fillRect(cx - 15, cy + 30, 15, 30);
+    ctx.fillRect(cx + bw, cy + 30, 15, 30);
+
+    // Giant Metallic Sword (held in leading hand)
+    let sHx = (dir === -1) ? (cx - 30) : (cx + bw + 15);
+    let sHy = cy + 50; 
+
+    // Sword Blade
+    ctx.fillStyle = '#EaEaEa';
+    ctx.beginPath();
+    ctx.moveTo(sHx - 10, sHy);
+    ctx.lineTo(sHx - 10, sHy - 70);
+    ctx.lineTo(sHx, sHy - 90);       // Tip
+    ctx.lineTo(sHx + 10, sHy - 70);
+    ctx.lineTo(sHx + 10, sHy);
+    ctx.fill();
+    // Sword Edge Highlight
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.moveTo(sHx, sHy);
+    ctx.lineTo(sHx, sHy - 90);
+    ctx.lineTo(sHx + 10, sHy - 70);
+    ctx.lineTo(sHx + 10, sHy);
+    ctx.fill();
+    // Sword Handle
+    ctx.fillStyle = '#111';
+    ctx.fillRect(sHx - 6, sHy, 12, 24); // Solid black seamless handle
+    ctx.fillStyle = '#ff0000';
+    ctx.fillRect(sHx - 4, sHy + 20, 8, 8); // Pommel gem
+
+    // Chassis
+    ctx.fillStyle = '#C0C0C0';
+    ctx.fillRect(cx, cy, bw, bh);
+    ctx.fillStyle = '#A0A0A0';
+    ctx.fillRect(cx + bw - 20, cy, 20, bh); 
+
+    // Eyes
+    let eyeY = cy + 15;
+    let eyeW = 18;
+    let eyeH = 10;
+    ctx.fillStyle = '#FF0000';
+    ctx.fillRect(cx + 15, eyeY, eyeW, eyeH);
+    ctx.fillRect(cx + bw - 15 - eyeW, eyeY, eyeW, eyeH);
+    drawGlow(ctx, cx + 15 + eyeW/2, eyeY + eyeH/2, 20, 'rgba(255, 0, 0, 0.6)');
+    drawGlow(ctx, cx + bw - 15 - eyeW/2, eyeY + eyeH/2, 20, 'rgba(255, 0, 0, 0.6)');
+
+    // Mouth
+    let mouthY = cy + 45;
+    let mouthH = (boss.phase === 2) ? 35 : 20; 
+    ctx.fillStyle = '#111';
+    ctx.fillRect(cx + 10, mouthY, bw - 20, mouthH);
+    
+    // Teeth
+    ctx.fillStyle = '#FFF';
+    for (let tx = 15; tx < bw - 20; tx += 15) {
+        ctx.beginPath(); ctx.moveTo(cx + tx, mouthY); ctx.lineTo(cx + tx + 10, mouthY + 8); ctx.lineTo(cx + tx + 20, mouthY); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(cx + tx, mouthY + mouthH); ctx.lineTo(cx + tx + 10, mouthY + mouthH - 8); ctx.lineTo(cx + tx + 20, mouthY + mouthH); ctx.fill();
+    }
+
+    // Stunned Sparks
+    if (boss.phase === 2 && Math.random() > 0.5) {
+        ctx.fillStyle = '#FFFF00'; 
+        ctx.fillRect(cx + Math.random()*bw, cy + Math.random()*bh, 4, 4);
+    }
+    
+    // Damage Flash
+    if (boss.hurtTimer > 0) { 
+        ctx.fillStyle = 'white'; ctx.globalAlpha = 0.5; ctx.fillRect(cx, cy, bw, bh); ctx.globalAlpha = 1; 
+    }
+}
+
 function render() {
-    let bId = Math.floor(currentLevel / 10) % 5;
+    let bId = Math.floor(currentLevel / 20) % 5;
 
     // Parallax Layer 0: Sky dynamically maps bounds implicitly to active Biome gracefully!
     let skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
@@ -593,7 +683,7 @@ function render() {
         drawGlow(ctx, plat.x + plat.width/2, plat.y + 8, 30, 'rgba(255, 100, 0, 0.4)');
         drawSprite(ctx, sprRocketPad, plat.x, plat.y, plat.width, plat.height, false);
         
-        // Render Rocket Thrusters intrinsically organically!
+        // Render Rocket Thrusters
         if (Math.random() > 0.2) {
             ctx.fillStyle = Math.random() > 0.5 ? '#ff2222' : '#f1c40f';
             ctx.fillRect(plat.x + 8 + Math.random() * 4, plat.y + plat.height, 2 + Math.random() * 2, 2 + Math.random() * 4);
@@ -604,9 +694,9 @@ function render() {
     // Draw Items
     for (let i of items) {
         if (i.type === 'checkpoint') {
-            let isActive = player.startX === i.x + 8 && player.startY === i.y + 8;
+            let isActive = player.startX === i.x + 8 && player.startY === i.y - 2;
             let flip = isActive || (Math.floor(Date.now() / 400) % 2 === 0);
-            drawSprite(ctx, sprRef, i.x, i.y, i.width, i.height, flip);
+            drawSprite(ctx, sprRef, i.x, i.y + 7, i.width, i.height, flip); // Shifted down drastically to prevent floating visually
             if (isActive) {
                 drawGlow(ctx, i.x + 16, i.y + 16, 40, 'rgba(10, 255, 100, 0.6)');
             } else {
@@ -615,6 +705,16 @@ function render() {
         } else if (!i.collected) {
             if (i.type === 'hotdog') {
                 drawSprite(ctx, sprHotdog, i.x, i.y, i.width, i.height, false);
+            } else if (i.type === 'valve') {
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(i.x + 4, i.y + 4, 24, 24);
+                drawGlow(ctx, i.x + 16, i.y + 16, 30, 'red');
+            } else if (i.type === 'detonator') {
+                ctx.fillStyle = '#ff5500';
+                ctx.fillRect(i.x, i.y + 16, 32, 16);
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(i.x + 8, i.y + 8, 16, 8);
+                drawGlow(ctx, i.x + 16, i.y + 16, 50, 'rgba(255, 0, 0, 0.8)');
             } else {
                 drawSprite(ctx, sprGear, i.x, i.y, i.width, i.height, false);
             }
@@ -630,12 +730,65 @@ function render() {
             drawSprite(ctx, sprLaserBot, e.x - 7, e.y - 14, 38, 38, e.dir < 0);
         }
     }
+
+    // Draw Boss
+    if (boss && boss.active) {
+        if (boss.type === 'masticator') {
+            drawMasticator(ctx, boss);
+        } else if (boss.type === 'sludge') {
+            ctx.fillStyle = '#00ff00';
+            ctx.beginPath(); ctx.arc(boss.x + boss.width/2, boss.y + boss.height/2, boss.width/2 + Math.sin(Date.now()/200)*10, 0, Math.PI*2); ctx.fill();
+            if (boss.hurtTimer > 0) { ctx.fillStyle = 'white'; ctx.globalAlpha=0.5; ctx.beginPath(); ctx.arc(boss.x + boss.width/2, boss.y + boss.height/2, boss.width/2, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+        } else if (boss.type === 'warden') {
+            ctx.fillStyle = '#444';
+            ctx.beginPath(); ctx.arc(boss.x + boss.width/2, boss.y + boss.height/2, boss.width/2, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#f00';
+            ctx.beginPath(); ctx.arc(boss.x + boss.width/2, boss.y + boss.height/2, Math.max(5, 20 + Math.sin(Date.now()/100)*10), 0, Math.PI*2); ctx.fill();
+            if (boss.hurtTimer > 0) { ctx.fillStyle = 'white'; ctx.globalAlpha=0.5; ctx.beginPath(); ctx.arc(boss.x+boss.width/2, boss.y+boss.height/2, boss.width/2, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+        } else if (boss.type === 'core') {
+            ctx.fillStyle = '#111';
+            ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
+            ctx.fillStyle = '#0ff';
+            let glow = Math.abs(Math.sin(Date.now()/200))*40;
+            ctx.fillRect(boss.x + 20, boss.y + 20, boss.width - 40, boss.height - 40);
+            drawGlow(ctx, boss.x + boss.width/2, boss.y + boss.height/2, 100 + glow, 'rgba(0, 255, 255, 0.5)');
+            if (boss.hurtTimer > 0) { ctx.fillStyle = 'white'; ctx.globalAlpha=0.5; ctx.fillRect(boss.x, boss.y, boss.width, boss.height); ctx.globalAlpha=1; }
+        } else if (boss.type === 'goliath') {
+            ctx.fillStyle = '#550000';
+            ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
+            ctx.fillStyle = '#ffaa00';
+            ctx.fillRect(boss.x + boss.width - 40, boss.y + 40, 20, 20);
+        }
+    }
     
-    // Draw Lasers Pool organically strictly natively
+    // Draw Lasers Pool 
     for (let l of laserPool) {
         if (!l.active) continue;
         drawGlow(ctx, l.x + 8, l.y + 2, 30, 'rgba(255, 0, 0, 0.6)');
         drawSprite(ctx, sprLaser, l.x - 4, l.y - 10, 24, 24, l.vx < 0);
+    }
+
+    // Draw Bombs (TNT Bundles)
+    for (let b of bombs) {
+        let bx = b.x;
+        let by = b.y + 10; // Anchor TNT exactly 10 pixels downwards directly onto surface layer
+        
+        ctx.fillStyle = '#2b1a10';
+        ctx.fillRect(bx + 6, by + 10, 20, 4);
+        ctx.fillRect(bx + 6, by + 22, 20, 4);
+
+        ctx.fillStyle = '#D32F2F';
+        ctx.fillRect(bx + 6, by + 4, 6, 26);
+        ctx.fillRect(bx + 13, by + 4, 6, 26);
+        ctx.fillRect(bx + 20, by + 4, 6, 26);
+
+        ctx.fillStyle = '#5D4037';
+        ctx.fillRect(bx + 15, by - 4, 2, 8); 
+        
+        ctx.fillStyle = '#FFC107'; 
+        ctx.beginPath(); ctx.arc(bx + 16 + (Math.random()-0.5)*4, by - 4 + (Math.random()-0.5)*4, 3, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#FF5722'; 
+        ctx.beginPath(); ctx.arc(bx + 16, by - 4, 2, 0, Math.PI*2); ctx.fill();
     }
 
     // Draw Particles Pool seamlessly securely efficiently!
@@ -684,11 +837,43 @@ function render() {
     if (player.vx > 0) player.lastDir = 1;
     if (player.vx === 0) playerFlip = player.lastDir === -1;
 
-    if (gameState !== 'DYING') {
+    if (gameState !== 'DYING' && gameState !== 'CREDITS' && gameState !== 'CREDITS_CUTSCENE') {
         let pSpr = sprHero;
         let wY = (player.isOnGround && player.vx !== 0 && Math.floor(timerAcc*10)%2===0) ? 2 : 0; // walk bob
         drawGlow(ctx, player.x + 12, player.y + 16, 40, 'rgba(255, 150, 0, 0.25)'); // Organic warm player glow
         drawSprite(ctx, pSpr, player.x, player.y + wY, player.width, player.height, playerFlip);
+    }
+    
+    // Draw Cinematic Overlays cleanly natively explicitly!
+    if (gameState === 'CREDITS_CUTSCENE') {
+        // Fudge picking up player intelligently flawlessly dynamically!
+        let animT = Math.min(1.0, player.cutsceneTimer / 4.0); 
+        let ptX = player.x;
+        let ptY = player.y; // The spot where we died
+        
+        // Fudge animating natively!
+        if (animT < 0.5) {
+            let fX = ptX - 100 + (animT * 2 * 100);
+            drawSprite(ctx, sprRef, fX, ptY, 24, 24, false);
+            // Draw scattered player pieces
+            for(let sx of [-15, -5, 10, 20]) {
+                ctx.fillStyle = 'white';
+                ctx.fillRect(ptX + sx, ptY + 20 + Math.random()*2, 4, 4);
+            }
+        } else if (animT < 0.8) {
+            drawSprite(ctx, sprRef, ptX, ptY, 24, 24, false); // Standing
+            // Player rebuilding
+            ctx.fillStyle = 'rgba(255, 255, 255, ' + ((animT - 0.5)*3.3) + ')';
+            drawSprite(ctx, sprHero, ptX + 24, ptY, player.width, player.height, true);
+        } else {
+            // Jump into Portal!
+            drawSprite(ctx, sprRef, ptX, ptY - ((animT-0.8)*2 * 50), 24, 24, false); 
+            drawSprite(ctx, sprHero, ptX + 24, ptY - ((animT-0.8)*2 * 50), player.width, player.height, true);
+            let pWidth = 100;
+            let pDx = ptX;
+            drawGlow(ctx, pDx + pWidth/2, ptY - 80, 80, 'rgba(0, 255, 255, 0.8)');
+            drawSprite(ctx, sprPortal, pDx, ptY - 100, pWidth, pWidth, false);
+        }
     }
     
     // -- End World Space --
@@ -702,6 +887,17 @@ function render() {
     ctx.fillText('LEVEL: ' + (currentLevel + 1), 250, 30);
     ctx.fillText('TIME: ' + timer, 450, 30);
     ctx.fillText('LIVES: ' + player.lives, 650, 30);
+
+    if (boss && boss.active && boss.hp > 0 && gameState !== 'CREDITS_CUTSCENE' && gameState !== 'CREDITS') {
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(canvas.width/2 - 200, canvas.height - 40, 400, 20);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(canvas.width/2 - 198, canvas.height - 38, Math.max(0, (boss.hp / boss.maxHp)) * 396, 16);
+        ctx.fillStyle = 'white';
+        ctx.font = '10px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        ctx.fillText(boss.type.toUpperCase(), canvas.width/2, canvas.height - 25);
+    }
 
     // Overlay Game Over / Win / Initials
     if (gameState === 'GAMEOVER') {
@@ -750,6 +946,30 @@ function render() {
         ctx.font = '15px "Press Start 2P"';
         ctx.fillStyle = '#fff';
         ctx.fillText('USE ARROWS. PRESS ENTER TO SAVE', canvas.width/2, 350);
+    } else if (gameState === 'CREDITS') {
+        ctx.fillStyle = 'rgba(0, 0, 0, 1.0)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#f1c40f';
+        ctx.font = '30px "Press Start 2P"';
+        ctx.textAlign = 'center';
+        let cY = canvas.height - (player.cutsceneTimer - 4.0) * 50;
+        
+        ctx.fillText("DON'T DIE", canvas.width/2, cY);
+        
+        ctx.fillStyle = 'white';
+        ctx.font = '20px "Press Start 2P"';
+        ctx.fillText("A STORY OF SACRIFICE", canvas.width/2, cY + 80);
+        ctx.fillText("ART & CODE: THE CLOUD", canvas.width/2, cY + 160);
+        
+        ctx.fillStyle = '#ff2222';
+        ctx.fillText("GOLIATH HAS FALLEN.", canvas.width/2, cY + 300);
+        
+        ctx.fillStyle = 'white';
+        ctx.font = '10px "Press Start 2P"';
+        ctx.fillText("AND SO HAS HEROIC HOTDOG HENLEY.", canvas.width/2, cY + 350);
+        ctx.fillText("THE UNIVERSE IS SAVED.", canvas.width/2, cY + 380);
+        ctx.fillText("THANK YOU FOR PLAYING.", canvas.width/2, cY + 500);
     }
     
     // Draw Global Share UX Button
