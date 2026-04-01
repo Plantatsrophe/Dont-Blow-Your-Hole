@@ -1,4 +1,4 @@
-const CACHE_NAME = 'platformer-cache-v82';
+const CACHE_NAME = 'platformer-cache-v83';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -8,12 +8,14 @@ const ASSETS_TO_CACHE = [
   './assets.js',
   './audio.js',
   './db.js',
-  './game.js',
-  './logo.js',
   './globals.js',
   './levels.js',
   './physics.js',
-  './render.js'
+  './render.js',
+  './input.js',
+  './spawner.js',
+  './game.js',
+  './logo.js'
 ];
 
 self.addEventListener('install', (e) => {
