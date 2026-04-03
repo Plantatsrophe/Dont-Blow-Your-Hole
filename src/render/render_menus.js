@@ -120,35 +120,37 @@ export function renderInstructions() {
     ctx.fillText("GEAR: +1000 POINTS", 520, 178);
 
     drawSprite(ctx, sprHotdog, 480, 200, 24, 24, false);
+    ctx.fillStyle = 'white';
     ctx.fillText("HOTDOG: +1 LIFE", 520, 218);
 
     let whistle = Math.floor(Date.now() / 400) % 2 === 0;
     drawSprite(ctx, sprRef, 480, 240, 24, 24, whistle);
+    ctx.fillStyle = 'white';
     ctx.fillText("FUDGE: CHECKPOINT", 520, 258);
 
     ctx.textAlign = 'center';
     ctx.fillStyle = '#f1c40f';
     ctx.font = '18px "Press Start 2P", sans-serif';
-    ctx.fillText("JUMP", canvas.width / 2, 270);
+    ctx.fillText("JUMP", 220, 270);
     ctx.fillStyle = 'white';
     ctx.font = '12px "Press Start 2P", sans-serif';
-    ctx.fillText("(TAP TWICE FOR DOUBLE JUMP)", canvas.width / 2, 290);
-    drawKey(ctx, canvas.width/2 - 120, 310, 240, 36, 'SPACEBAR');
+    ctx.fillText("(TAP TWICE FOR DOUBLE JUMP)", 220, 290);
+    drawKey(ctx, 220 - 120, 310, 240, 36, 'SPACEBAR');
     
     ctx.fillStyle = '#ff2222';
     ctx.font = '18px "Press Start 2P", sans-serif';
-    ctx.fillText("OBJECTIVE", canvas.width / 2, 380);
+    ctx.fillText("OBJECTIVE", canvas.width / 2, 400);
     
     ctx.fillStyle = 'white';
     ctx.font = '12px "Press Start 2P", sans-serif';
-    ctx.fillText("REACH THE TIME PORTAL ALIVE.", canvas.width / 2, 420);
-    ctx.fillText("BEAT THE CLOCK FOR TIME BONUSES.", canvas.width / 2, 450);
-    ctx.fillText("AVOID SPIKES AND STOMP ON BOTS.", canvas.width / 2, 480);
+    ctx.fillText("GET BACK IN TIME FOR THE SHOW.", canvas.width / 2, 440);
+    ctx.fillText("STOMP SOME BOTS.", canvas.width / 2, 470);
+    ctx.fillText("DON'T DIE...", canvas.width / 2, 500);
 
     ctx.font = '15px "Press Start 2P", sans-serif';
     if (Math.floor(Date.now() / 500) % 2 === 0) {
         ctx.fillStyle = '#f1c40f';
-        ctx.fillText('PRESS ENTER TO DROP IN', canvas.width / 2, 540);
+        ctx.fillText('PRESS ENTER TO DROP IN', canvas.width / 2, 560);
     }
     ctx.restore();
 }
