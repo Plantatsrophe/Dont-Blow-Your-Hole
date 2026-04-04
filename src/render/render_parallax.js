@@ -94,17 +94,17 @@ export function renderParallax() {
             if(x < -200) x += canvas.width + 400;
             
             // Pipe Body (Cylindrical Lighting)
-            ctx.fillStyle = '#2a140b'; ctx.fillRect(x, 0, 40, canvas.height); // Shadow Edge Left
-            ctx.fillStyle = '#3a1f11'; ctx.fillRect(x + 10, 0, 20, canvas.height); // Main Body
-            ctx.fillStyle = '#4d2a1a'; ctx.fillRect(x + 15, 0, 5, canvas.height);  // Highlight Strip
-            ctx.fillStyle = '#1c0e07'; ctx.fillRect(x + 30, 0, 10, canvas.height); // Shadow Edge Right
+            ctx.fillStyle = '#2a140b'; ctx.fillRect(x, 0, 40, canvas.height); 
+            ctx.fillStyle = '#3a1f11'; ctx.fillRect(x + 10, 0, 20, canvas.height); 
+            ctx.fillStyle = '#4d2a1a'; ctx.fillRect(x + 15, 0, 5, canvas.height);  
+            ctx.fillStyle = '#1c0e07'; ctx.fillRect(x + 30, 0, 10, canvas.height); 
 
             // Pipe Couplings
             ctx.fillStyle = '#2a140b';
             for (let cp = 0; cp < 3; cp++) {
                 let cpy = 100 + cp * 180;
                 ctx.fillRect(x - 4, cpy, 48, 12);
-                ctx.fillStyle = '#4d2a1a'; ctx.fillRect(x - 4, cpy + 2, 48, 3); // Ring Highlight
+                ctx.fillStyle = '#4d2a1a'; ctx.fillRect(x - 4, cpy + 2, 48, 3);
                 ctx.fillStyle = '#2a140b';
             }
 

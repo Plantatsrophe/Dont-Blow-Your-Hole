@@ -1,5 +1,5 @@
 import { G, player, keys, canvas, TILE_SIZE, laserPool, particlePool } from './globals.js';
-import { staticLevels } from '../data/levels.js';
+import { staticLevels } from '../data/levels.js?v=105';
 import { playSound, stopBackgroundMusic } from '../assets/audio.js';
 import { parseMap, resetPlayerPosition } from '../logic/spawner.js';
 
@@ -158,7 +158,6 @@ export function updatePhysics(dt) {
         }
     }
 
-    // 2. Synchronize Player with Riding Platform (Stejskal Method)
     if (player.riding) {
         player.x = player.riding.x + player.rideOffsetX;
         player.y = player.riding.y - player.height;
@@ -207,7 +206,6 @@ export function updatePhysics(dt) {
         if(G.boss&&G.boss.active) G.boss.vibrateX=Math.sin(Date.now()*0.05)*8;
         return;
     }
-    // Standard Player Movement
     player.vx = 0;
     if (keys.ArrowLeft) player.vx = -player.speed;
     if (keys.ArrowRight) player.vx = player.speed;
@@ -227,7 +225,6 @@ export function updatePhysics(dt) {
     if(player.isClimbing){player.vy=0;if(keys.ArrowUp)player.vy=-player.speed*0.6;if(keys.ArrowDown)player.vy=player.speed*0.6;}
     else{player.vy+=player.gravity*dt;if(player.vy>800)player.vy=800;}
     
-    // Horizontal Movement & Offset-Walking (Stejskal Method)
     if (player.riding) {
         player.rideOffsetX += player.vx * dt;
         player.x = player.riding.x + player.rideOffsetX;
@@ -239,7 +236,6 @@ export function updatePhysics(dt) {
     
     player.isOnGround = false;
 
-    // Standard Platform Collision (Stejskal Method)
     for (let plat of G.platforms) {
         if (player.vy >= 0 && 
             player.x + player.width > plat.x && 

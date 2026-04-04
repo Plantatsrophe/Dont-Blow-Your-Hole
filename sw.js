@@ -1,4 +1,4 @@
-const CACHE_NAME = 'platformer-cache-v85';
+const CACHE_NAME = 'platformer-cache-v105';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -12,9 +12,18 @@ const ASSETS_TO_CACHE = [
   './src/data/levels.js',
   './src/core/physics.js',
   './src/render/render.js',
+  './src/render/render_parallax.js',
+  './src/render/render_menus.js',
+  './src/render/render_world.js',
+  './src/render/render_entities.js',
+  './src/render/render_bosses.js',
+  './src/render/render_player.js',
+  './src/render/render_ui.js',
+  './src/render/render_utils.js',
   './src/core/input.js',
   './src/logic/spawner.js',
   './src/core/game.js',
+  './src/main.js',
   './src/assets/logo.js'
 ];
 
