@@ -1,4 +1,4 @@
-import { G, player, canvas, ctx } from '../core/globals.js?v=126';
+import { G, player, canvas, ctx } from '../core/globals.js?v=127';
 
 export function renderHUD() {
     ctx.fillStyle = 'white'; ctx.font = '14px "Press Start 2P"'; ctx.textAlign = 'left';

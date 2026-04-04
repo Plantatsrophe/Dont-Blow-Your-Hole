@@ -1,5 +1,5 @@
-import { G, player, keys } from './globals.js?v=126';
-import { playSound } from '../assets/audio.js?v=126';
+import { G, player, keys } from './globals.js?v=127';
+import { playSound } from '../assets/audio.js?v=127';
 
 let lastDownPressTime = 0;
 

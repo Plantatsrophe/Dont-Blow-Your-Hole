@@ -1,6 +1,6 @@
-import { G, player, ctx, laserPool, particlePool } from '../core/globals.js?v=126';
-import { sprRocketPad, sprSewerGrate, sprRef, sprValveWheel, sprHotdog, sprGear, sprBot, sprLaserBot, sprLaser, sprHeroDead } from '../assets/assets.js?v=126';
-import { drawSprite, drawGlow } from './render_utils.js?v=126';
+import { G, player, ctx, laserPool, particlePool } from '../core/globals.js?v=127';
+import { sprRocketPad, sprSewerGrate, sprRef, sprValveWheel, sprHotdog, sprGear, sprBot, sprLaserBot, sprLaser, sprHeroDead } from '../assets/assets.js?v=127';
+import { drawSprite, drawGlow } from './render_utils.js?v=127';
 
 export function renderEntities() {
     const { platforms, items, enemies, bombs, activeValvePos, valveCutsceneTimer, timerAcc } = G;

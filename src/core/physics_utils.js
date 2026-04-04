@@ -1,5 +1,5 @@
-import { G, player, keys, TILE_SIZE, laserPool, particlePool } from './globals.js?v=126';
-import { playSound } from '../assets/audio.js?v=126';
+import { G, player, keys, TILE_SIZE, laserPool, particlePool } from './globals.js?v=127';
+import { playSound } from '../assets/audio.js?v=127';
 
 export function checkRectCollision(r1, r2) {
     return r1.x < r2.x+r2.width && r1.x+r1.width > r2.x && r1.y < r2.y+r2.height && r1.y+r1.height > r2.y;

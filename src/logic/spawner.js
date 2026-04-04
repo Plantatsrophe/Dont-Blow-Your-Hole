@@ -1,6 +1,6 @@
-import { G, player, keys, TILE_SIZE, offscreenMapCanvas } from '../core/globals.js?v=126';
-import { staticLevels } from '../data/levels.js?v=126';
-import { spawnMovingPlatform, spawnBoss } from './entity_spawner.js?v=126';
+import { G, player, keys, TILE_SIZE, offscreenMapCanvas } from '../core/globals.js?v=127';
+import { staticLevels } from '../data/levels.js?v=127';
+import { spawnMovingPlatform, spawnBoss } from './entity_spawner.js?v=127';
 
 let lastLevel = -1;
 export function parseMap(resetEntities = true) {

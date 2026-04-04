@@ -1,4 +1,4 @@
-import { G, player, TILE_SIZE } from '../core/globals.js?v=126';
+import { G, player, TILE_SIZE } from '../core/globals.js?v=127';
 
 export function spawnMovingPlatform(char, row, col, currentMapData) {
     const isVert = (char === 'U');

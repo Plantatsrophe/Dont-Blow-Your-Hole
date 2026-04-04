@@ -1,6 +1,6 @@
-import { G, player, ctx, keys } from '../core/globals.js?v=126';
-import { sprHero, sprRef, sprPortal, sprHeroDead } from '../assets/assets.js?v=126';
-import { drawSprite, drawGlow } from './render_utils.js?v=126';
+import { G, player, ctx, keys } from '../core/globals.js?v=127';
+import { sprHero, sprRef, sprPortal, sprHeroDead } from '../assets/assets.js?v=127';
+import { drawSprite, drawGlow } from './render_utils.js?v=127';
 
 export function renderPlayer() {
     const { gameState, timerAcc, winTimer } = G;
