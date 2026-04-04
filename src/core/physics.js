@@ -115,7 +115,24 @@ function updateBoss(dt) {
         if(boss.timer>2.0&&G.gameState!=='CREDITS_CUTSCENE'&&G.gameState!=='CREDITS'){boss.timer=0;for(let i=0;i<3;i++){let l=laserPool.find(lp=>!lp.active);if(l){l.active=true;l.width=30;l.height=15;l.x=boss.x+boss.width;l.y=boss.y+40+(i*40);l.vx=400+Math.random()*100;}}playSound('shoot');}
     }
 }
+
 export function updatePhysics(dt) {
+    // 1. Clear Riding if jumping/climbing or falling off bounds (DO THIS FIRST)
+    if (player.riding) {
+        if (keys.Space || player.isClimbing || player.x + player.width < player.riding.x || player.x > player.riding.x + player.riding.width) {
+            player.riding = null;
+        }
+    }
+
+    // 2. Synchronize Player with Riding Platform (Stejskal Method)
+    if (player.riding) {
+        player.x = player.riding.x + player.rideOffsetX;
+        player.y = player.riding.y - player.height;
+        player.vy = 0;
+        player.isOnGround = true;
+    }
+
+    // 3. Move Platforms
     for (let plat of G.platforms) {
         if (plat.vx !== 0) {
             plat.x += plat.vx * dt;
@@ -176,28 +193,41 @@ export function updatePhysics(dt) {
     if(player.isClimbing){player.vy=0;if(keys.ArrowUp)player.vy=-player.speed*0.6;if(keys.ArrowDown)player.vy=player.speed*0.6;}
     else{player.vy+=player.gravity*dt;if(player.vy>800)player.vy=800;}
     
-    player.x += player.vx * dt;
+    // Horizontal Movement & Offset-Walking (Stejskal Method)
+    if (player.riding) {
+        player.rideOffsetX += player.vx * dt;
+        player.x = player.riding.x + player.rideOffsetX;
+    } else {
+        player.x += player.vx * dt;
+    }
     for(let t of getCollidingTiles(player)){if(t.type===1){let fl=t.col>0&&t.col<G.mapCols-1&&((G.mapRows===15&&t.row>0&&t.row<13)||(G.mapRows===60&&t.row>0&&t.row<59));if(!fl){if(player.vx>0)player.x=t.rect.x-player.width;else if(player.vx<0)player.x=t.rect.x+t.rect.width;player.vx=0;}}}
     player.y += player.vy * dt;
     
     player.isOnGround = false;
 
-    // Standard Platform Collision
+    // Standard Platform Collision (Stejskal Method)
     for (let plat of G.platforms) {
         if (player.vy >= 0 && 
             player.x + player.width > plat.x && 
             player.x < plat.x + plat.width && 
             player.y + player.height >= plat.y && 
-            (player.y + player.height - (player.vy * dt)) <= plat.y + 10) {
+            (player.y + player.height - (player.vy * dt * 2)) <= plat.y + 10) {
             
+            if (!player.riding) {
+                player.riding = plat;
+                player.rideOffsetX = player.x - plat.x;
+            }
             player.y = plat.y - player.height;
             player.isOnGround = true;
             player.doubleJump = false;
             player.vy = 0;
-            // Simple Carry (non-parenting)
-            player.x += plat.vx * dt;
             break;
         }
+    }
+    
+    // Check if we lost footing (e.g. platform moved under us and we aren't colliding)
+    if (player.riding && (player.x + player.width < player.riding.x || player.x > player.riding.x + player.riding.width)) {
+        player.riding = null;
     }
 
     for(let t of getCollidingTiles(player)){

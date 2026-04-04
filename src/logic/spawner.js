@@ -42,21 +42,70 @@ export function parseMap(resetEntities = true) {
             } else if (tile === 14) {
                 if (resetEntities) G.items.push({ x: col*TILE_SIZE, y: row*TILE_SIZE, width: 32, height: 32, collected: false, type: 'checkpoint' });
                 rowData.push(0);
-            } else if (tile === 6) {
+            } else if (char === 'U' || char === 'P' || tile === 6) {
                 if (resetEntities) {
-                    let pWidth = 64, pHeight = 16;
-                    let spd = 60 + Math.random() * 40;
-                    let dir = Math.random() > 0.5 ? 1 : -1;
-                    let range = TILE_SIZE * 3;
+                    const isVert = (char === 'U');
+                    const pWidth = 64, pHeight = 16;
+                    const spd = 40 + Math.random() * 27; // 33% Slower
+                    const dir = Math.random() > 0.5 ? 1 : -1;
+                    
+                    const rangeTiles = (char === 'U') ? 20 : (char === 'P' ? 15 : 3);
+                    const rangePx = TILE_SIZE * rangeTiles;
+
                     let plat = { 
-                        x: col * TILE_SIZE, y: row * TILE_SIZE + 8, width: pWidth, height: pHeight,
-                        vx: spd * dir, vy: 0,
-                        minX: (col - 3) * TILE_SIZE, maxX: (col + 3) * TILE_SIZE,
-                        minY: (row - 3) * TILE_SIZE + 8, maxY: (row + 3) * TILE_SIZE + 8
+                        x: col * TILE_SIZE, 
+                        y: row * TILE_SIZE + 8, 
+                        width: pWidth, 
+                        height: pHeight,
+                        vx: isVert ? 0 : spd * dir, 
+                        vy: isVert ? spd * dir : 0,
+                        minX: col * TILE_SIZE, 
+                        maxX: col * TILE_SIZE,
+                        minY: row * TILE_SIZE + 8, 
+                        maxY: row * TILE_SIZE + 8,
+                        type: isVert ? 'v-grate' : 'h-grate'
                     };
-                    // Randomize starting position within range
-                    let offset = Math.random() * range * 2;
-                    plat.x = plat.minX + (offset % (range * 2));
+
+                    if (isVert) {
+                        let scanMinR = row;
+                        let c2 = Math.min(G.mapCols - 1, col + 1);
+                        let cL = Math.max(0, col - 1);
+                        let cR = Math.min(G.mapCols - 1, col + 2);
+                        
+                        while(scanMinR > 0) {
+                            if (currentMapData[scanMinR - 1][col] === '1' || currentMapData[scanMinR - 1][c2] === '1') break;
+                            if (scanMinR < row && (currentMapData[scanMinR][cL] === '1' || currentMapData[scanMinR][cR] === '1')) break;
+                            scanMinR--;
+                        }
+                        
+                        let scanMaxR = row;
+                        while(scanMaxR < G.mapRows - 1) {
+                            if (currentMapData[scanMaxR + 1][col] === '1' || currentMapData[scanMaxR + 1][c2] === '1') break;
+                            if (scanMaxR > row && (currentMapData[scanMaxR][cL] === '1' || currentMapData[scanMaxR][cR] === '1')) break;
+                            scanMaxR++;
+                        }
+                        
+                        let targetMinY = (row - rangeTiles/2) * TILE_SIZE;
+                        let targetMaxY = (row + rangeTiles/2) * TILE_SIZE;
+                        plat.minY = Math.max(scanMinR * TILE_SIZE, targetMinY);
+                        plat.maxY = Math.min(scanMaxR * TILE_SIZE + TILE_SIZE - pHeight, targetMaxY);
+                        if (plat.maxY < plat.minY) plat.maxY = plat.minY;
+                        plat.y = plat.minY + Math.random() * (plat.maxY - plat.minY);
+                        console.log(`SPAWNER: Created Vertical Grate at (${col},${row}) with range ${rangeTiles}`);
+                    } else {
+                        let scanMinC = col;
+                        while(scanMinC > 0 && currentMapData[row][scanMinC - 1] !== '1') scanMinC--;
+                        let scanMaxC = col;
+                        while(scanMaxC < G.mapCols - 1 && currentMapData[row][scanMaxC + 1] !== '1') scanMaxC++;
+                        
+                        let targetMinX = (col - rangeTiles/2) * TILE_SIZE;
+                        let targetMaxX = (col + rangeTiles/2) * TILE_SIZE;
+                        plat.minX = Math.max(scanMinC * TILE_SIZE, targetMinX);
+                        plat.maxX = Math.min((scanMaxC + 1) * TILE_SIZE - pWidth, targetMaxX);
+                        if (plat.maxX < plat.minX) plat.maxX = plat.minX;
+                        plat.x = plat.minX + Math.random() * (plat.maxX - plat.minX);
+                        if (char === 'P') console.log(`SPAWNER: Created Horizontal Grate at (${col},${row}) with range ${rangeTiles}`);
+                    }
                     G.platforms.push(plat);
                 }
                 rowData.push(0);
@@ -88,7 +137,7 @@ export function parseMap(resetEntities = true) {
                 if (resetEntities) G.bombs.push({ active:false, x:col*TILE_SIZE+4, y:row*TILE_SIZE, width:32, height:32, vx:0, vy:0, col, row });
                 rowData.push(0);
             } else {
-                rowData.push(tile);
+                rowData.push(isNaN(tile) ? 0 : tile);
             }
         }
         G.map.push(rowData);

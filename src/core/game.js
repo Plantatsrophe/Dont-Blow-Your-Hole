@@ -1,4 +1,5 @@
 import { G, player, canvas, keys, TILE_SIZE, laserPool, particlePool } from './globals.js';
+import { staticLevels } from '../data/levels.js';
 import { playSound } from '../assets/audio.js';
 import { parseMap, resetPlayerPosition, resetFullGame } from '../logic/spawner.js';
 import { updatePhysics, checkRectCollision, playerDeath, bossExplode } from './physics.js';
@@ -16,7 +17,7 @@ function getCollidingTiles(rect) {
 
 export function handleUIAccept() {
     if (G.gameState==='ENTER_INITIALS') { window.saveScore(); resetFullGame(); G.gameState='START'; }
-    else if (G.gameState==='WIN') { G.currentLevel++; if(G.currentLevel>=40)G.currentLevel=0; G.timer=60; parseMap(); resetPlayerPosition(); G.gameState='PLAYING'; }
+    else if (G.gameState==='WIN') { G.currentLevel++; if(G.currentLevel>=99)G.currentLevel=0; G.timer=60; parseMap(); resetPlayerPosition(); G.gameState='PLAYING'; }
     else if (G.gameState==='GAMEOVER'||G.gameState==='CREDITS') { G.gameState='ENTER_INITIALS'; }
     else if (G.gameState==='START') { G.introY=canvas.height*0.66; G.gameState='INTRO'; }
     else if (G.gameState==='INTRO') { G.gameState='INSTRUCTIONS'; }
@@ -70,7 +71,6 @@ function updateGame(dt) {
     }
     for(let l of laserPool){if(!l.active)continue;l.x+=l.vx*dt;let hitWall=false;for(let t of getCollidingTiles(l)){if(t.type===1)hitWall=true;}if(hitWall||l.x<0||l.x>G.mapCols*TILE_SIZE){l.active=false;continue;}if(checkRectCollision(player,l)){playerDeath();return;}}
     if(anyEnemyVisible){G.enemyWalkTimer+=dt;if(G.enemyWalkTimer>0.12){playSound('enemyMove');G.enemyWalkTimer=0;}}
-    for(let plat of G.platforms){plat.x+=plat.vx*dt;if(plat.x>=plat.maxX){plat.x=plat.maxX;plat.vx*=-1;}else if(plat.x<=plat.minX){plat.x=plat.minX;plat.vx*=-1;}}
 }
 
 let lastTime=0;

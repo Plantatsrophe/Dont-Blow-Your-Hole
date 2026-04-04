@@ -8,11 +8,27 @@ export function renderEntities() {
     // Moving Platforms
     let biome = Math.floor(G.currentLevel / 20) % 5;
     for (let plat of platforms) {
-        drawGlow(ctx, plat.x + plat.width/2, plat.y + 8, 30, 'rgba(255, 100, 0, 0.4)');
-        drawSprite(ctx, sprRocketPad, plat.x, plat.y, plat.width, plat.height, false);
-        if (Math.random() > 0.2) {
-            ctx.fillStyle = Math.random() > 0.5 ? '#ff2222' : '#f1c40f';
-            ctx.fillRect(plat.x + 8 + Math.random() * 4, plat.y + plat.height, 2 + Math.random() * 2, 2 + Math.random() * 4);
+        if (biome === 1) {
+            // Sewer Biome: Rusted Grates (Uniform across H and V)
+            drawSprite(ctx, sprSewerGrate, plat.x, plat.y, plat.width, plat.height, false);
+            
+            if (plat.type === 'h-grate' && Math.random() > 0.96) {
+                let p = particlePool.find(pp => !pp.active);
+                if (p) {
+                    p.active = true; p.type = 'normal'; p.color = '#2ecc71';
+                    p.x = plat.x + Math.random() * plat.width; p.y = plat.y + plat.height;
+                    p.vx = 0; p.vy = 40 + Math.random() * 40;
+                    p.size = 3; p.life = 0.6; p.maxLife = 1.0;
+                }
+            }
+        } else {
+            // Other Biomes: Classic Rocket Pads
+            drawGlow(ctx, plat.x + plat.width/2, plat.y + 8, 30, 'rgba(255, 100, 0, 0.4)');
+            drawSprite(ctx, sprRocketPad, plat.x, plat.y, plat.width, plat.height, false);
+            if (Math.random() > 0.2) {
+                ctx.fillStyle = Math.random() > 0.5 ? '#ff2222' : '#f1c40f';
+                ctx.fillRect(plat.x + 8 + Math.random() * 4, plat.y + plat.height, 2 + Math.random() * 2, 2 + Math.random() * 4);
+            }
         }
     }
 

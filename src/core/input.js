@@ -157,6 +157,18 @@ function handleTouch(e) {
 
 function handleJump() {
     if (G.gameState !== 'PLAYING') return;
-    if (player.isOnGround || player.isClimbing) { player.vy = player.jumpPower; player.isOnGround = false; player.isClimbing = false; player.doubleJump = true; playSound('jump'); }
-    else if (player.doubleJump) { player.vy = player.jumpPower * 0.9; player.doubleJump = false; playSound('jump'); }
+    if (player.isOnGround || player.isClimbing) {
+        player.riding = null; // Explicitly detach before jump processing
+        player.vy = player.jumpPower; 
+        player.isOnGround = false; 
+        player.isClimbing = false; 
+        player.doubleJump = true; 
+        playSound('jump'); 
+    }
+    else if (player.doubleJump) { 
+        player.riding = null; // Detach on double jump as well
+        player.vy = player.jumpPower * 0.9; 
+        player.doubleJump = false; 
+        playSound('jump'); 
+    }
 }

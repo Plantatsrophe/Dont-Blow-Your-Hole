@@ -82,23 +82,23 @@ def generate_acid(i, difficulty):
         for c in range(20, 25): level[10][c] = "1"
         level[9][22] = "V"
         level[11][13] = "P" # Link start to V1
-        level[10][17] = "P"
+        level[10][17] = "U" # Changed to Vertical
         level[10][28] = "P" # Extra platform after Valve 1
         
         # Valve 2 (Mid)
         for c in range(45, 50): level[7][c] = "1"
         level[6][47] = "V"
         level[8][32] = "P" # Link V1 to V2 path
-        level[9][38] = "P"
+        level[9][38] = "U" # Changed to Vertical
         level[8][42] = "P"
         
         # Valve 3 (High)
         for c in range(75, 80): level[4][c] = "1"
         level[3][77] = "V"
         level[5][55] = "P" # Link V2 to V3 path
-        level[6][62] = "P"
+        level[6][62] = "U" # Changed to Vertical
         level[5][68] = "P"
-        level[4][72] = "P"
+        level[4][72] = "U" # Changed to Vertical
         
         # Boss in the middle
         level[12][50] = "B"
@@ -153,10 +153,9 @@ def generate_acid(i, difficulty):
             c += 4
         else:
             h = random.randint(5, 8)
-            level[h][c+1] = "6"
+            level[10][c] = "U" # Shifted left by 1 column to explicitly prevent 64px width overlap
             level[h][c+2] = "1"
-            for r in range(h+1, 13): level[r][c+1] = "2"
-            level[13][c+1] = "1" # Solid landing block perfectly implicitly mapped
+            level[13][c] = "1" # Solid boarding block at the bottom purely natively mapped
             last_h = h
             c += 3
     return level
@@ -397,7 +396,7 @@ def generate_goliath(i, difficulty):
     return level
 
 with open("levels.js", "w") as f:
-    f.write("const staticLevels = [\n")
+    f.write("export const staticLevels = [\n")
     for i in range(100):
         biome = i // 20
         local_level = i % 20
