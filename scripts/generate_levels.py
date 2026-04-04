@@ -75,36 +75,59 @@ def generate_acid(i, difficulty):
             level[14][c] = "1"
         
         # Safe Start
-        for c in range(0, 10): level[12][c] = "1"
+        for c in range(0, 8): level[12][c] = "1"
         level[11][2] = "7"; level[11][3] = "C"; level[11][4] = "H"
         
         # Valve 1 (Low)
-        for c in range(20, 25): level[10][c] = "1"
+        for c in range(21, 25): level[10][c] = "1"
         level[9][22] = "V"
-        level[11][13] = "P" # Link start to V1
-        level[10][17] = "U" # Changed to Vertical
-        level[10][28] = "P" # Extra platform after Valve 1
         
+        # Start -> P -> U -> Valve 1
+        level[9][13] = "P" 
+        level[9][7] = "1" # L Bound (Safe Start ends at 7 so this seamlessly connects)
+        level[9][18] = "1" # R Bound
+
+        level[10][19] = "U" 
+        level[6][19] = "1" # T Bound (Huge vertical sweep)
+        level[12][19] = "1" # B Bound
+        
+        level[9][32] = "P" 
+        level[9][24] = "1" # L Bound (Connects to V1 platform)
+        level[9][40] = "1" 
+
         # Valve 2 (Mid)
-        for c in range(45, 50): level[7][c] = "1"
+        for c in range(46, 50): level[7][c] = "1"
         level[6][47] = "V"
-        level[8][32] = "P" # Link V1 to V2 path
-        level[9][38] = "U" # Changed to Vertical
-        level[8][42] = "P"
+        
+        level[8][36] = "P" # P under Valve 2 area
+        level[8][28] = "1"
+        level[8][43] = "1"
+        
+        level[9][44] = "U" 
+        level[5][44] = "1"
+        level[12][44] = "1"
         
         # Valve 3 (High)
         for c in range(75, 80): level[4][c] = "1"
         level[3][77] = "V"
-        level[5][55] = "P" # Link V2 to V3 path
-        level[6][62] = "U" # Changed to Vertical
-        level[5][68] = "P"
-        level[4][72] = "U" # Changed to Vertical
+        
+        level[6][55] = "P" 
+        level[6][48] = "1"
+        level[6][62] = "1"
+        
+        level[6][63] = "U" 
+        level[2][63] = "1"
+        level[10][63] = "1"
+
+        level[5][69] = "P"
+        level[5][64] = "1"
+        level[5][74] = "1"
         
         # Boss in the middle
         level[12][50] = "B"
         
         # Exit/Safe End
-        for c in range(90, 100): level[12][c] = "1"
+        for c in range(88, 100): level[12][c] = "1"
         level[11][95] = "0"
         
         return level
@@ -395,7 +418,7 @@ def generate_goliath(i, difficulty):
                 level[12][c] = "4"
     return level
 
-with open("levels.js", "w") as f:
+with open("src/data/levels.js", "w") as f:
     f.write("export const staticLevels = [\n")
     for i in range(100):
         biome = i // 20

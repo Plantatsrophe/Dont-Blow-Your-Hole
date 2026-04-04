@@ -1,5 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+import { staticLevels } from './levels.js?v=7';
+window.staticLevels = staticLevels;
 
 // ==========================================
 // USER CONFIGURATION REQUIRED:

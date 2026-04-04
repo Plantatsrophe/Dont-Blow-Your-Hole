@@ -49,7 +49,7 @@ export function parseMap(resetEntities = true) {
                     const spd = 40 + Math.random() * 27; // 33% Slower
                     const dir = Math.random() > 0.5 ? 1 : -1;
                     
-                    const rangeTiles = (char === 'U') ? 20 : (char === 'P' ? 15 : 3);
+                    const rangeTiles = (char === 'U') ? 14 : (char === 'P' ? 15 : 3);
                     const rangePx = TILE_SIZE * rangeTiles;
 
                     let plat = { 
@@ -94,9 +94,26 @@ export function parseMap(resetEntities = true) {
                         console.log(`SPAWNER: Created Vertical Grate at (${col},${row}) with range ${rangeTiles}`);
                     } else {
                         let scanMinC = col;
-                        while(scanMinC > 0 && currentMapData[row][scanMinC - 1] !== '1') scanMinC--;
+                        let rL = Math.max(0, row - 4);
+                        let rH = Math.min(G.mapRows - 1, row + 4);
+
+                        while(scanMinC > 0) {
+                            let blocked = false;
+                            for (let r = rL; r <= rH; r++) {
+                                if (currentMapData[r][scanMinC - 1] === '1') { blocked = true; break; }
+                            }
+                            if (blocked) break;
+                            scanMinC--;
+                        }
                         let scanMaxC = col;
-                        while(scanMaxC < G.mapCols - 1 && currentMapData[row][scanMaxC + 1] !== '1') scanMaxC++;
+                        while(scanMaxC < G.mapCols - 1) {
+                            let blocked = false;
+                            for (let r = rL; r <= rH; r++) {
+                                if (currentMapData[r][scanMaxC + 1] === '1') { blocked = true; break; }
+                            }
+                            if (blocked) break;
+                            scanMaxC++;
+                        }
                         
                         let targetMinX = (col - rangeTiles/2) * TILE_SIZE;
                         let targetMaxX = (col + rangeTiles/2) * TILE_SIZE;
@@ -123,7 +140,7 @@ export function parseMap(resetEntities = true) {
                     let biome = Math.floor(G.currentLevel / 20) % 5;
                     let bType = ['masticator','septicus','warden','core','goliath'][biome];
                     G.boss = { active:true, type:bType, startX:col*TILE_SIZE, startY:row*TILE_SIZE-40, x:col*TILE_SIZE, y:row*TILE_SIZE+200,
-                        width:(bType==='septicus'?64:TILE_SIZE*2), height:(bType==='septicus'?120:TILE_SIZE*2),
+                        width:(bType==='septicus'?128:TILE_SIZE*2), height:(bType==='septicus'?128:TILE_SIZE*2),
                         hp:(bType==='masticator'?4:3), maxHp:(bType==='masticator'?4:3), phase:0, timer:0, vx:0, vy:0, hurtTimer:0, triggered:(bType!=='septicus') };
                 }
                 rowData.push(0);

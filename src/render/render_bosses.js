@@ -30,15 +30,35 @@ export function renderBoss() {
     if (boss.type === 'masticator') drawMasticator(boss);
     else if (boss.type === 'septicus') {
         let dir = boss.vx < 0 ? -1 : 1, vx = boss.vibrateX || 0;
-        drawGlow(ctx, boss.x + boss.width / 2 + vx, boss.y + 60, 100, 'rgba(0, 255, 100, 0.7)');
         
-        // Sequential Arc Swing Sequence (8 fps)
+        let scaleOffset = Math.sin(Date.now() * 0.005) * 4;
+        let waterY = 13 * TILE_SIZE + 12; // Precise pixel height where acid water visually begins
+        
+        ctx.save();
+        // Clip rendering bounds so Septicus only draws above the water surface line
+        ctx.beginPath();
+        ctx.rect(boss.x - 50 + vx, boss.y - 100, boss.width + 100, (waterY) - (boss.y - 100));
+        ctx.clip();
+        
         let frames = [sprSepticus1, sprSepticus2, sprSepticus3, sprSepticus4, sprSepticus5];
         let frameIdx = Math.floor(G.timerAcc * 8) % frames.length;
         
-        // Draw the unified Colossus
-        drawSprite(ctx, frames[frameIdx], boss.x - 32 + vx, boss.y - 8, 128, 128, dir < 0);
+        drawSprite(ctx, frames[frameIdx], boss.x - scaleOffset/2 + vx, boss.y - scaleOffset, boss.width + scaleOffset, boss.height + scaleOffset, dir < 0);
         
+        ctx.restore();
+
+        // Dynamically draw SEPT so it never inverts when he turns around
+        if (boss.hp > 0 && !boss.isSinking) {
+            ctx.save();
+            ctx.fillStyle = '#8B4513';
+            ctx.font = `bold ${Math.floor((boss.height + scaleOffset) * 0.11)}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 2;
+            ctx.fillText("SEPT", boss.x + boss.width/2 + vx, boss.y + boss.height * 0.45 - scaleOffset);
+            ctx.restore();
+        }
+
         // Projectiles still Barrage separately
         if (boss.projs) { for (let p of boss.projs) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.timer * 12); drawSprite(ctx, sprManhole, -20, -20, 40, 40, false); ctx.restore(); } }
     } else if (boss.type === 'warden') {

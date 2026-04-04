@@ -30,11 +30,11 @@ export function playerDeath() {
 }
 export function bossExplode() {
     const boss = G.boss;
-    if (boss.type==='septicus'&&!boss.isSinking&&boss.hp<=0) {
-        boss.isSinking=true; boss.timer=0; boss.vx=0; boss.vy=0; boss.vibrateX=0;
+    if (boss.type==='septicus'&&!boss.isSinking&&!boss.isDying&&boss.hp<=0) {
+        boss.isDying=true; boss.timer=0; boss.vx=0; boss.vy=0; boss.vibrateX=0;
         G.acidPurified=true; G.isMapCached=false;
-        if (boss.projs) boss.projs=[]; playSound('gameOver');
-    } else if (boss.isSinking) { return; } else { boss.active=false; playSound('gameOver'); }
+        if (boss.projs) boss.projs=[]; playSound('explosion');
+    } else if (boss.isDying||boss.isSinking) { return; } else { boss.active=false; playSound('gameOver'); }
     for (let i=0;i<40;i++) { let p=particlePool.find(pp=>!pp.active); if(p){p.active=true;p.type='normal';p.size=15;p.x=boss.x+Math.random()*boss.width;p.y=boss.y+Math.random()*boss.height;p.vx=(Math.random()-0.5)*500;p.vy=(Math.random()-0.5)*500;p.life=1.0;p.maxLife=1.0;} }
     for (let it of G.items) { if (it.type==='valve'||it.type==='detonator') it.collected=true; }
     if (boss.type!=='goliath') {
@@ -59,7 +59,7 @@ function updateBombs(dt) {
 }
 function updateBoss(dt) {
     const boss=G.boss;
-    if (!boss||!boss.active||(boss.hp<=0&&!boss.isSinking)) return;
+    if (!boss||!boss.active||(boss.hp<=0&&!boss.isSinking&&!boss.isDying)) return;
     if (boss.hurtTimer>0) boss.hurtTimer-=dt;
     let bRect={x:boss.x+20,y:boss.y+20,width:boss.width-40,height:boss.height-40};
     if (checkRectCollision(player,bRect)) playerDeath();
@@ -79,6 +79,21 @@ function updateBoss(dt) {
         } else if (boss.phase===3) { boss.vx*=0.9; boss.x+=boss.vx*dt; if(boss.timer>0.4){boss.phase=1;boss.vx=(player.x<boss.x)?-300:300;playSound('shoot');} }
         else if (boss.phase===2) { if(boss.timer>3.0){boss.phase=0;boss.timer=0;} }
     } else if (boss.type==='septicus') {
+        if (boss.isDying) {
+            boss.timer+=dt;
+            let shake = Math.min((boss.timer / 3.0) * 15, 15);
+            boss.vibrateX = (Math.random()-0.5)*shake*2;
+            if (Math.random() < 30 * dt) {
+                let p = particlePool.find(pp=>!pp.active);
+                if(p){ p.active=true; p.type='normal'; p.size=Math.random()*6+4; p.x=boss.x+Math.random()*boss.width; p.y=boss.y+Math.random()*boss.height; p.vx=(Math.random()-0.5)*400; p.vy=(Math.random()-0.5)*400; p.color=(Math.random()>0.5?'#3ee855':'#ffffff'); p.life=0; p.maxLife=0.6+Math.random()*0.4; }
+            }
+            if (boss.timer > 3.0) {
+                boss.isDying = false; boss.isSinking = true; boss.timer = 0; playSound('gameOver'); boss.vibrateX = 0;
+                for(let i=0; i<40; i++){ let p=particlePool.find(pp=>!pp.active); if(p){p.active=true;p.type='explosion';p.size=15;p.x=boss.x+Math.random()*boss.width;p.y=boss.y+Math.random()*boss.height;p.vx=(Math.random()-0.5)*600;p.vy=(Math.random()-0.5)*600;p.life=1.0;p.maxLife=1.0;} }
+                G.camera.vibrate = 20;
+            }
+            return;
+        }
         if (boss.isSinking) { boss.y+=18*dt; if(boss.timer>10.0){boss.isSinking=false;boss.active=false;} return; }
         else if (!boss.triggered) { if(player.x>TILE_SIZE*12){boss.triggered=true;boss.x=player.x-boss.width/2;playSound('powerup');} boss.vx=0;boss.vy=0; return; }
         if (boss.y>boss.startY) { boss.y-=350*dt; if(boss.y<boss.startY)boss.y=boss.startY; return; }
@@ -105,6 +120,25 @@ function updateBoss(dt) {
         }
         if (boss.projs) {
             for(let i=boss.projs.length-1;i>=0;i--){let p=boss.projs[i];if(!p)break;p.timer+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;if(!p.linear)p.vy+=600*dt;let pdx=player.x+player.width/2-p.x,pdy=player.y+player.height/2-p.y;if(Math.sqrt(pdx*pdx+pdy*pdy)<25)playerDeath();if(p.y>G.boss.startY+400||p.x<0||p.x>G.mapCols*TILE_SIZE)boss.projs.splice(i,1);}
+        }
+        if (Math.random() < 30 * dt) {
+            let p = particlePool.find(pp=>!pp.active);
+            if (p) {
+                p.active = true; p.type = 'normal'; p.size = Math.random()*3 + 2; 
+                p.x = boss.x + Math.random()*boss.width; p.y = boss.y + boss.height; 
+                p.vx = (Math.random()-0.5)*15; p.vy = 40 + Math.random()*80; 
+                p.color = '#3ee855'; p.life = 0; p.maxLife = 1.0 + Math.random();
+            }
+        }
+        // Horizontal Wading Splashes
+        if (boss.vx !== 0 && Math.random() < 50 * dt) {
+            let p = particlePool.find(pp=>!pp.active);
+            if (p) {
+                p.active = true; p.type = 'normal'; p.size = Math.random()*4 + 3; 
+                p.x = boss.x + (boss.vx > 0 ? boss.width : 0) + (Math.random()-0.5)*30; p.y = 13 * TILE_SIZE; 
+                p.vx = boss.vx * 0.4 + (Math.random()-0.5)*80; p.vy = -180 - Math.random()*150; 
+                p.color = '#3ee855'; p.life = 0; p.maxLife = 0.5 + Math.random()*0.5;
+            }
         }
     } else if (boss.type==='warden') {
         if(player.y<boss.y) boss.y-=70*dt; boss.x+=Math.cos(boss.timer*4)*80*dt;
@@ -228,6 +262,9 @@ export function updatePhysics(dt) {
     // Check if we lost footing (e.g. platform moved under us and we aren't colliding)
     if (player.riding && (player.x + player.width < player.riding.x || player.x > player.riding.x + player.riding.width)) {
         player.riding = null;
+    } else if (player.riding) {
+        player.isOnGround = true;
+        player.doubleJump = false;
     }
 
     for(let t of getCollidingTiles(player)){
