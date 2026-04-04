@@ -1,8 +1,8 @@
-import { G, player, keys, canvas, TILE_SIZE, addScore } from './globals.js?v=105';
-import { playSound, stopBackgroundMusic } from '../assets/audio.js?v=105';
-import { parseMap, resetPlayerPosition } from '../logic/spawner.js?v=105';
-import { getCollidingTiles, playerDeath, checkRectCollision } from './physics_utils.js?v=105';
-import { updateBoss, updateBombs } from './physics_boss.js?v=105';
+import { G, player, keys, canvas, TILE_SIZE, addScore } from './globals.js?v=126';
+import { playSound, stopBackgroundMusic } from '../assets/audio.js?v=126';
+import { parseMap, resetPlayerPosition } from '../logic/spawner.js?v=126';
+import { getCollidingTiles, playerDeath, checkRectCollision } from './physics_utils.js?v=126';
+import { updateBoss, updateBombs } from './physics_boss.js?v=126';
 
 export function updatePhysics(dt) {
     if (player.riding) {

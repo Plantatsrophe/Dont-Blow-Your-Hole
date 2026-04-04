@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Don't Die</title>
-    <link rel="stylesheet" href="style.css?v=105">
+    <link rel="stylesheet" href="style.css?v=126">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="src/assets/images/icon.svg" type="image/svg+xml">
@@ -32,12 +32,21 @@
         </div>
     </div>
 
-    <script type="module" src="src/data/db.js?v=105"></script>
-    <script type="module" src="src/main.js?v=105"></script>
+    <script type="module" src="src/data/db.js?v=126"></script>
+    <script type="module" src="src/main.js?v=126"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=105')
+                // Force unregister previous versions if we are loading this fresh index.html
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    for(let reg of regs) {
+                        if (!reg.active || !reg.active.scriptURL.includes('v=126')) {
+                            reg.unregister();
+                            console.log('Unregistered stale service worker.');
+                        }
+                    }
+                });
+                navigator.serviceWorker.register('./sw.js?v=126')
                     .then(reg => console.log('Service Worker registered explicitly!'))
                     .catch(err => console.log('Service Worker registration failed structurally: ', err));
             });

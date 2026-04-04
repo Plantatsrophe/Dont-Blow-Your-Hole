@@ -60,7 +60,7 @@ export const G = {
     particles: [],
     platforms: [],
     bombs: [],
-    boss: { active: false },
+    boss: { active: false, squash: 1.0, squashTimer: 0 },
     camera: { x: 0, y: 0 },
     isMapCached: false,
     acidPurified: false,

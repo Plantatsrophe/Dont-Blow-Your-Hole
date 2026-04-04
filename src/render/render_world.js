@@ -1,6 +1,6 @@
-import { G, canvas, ctx, offscreenMapCanvas, offscreenMapCtx, TILE_SIZE } from '../core/globals.js?v=105';
-import { sprPortal, sprPipe } from '../assets/assets.js?v=105';
-import { drawSprite, drawGlow } from './render_utils.js?v=105';
+import { G, canvas, ctx, offscreenMapCanvas, offscreenMapCtx, TILE_SIZE } from '../core/globals.js?v=126';
+import { sprPortal, sprPipe } from '../assets/assets.js?v=126';
+import { drawSprite, drawGlow } from './render_utils.js?v=126';
 
 export function renderConduits() {
     const { items, purifiedValves, activeValvePos, valveCutsceneTimer, mapRows } = G;

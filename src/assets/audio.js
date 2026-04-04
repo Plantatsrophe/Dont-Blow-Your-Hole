@@ -1,7 +1,7 @@
-import { G } from '../core/globals.js?v=105';
+import { G } from '../core/globals.js?v=126';
 
-export { startBackgroundMusic, stopBackgroundMusic } from './audio_music.js?v=105';
-export { playSound } from './audio_sfx.js?v=105';
+export { startBackgroundMusic, stopBackgroundMusic } from './audio_music.js?v=126';
+export { playSound } from './audio_sfx.js?v=126';
 
 export function initAudio() {
     if (!G.audioCtx) {

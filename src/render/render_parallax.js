@@ -1,8 +1,8 @@
-import { G, canvas, ctx } from '../core/globals.js?v=105';
+import { G, canvas, ctx } from '../core/globals.js?v=126';
 import { 
     drawSlumsParallax, drawSewerParallax, drawShaftParallax, 
     drawFactoryParallax, drawGoliathParallax, drawSlumsLayer2 
-} from './render_biomes.js?v=105';
+} from './render_biomes.js?v=126';
 
 export function renderParallax() {
     const { currentLevel, camera } = G;

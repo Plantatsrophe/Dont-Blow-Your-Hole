@@ -1,4 +1,5 @@
-const CACHE_NAME = 'platformer-cache-v105';
+// Cache-Busting Timestamp: 2026-04-04 16:11:00
+const CACHE_NAME = 'platformer-cache-v126';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

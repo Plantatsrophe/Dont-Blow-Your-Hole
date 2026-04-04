@@ -1,4 +1,4 @@
-import { G, player, TILE_SIZE } from '../core/globals.js?v=105';
+import { G, player, TILE_SIZE } from '../core/globals.js?v=126';
 
 export function spawnMovingPlatform(char, row, col, currentMapData) {
     const isVert = (char === 'U');
@@ -82,9 +82,10 @@ export function spawnMovingPlatform(char, row, col, currentMapData) {
 export function spawnBoss(col, row) {
     let biome = Math.floor(G.currentLevel / 20) % 5;
     let bType = ['masticator','septicus','warden','core','goliath'][biome];
+    let sY = (bType === 'masticator') ? row * TILE_SIZE + 1 : row * TILE_SIZE - 40;
     G.boss = { 
-        active:true, type:bType, startX:col*TILE_SIZE, startY:row*TILE_SIZE-40, 
-        x:col*TILE_SIZE, y:row*TILE_SIZE+200,
+        active:true, type:bType, startX:col*TILE_SIZE, startY:sY, 
+        x:col*TILE_SIZE, y:(bType === 'masticator' ? sY : row*TILE_SIZE+200),
         width:(bType==='septicus'?128:TILE_SIZE*2), 
         height:(bType==='septicus'?128:TILE_SIZE*2),
         hp:(bType==='masticator'?4:3), 

@@ -1,6 +1,6 @@
-import { G, player, keys, TILE_SIZE, offscreenMapCanvas } from '../core/globals.js?v=105';
-import { staticLevels } from '../data/levels.js?v=105';
-import { spawnMovingPlatform, spawnBoss } from './entity_spawner.js?v=105';
+import { G, player, keys, TILE_SIZE, offscreenMapCanvas } from '../core/globals.js?v=126';
+import { staticLevels } from '../data/levels.js?v=126';
+import { spawnMovingPlatform, spawnBoss } from './entity_spawner.js?v=126';
 
 let lastLevel = -1;
 export function parseMap(resetEntities = true) {
@@ -34,8 +34,8 @@ export function parseMap(resetEntities = true) {
             } else if (char === 'U' || char === 'P' || tile === 6) {
                 if (resetEntities) spawnMovingPlatform(char, row, col, currentMapData);
                 rowData.push(0);
-            } else if (char === '7' || (row === 12 && col === 1 && !spawnFound)) {
-                if (resetEntities) { player.startX = col*TILE_SIZE+6; player.startY = (row+1)*TILE_SIZE - player.height; spawnFound = true; }
+            } else if (char === '7' || (row === 8 && col === 1 && !spawnFound)) {
+                player.startX = col*TILE_SIZE+6; player.startY = (row+1)*TILE_SIZE - player.height; spawnFound = true;
                 rowData.push(0);
             } else if (tile === 8) {
                 if (resetEntities) G.enemies.push({ type:'bot', x:col*TILE_SIZE+8, y:(row+1)*TILE_SIZE-24, width:24, height:24, vx:50, dir:1, color:'#ff2222' });
@@ -75,3 +75,22 @@ export function resetFullGame() {
     keys.ArrowLeft = false; keys.ArrowRight = false; keys.ArrowUp = false; keys.ArrowDown = false; keys.Space = false;
     G.gameStartTime = new Date().getTime();
 }
+
+// Expose to window for console access (Cheats/Debugging)
+window.parseMap = parseMap;
+window.resetPlayerPosition = resetPlayerPosition;
+window.skipLevel = function(lvl) {
+    if (lvl !== undefined) G.currentLevel = lvl;
+    parseMap();
+    resetPlayerPosition();
+    return `Skipped to Level ${G.currentLevel}`;
+};
+window.goToLevel = window.skipLevel;
+window.nextLevel = function() {
+    return window.skipLevel(G.currentLevel + 1);
+};
+Object.defineProperty(window, 'currentLevel', {
+    get: function() { return G.currentLevel; },
+    set: function(val) { window.skipLevel(val); },
+    configurable: true
+});

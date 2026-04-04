@@ -1,6 +1,6 @@
-import { G, canvas, ctx, TILE_SIZE } from '../core/globals.js?v=105';
-import { sprGear } from '../assets/assets.js?v=105';
-import { drawSprite } from './render_utils.js?v=105';
+import { G, canvas, ctx, TILE_SIZE } from '../core/globals.js?v=126';
+import { sprGear } from '../assets/assets.js?v=126';
+import { drawSprite } from './render_utils.js?v=126';
 
 export function drawSlumsParallax(px) {
     for (let i = 0; i < 30; i++) {

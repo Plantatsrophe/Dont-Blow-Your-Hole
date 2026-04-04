@@ -1,7 +1,7 @@
-import { G, player, keys } from './globals.js?v=105';
-import { initAudio, startBackgroundMusic } from '../assets/audio.js?v=105';
-import { handleUIAccept } from './game.js?v=105';
-import { processDownInput, handleJump } from './input_utils.js?v=105';
+import { G, player, keys } from './globals.js?v=126';
+import { initAudio, startBackgroundMusic } from '../assets/audio.js?v=126';
+import { handleUIAccept } from './game.js?v=126';
+import { processDownInput, handleJump } from './input_utils.js?v=126';
 
 let isTouchMode = false;
 

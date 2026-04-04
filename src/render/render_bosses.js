@@ -1,6 +1,6 @@
-import { G, ctx, TILE_SIZE, particlePool } from '../core/globals.js?v=105';
-import { sprSepticus1, sprSepticus2, sprSepticus3, sprSepticus4, sprSepticus5, sprManhole } from '../assets/assets.js?v=105';
-import { drawSprite, drawGlow } from './render_utils.js?v=105';
+import { G, ctx, TILE_SIZE, particlePool } from '../core/globals.js?v=126';
+import { sprSepticus1, sprSepticus2, sprSepticus3, sprSepticus4, sprSepticus5, sprManhole } from '../assets/assets.js?v=126';
+import { drawSprite, drawGlow } from './render_utils.js?v=126';
 
 export function drawMasticator(boss) {
     let cx = boss.x, cy = boss.y - 15, bw = boss.width, bh = boss.height, dir = G.boss.vx < 0 ? -1 : 1; 
@@ -22,6 +22,11 @@ export function drawMasticator(boss) {
     ctx.fillStyle = '#C0C0C0'; ctx.fillRect(cx, cy, bw, bh); ctx.fillStyle = '#FF0000'; ctx.fillRect(cx + 15, cy + 15, 18, 10); ctx.fillRect(cx + bw - 33, cy + 15, 18, 10);
     drawGlow(ctx, cx + 24, cy + 20, 20, 'rgba(255, 0, 0, 0.6)'); drawGlow(ctx, cx + bw - 24, cy + 20, 20, 'rgba(255, 0, 0, 0.6)');
     ctx.fillStyle = '#111'; ctx.fillRect(cx + 10, cy + 45, bw - 20, (boss.phase === 2) ? 35 : 20);
+    ctx.fillStyle = '#fff'; for (let i=0; i<4; i++) {
+        let tx = cx + 15 + i * (bw-30)/4, ty = cy + 45 + ((boss.phase === 2) ? 35 : 20);
+        ctx.beginPath(); ctx.moveTo(tx, cy + 45); ctx.lineTo(tx + 5, cy + 45 + 10); ctx.lineTo(tx + 10, cy + 45); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + 5, ty - 10); ctx.lineTo(tx + 10, ty); ctx.fill();
+    }
     if (boss.hurtTimer > 0) { ctx.fillStyle = 'white'; ctx.globalAlpha = 0.5; ctx.fillRect(cx, cy, bw, bh); ctx.globalAlpha = 1; }
 }
 

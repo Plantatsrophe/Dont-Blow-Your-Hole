@@ -1,4 +1,4 @@
-import { G } from '../core/globals.js?v=105';
+import { G } from '../core/globals.js?v=126';
 
 export function playSound(type) {
     if (!G.audioCtx) return;

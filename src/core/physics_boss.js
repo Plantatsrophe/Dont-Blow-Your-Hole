@@ -1,7 +1,7 @@
-import { G, player, TILE_SIZE, laserPool, particlePool } from './globals.js?v=105';
-import { staticLevels } from '../data/levels.js?v=105';
-import { playSound } from '../assets/audio.js?v=105';
-import { checkRectCollision, playerDeath } from './physics_utils.js?v=105';
+import { G, player, TILE_SIZE, laserPool, particlePool } from './globals.js?v=126';
+import { staticLevels } from '../data/levels.js?v=126';
+import { playSound } from '../assets/audio.js?v=126';
+import { checkRectCollision, playerDeath } from './physics_utils.js?v=126';
 
 export function bossExplode() {
     const boss = G.boss;
@@ -38,10 +38,11 @@ export function updateBoss(dt) {
     const boss=G.boss;
     if (!boss||!boss.active||(boss.hp<=0&&!boss.isSinking&&!boss.isDying)) return;
     if (boss.hurtTimer>0) boss.hurtTimer-=dt;
-    let bRect={x:boss.x+20,y:boss.y+20,width:boss.width-40,height:boss.height-40};
+    let bRect={x:boss.x+5,y:boss.y+5,width:boss.width-10,height:boss.height-10};
     if (checkRectCollision(player,bRect)) playerDeath();
     boss.timer+=dt;
     if (boss.type==='masticator') {
+        boss.y = boss.startY;
         if (boss.phase===0) { boss.vx=0; if(boss.hasSeenPlayer||(boss.x>G.camera.x&&boss.x<G.camera.x+800)){boss.hasSeenPlayer=true;boss.phase=1;boss.vx=(player.x<boss.x)?-300:300;playSound('shoot');} }
         else if (boss.phase===1) {
             boss.x+=boss.vx*dt;
@@ -49,7 +50,7 @@ export function updateBoss(dt) {
             let hitPillar=false,hitCol=-1;
             for(let r=sr2;r<=er2;r++) for(let c=sc2;c<=ec2;c++) { if(G.map[r]&&G.map[r][c]!==0&&G.map[r][c]!==undefined&&r<13){let p2=particlePool.find(pp=>!pp.active);if(p2){p2.active=true;p2.type='normal';p2.size=12;p2.x=c*TILE_SIZE+20;p2.y=r*TILE_SIZE+20;p2.vx=(Math.random()-0.5)*500;p2.vy=-300-Math.random()*300;p2.color='#B0B0B0';p2.life=1.0;p2.maxLife=1.0;}if(G.map[r][c]===1){hitPillar=true;hitCol=c;}G.map[r][c]=0;G.isMapCached=false;} }
             if (hitPillar) {
-                for(let pr=12;pr>=0;pr--){let rs=staticLevels[G.currentLevel].map[pr];if(rs&&rs[hitCol]==='1'){G.map[pr][hitCol]=0;staticLevels[G.currentLevel].map[pr]=rs.substring(0,hitCol)+"0"+rs.substring(hitCol+1);let p2=particlePool.find(pp=>!pp.active);if(p2){p2.active=true;p2.type='normal';p2.size=12;p2.x=hitCol*TILE_SIZE+20;p2.y=pr*TILE_SIZE+20;p2.vx=(Math.random()-0.5)*500;p2.vy=-300-Math.random()*300;p2.color='#B0B0B0';p2.life=1.0;p2.maxLife=1.0;}}}
+                for(let pr=12;pr>0;pr--){let rs=staticLevels[G.currentLevel].map[pr];if(rs&&rs[hitCol]==='1'){G.map[pr][hitCol]=0;staticLevels[G.currentLevel].map[pr]=rs.substring(0,hitCol)+"0"+rs.substring(hitCol+1);let p2=particlePool.find(pp=>!pp.active);if(p2){p2.active=true;p2.type='normal';p2.size=12;p2.x=hitCol*TILE_SIZE+20;p2.y=pr*TILE_SIZE+20;p2.vx=(Math.random()-0.5)*500;p2.vy=-300-Math.random()*300;p2.color='#B0B0B0';p2.life=1.0;p2.maxLife=1.0;}}}
                 G.isMapCached=false; boss.phase=2; boss.vx=0; boss.timer=0;
                 for(let b of G.bombs){if(!b.active&&Math.abs(b.col-hitCol)<=3){b.active=true;b.vx=(boss.x+boss.width/2>b.x)?50:-50;}}
             } else { if((boss.vx>0&&player.x+player.width<boss.x)||(boss.vx<0&&player.x>boss.x+boss.width)){boss.phase=3;boss.timer=0;} }
