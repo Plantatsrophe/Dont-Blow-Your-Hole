@@ -4,7 +4,8 @@
   "description": "Don't Die - A Native ESM TypeScript Game",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run sync-version",
+    "sync-version": "node scripts/version_sync.js",
     "watch": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
