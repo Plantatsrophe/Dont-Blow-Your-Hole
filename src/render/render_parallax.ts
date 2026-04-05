@@ -1,6 +1,6 @@
 import { G, canvas, ctx } from '../core/globals.js';
 import { 
-    drawSlumsParallax, drawSewerParallax, drawShaftParallax, 
+    drawSlumsParallax, drawSewerParallax, drawMineParallax, 
     drawFactoryParallax, drawGoliathParallax, drawSlumsLayer2 
 } from './render_biomes.js';
 
@@ -23,7 +23,7 @@ export function renderParallax() {
         skyGradient.addColorStop(0, '#020502'); 
         skyGradient.addColorStop(0.5, cMurk);
         skyGradient.addColorStop(1, cDeep);
-    } else if (bId === 2) { // Shaft
+    } else if (bId === 2) { // Mine
         skyGradient.addColorStop(0, '#030014'); skyGradient.addColorStop(1, '#2c0c4a');
     } else if (bId === 3) { // Factory
         skyGradient.addColorStop(0, '#050f14'); skyGradient.addColorStop(1, '#1a4159');
@@ -38,7 +38,7 @@ export function renderParallax() {
     // Biome Specific Parallax Layers
     if (bId === 0) drawSlumsParallax(camera.x * 0.2);
     else if (bId === 1) drawSewerParallax(camera.x * 0.3, hpRatio);
-    else if (bId === 2) drawShaftParallax(camera.y * 0.4);
+    else if (bId === 2) drawMineParallax(camera.y * 0.4);
     else if (bId === 3) drawFactoryParallax(camera.x * 0.15);
     else if (bId === 4) drawGoliathParallax(camera.x * 0.05);
 }

@@ -83,7 +83,7 @@ export function spawnMovingPlatform(char: string, row: number, col: number, curr
 
 export function spawnBoss(col: number, row: number) {
     let biome = Math.floor(G.currentLevel / 20) % 5;
-    let bType = ['masticator','septicus','warden','core','goliath'][biome];
+    let bType = ['masticator','septicus','auh-gr','core','goliath'][biome];
     let sY = (bType === 'masticator') ? row * TILE_SIZE + 1 : row * TILE_SIZE - 40;
     G.boss = { 
         active:true, type:bType, startX:col*TILE_SIZE, startY:sY, 

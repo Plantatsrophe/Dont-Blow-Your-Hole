@@ -67,7 +67,7 @@ export function renderBoss() {
 
         // Projectiles still Barrage separately
         if (boss.projs) { for (let p of boss.projs) { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.timer * 12); drawSprite(ctx, sprManhole, -20, -20, 40, 40, false); ctx.restore(); } }
-    } else if (boss.type === 'warden') {
+    } else if (boss.type === 'auh-gr') {
         ctx.fillStyle = '#444'; ctx.beginPath(); ctx.arc(boss.x + boss.width/2, boss.y + boss.height/2, boss.width/2, 0, Math.PI*2); ctx.fill();
         ctx.fillStyle = '#f00'; ctx.beginPath(); ctx.arc(boss.x + boss.width/2, boss.y + boss.height/2, 20, 0, Math.PI*2); ctx.fill();
     } else if (boss.type === 'core') {

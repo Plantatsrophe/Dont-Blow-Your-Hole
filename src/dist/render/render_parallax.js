@@ -1,5 +1,5 @@
 import { G, canvas, ctx } from '../core/globals.js';
-import { drawSlumsParallax, drawSewerParallax, drawShaftParallax, drawFactoryParallax, drawGoliathParallax, drawSlumsLayer2 } from './render_biomes.js';
+import { drawSlumsParallax, drawSewerParallax, drawMineParallax, drawFactoryParallax, drawGoliathParallax, drawSlumsLayer2 } from './render_biomes.js';
 export function renderParallax() {
     const { currentLevel, camera } = G;
     const bId = Math.floor(currentLevel / 20) % 5;
@@ -20,7 +20,7 @@ export function renderParallax() {
         skyGradient.addColorStop(0.5, cMurk);
         skyGradient.addColorStop(1, cDeep);
     }
-    else if (bId === 2) { // Shaft
+    else if (bId === 2) { // Mine
         skyGradient.addColorStop(0, '#030014');
         skyGradient.addColorStop(1, '#2c0c4a');
     }
@@ -44,7 +44,7 @@ export function renderParallax() {
     else if (bId === 1)
         drawSewerParallax(camera.x * 0.3, hpRatio);
     else if (bId === 2)
-        drawShaftParallax(camera.y * 0.4);
+        drawMineParallax(camera.y * 0.4);
     else if (bId === 3)
         drawFactoryParallax(camera.x * 0.15);
     else if (bId === 4)

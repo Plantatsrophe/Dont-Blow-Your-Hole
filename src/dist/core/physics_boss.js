@@ -380,7 +380,7 @@ export function updateBoss(dt) {
             p.maxLife = 0.5 + Math.random() * 0.5;
         }
     }
-    else if (boss.type === 'warden') {
+    else if (boss.type === 'auh-gr') {
         if (player.y < boss.y)
             boss.y -= 70 * dt;
         boss.x += Math.cos(boss.timer * 4) * 80 * dt;

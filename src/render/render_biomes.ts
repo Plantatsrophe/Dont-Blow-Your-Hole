@@ -107,7 +107,7 @@ export function drawSewerParallax(px: number, hpRatio: number) {
     ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
 }
 
-export function drawShaftParallax(py: number) {
+export function drawMineParallax(py: number) {
     ctx.strokeStyle = '#221333'; ctx.lineWidth = 2; ctx.beginPath();
     for (let i = -10; i < 20; i++) {
         let offset = (i * 50 + py) % (canvas.height + 500);

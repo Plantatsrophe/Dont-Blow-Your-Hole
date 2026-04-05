@@ -124,7 +124,7 @@ export function drawSewerParallax(px, hpRatio) {
     ctx.fillStyle = hpRatio > 0.5 ? '#07170a' : (hpRatio > 0.1 ? '#071217' : '#040b1a');
     ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
 }
-export function drawShaftParallax(py) {
+export function drawMineParallax(py) {
     ctx.strokeStyle = '#221333';
     ctx.lineWidth = 2;
     ctx.beginPath();

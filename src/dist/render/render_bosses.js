@@ -116,7 +116,7 @@ export function renderBoss() {
             }
         }
     }
-    else if (boss.type === 'warden') {
+    else if (boss.type === 'auh-gr') {
         ctx.fillStyle = '#444';
         ctx.beginPath();
         ctx.arc(boss.x + boss.width / 2, boss.y + boss.height / 2, boss.width / 2, 0, Math.PI * 2);

@@ -879,7 +879,7 @@ export const staticLevels = [
     },
     {
         level: 40,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -946,7 +946,7 @@ export const staticLevels = [
     },
     {
         level: 41,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1013,7 +1013,7 @@ export const staticLevels = [
     },
     {
         level: 42,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1080,7 +1080,7 @@ export const staticLevels = [
     },
     {
         level: 43,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1147,7 +1147,7 @@ export const staticLevels = [
     },
     {
         level: 44,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1214,7 +1214,7 @@ export const staticLevels = [
     },
     {
         level: 45,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1281,7 +1281,7 @@ export const staticLevels = [
     },
     {
         level: 46,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1348,7 +1348,7 @@ export const staticLevels = [
     },
     {
         level: 47,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1415,7 +1415,7 @@ export const staticLevels = [
     },
     {
         level: 48,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1482,7 +1482,7 @@ export const staticLevels = [
     },
     {
         level: 49,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1549,7 +1549,7 @@ export const staticLevels = [
     },
     {
         level: 50,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1616,7 +1616,7 @@ export const staticLevels = [
     },
     {
         level: 51,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1683,7 +1683,7 @@ export const staticLevels = [
     },
     {
         level: 52,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1750,7 +1750,7 @@ export const staticLevels = [
     },
     {
         level: 53,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1817,7 +1817,7 @@ export const staticLevels = [
     },
     {
         level: 54,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1884,7 +1884,7 @@ export const staticLevels = [
     },
     {
         level: 55,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -1951,7 +1951,7 @@ export const staticLevels = [
     },
     {
         level: 56,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -2018,7 +2018,7 @@ export const staticLevels = [
     },
     {
         level: 57,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -2085,7 +2085,7 @@ export const staticLevels = [
     },
     {
         level: 58,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: false,
         map: [
             "111111111111111",
@@ -2152,7 +2152,7 @@ export const staticLevels = [
     },
     {
         level: 59,
-        biome: "Shaft",
+        biome: "Mine",
         isBoss: true,
         map: [
             "111111111111111",
