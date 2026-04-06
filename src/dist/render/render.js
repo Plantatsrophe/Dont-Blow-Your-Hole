@@ -1,3 +1,13 @@
+/**
+ * MASTER RENDERER (Don't Die)
+ * ---------------------------
+ * Coordinates the entire visual pipeline for each animation frame.
+ *
+ * THE RENDER PIPELINE:
+ * 1. Screen-Space Backgrounds (Parallax)
+ * 2. Viewport-Transformed World (Tiles, Entities, Bosses, Player)
+ * 3. Screen-Space Overlays (HUD, Menus, UI)
+ */
 import { G, ctx, offscreenMapCanvas } from '../core/globals.js';
 import { renderParallax, renderParallaxLayer2 } from './render_parallax.js';
 import { renderStartScreen, renderIntroScreen, renderInstructions } from './render_menus.js';
@@ -6,9 +16,13 @@ import { renderEntities } from './render_entities.js';
 import { renderBoss } from './render_bosses.js';
 import { renderPlayer, renderPlayerCutscene } from './render_player.js';
 import { renderHUD, renderOverlays, renderCredits, renderShareButton } from './render_ui.js';
+/**
+ * Main render function called by the game loop.
+ * Switches between menu-specific rendering and active world-rendering.
+ */
 export function render() {
     const { gameState, camera } = G;
-    // 1. Static State Screens (Start, Intro, Instructions)
+    // --- PHASE 1: Menu & Static Screen Passthrough ---
     if (gameState === 'START') {
         renderStartScreen();
         return;
@@ -21,22 +35,28 @@ export function render() {
         renderInstructions();
         return;
     }
-    // 2. Parallax Background Layers
+    // --- PHASE 2: Background Parallax Layers ---
+    // These render in screen-space before the world camera is applied.
     renderParallax();
     renderParallaxLayer2();
-    // 3. World Space Transformation
+    // --- PHASE 3: World-Space Rendering ---
+    // Save current canvas state and translate the context based on the camera position.
     ctx.save();
     ctx.translate(-Math.floor(camera.x), -Math.floor(camera.y));
+    // Render world static geometry and animated tiles
     renderConduits();
-    preRenderMap();
+    preRenderMap(); // Draws the static map from the offscreen canvas cache
     ctx.drawImage(offscreenMapCanvas, 0, 0);
     renderAnimatedTiles();
-    renderEntities();
+    // Render all active dynamic entities
+    renderEntities(); // Bots, Items, Projectiles, Particles
     renderBoss();
     renderPlayer();
-    renderPlayerCutscene();
+    renderPlayerCutscene(); // Cinematic effects like level-clear warp
+    // Restore the canvas to its original (screen-space) state.
     ctx.restore();
-    // 4. Screen Space Overlays (HUD, Menus, Credits)
+    // --- PHASE 4: HUD & UI Overlays ---
+    // HUD elements are rendered in screen-space on top of the world.
     renderHUD();
     renderOverlays();
     renderCredits();

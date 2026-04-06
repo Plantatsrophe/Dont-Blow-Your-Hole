@@ -1,7 +1,19 @@
+/**
+ * BIOME RENDERING ENGINE
+ * ----------------------
+ * Handles the specialized, procedural background layers for each game zone.
+ * Each biome uses a unique combination of parallax speeds, procedural shapes, 
+ * and dynamic lighting (gradients/flickers) to create atmospheric depth.
+ */
+
 import { G, canvas, ctx, TILE_SIZE } from '../core/globals.js';
 import { sprGear } from '../assets/assets.js';
 import { drawSprite } from './render_utils.js';
 
+/**
+ * Slums: Urban silhouette with flickering windows.
+ * @param px Camera parallax offset
+ */
 export function drawSlumsParallax(px: number) {
     for (let i = 0; i < 30; i++) {
         let h = 80 + (Math.sin(i * 999) * 40);
@@ -10,6 +22,8 @@ export function drawSlumsParallax(px: number) {
         if (x < -100) x += canvas.width + 200;
         ctx.fillStyle = '#05050f';
         ctx.fillRect(x, canvas.height - h, w, h);
+        
+        // Flickering windows logic
         ctx.fillStyle = '#f1c40f';
         for (let wy = canvas.height - h + 10; wy < canvas.height - 10; wy += 15) {
             for (let wx = x + 5; wx < x + w - 5; wx += 10) {
@@ -19,8 +33,13 @@ export function drawSlumsParallax(px: number) {
     }
 }
 
+/**
+ * Sewer: Wet, brick-patterned tunnels with toxic drips and dynamic pipe-cleaning state.
+ * @param px Camera parallax offset
+ * @param hpRatio Current player health for color-shifting toxic drips
+ */
 export function drawSewerParallax(px: number, hpRatio: number) {
-    // Faint Brick Pattern
+    // 1. Distant Brick Grid
     ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1;
     for (let r = 0; r < canvas.height / 20 + 2; r++) {
         let ry = r * 20;
@@ -32,7 +51,7 @@ export function drawSewerParallax(px: number, hpRatio: number) {
         }
     }
 
-    // Dark Tunnel Openings
+    // 2. Large Tunnel Arches
     for (let a = 0; a < 4; a++) {
         let ax = ((a * 400) - px * 0.5) % (canvas.width + 400);
         if (ax < -400) ax += canvas.width + 800;
@@ -43,6 +62,7 @@ export function drawSewerParallax(px: number, hpRatio: number) {
         ctx.fillStyle = grad; ctx.fill();
     }
 
+    // 3. Fast Foreground Toxic Drips
     for(let j = 0; j < 8; j++) {
         let hX = ((j * 150) - px * 1.5) % (canvas.width + 100);
         if (hX < -100) hX += canvas.width + 200;
@@ -51,14 +71,18 @@ export function drawSewerParallax(px: number, hpRatio: number) {
         ctx.fillRect(hX, hDripY, 3, 15 + (j%2)*5);
     }
 
+    // 4. Vertical Drainage Pipes with Dynamic "Cleaning" visual logic
     for(let i = 0; i < 6; i++) {
         let x = ((i * 200) - px) % (canvas.width + 200);
         if(x < -200) x += canvas.width + 400;
+        
+        // Base pipe geometry
         ctx.fillStyle = '#2a140b'; ctx.fillRect(x, 0, 40, canvas.height); 
         ctx.fillStyle = '#3a1f11'; ctx.fillRect(x + 10, 0, 20, canvas.height); 
         ctx.fillStyle = '#4d2a1a'; ctx.fillRect(x + 15, 0, 5, canvas.height);  
         ctx.fillStyle = '#1c0e07'; ctx.fillRect(x + 30, 0, 10, canvas.height); 
 
+        // Concrete support brackets
         ctx.fillStyle = '#2a140b';
         for (let cp = 0; cp < 3; cp++) {
             let cpy = 100 + cp * 180;
@@ -69,6 +93,8 @@ export function drawSewerParallax(px: number, hpRatio: number) {
 
         const mColors = ['#1b5c21', '#1e5014', '#3ee855'];
         let currentV = G.purifiedValves.length - 1;
+        
+        // Tracking: Detect pipe purification triggered by the Septicus cutscene
         if (G.gameState === 'VALVE_CUTSCENE' && x > -50 && x < canvas.width + 50) {
             if (!G.cleanedPipes.some(p => p.id === i)) G.cleanedPipes.push({ id: i, vIdx: currentV });
         }
@@ -76,12 +102,13 @@ export function drawSewerParallax(px: number, hpRatio: number) {
         let mAlpha = 1.0;
         let pRecord = G.cleanedPipes.find((p: any) => p.id === i);
         if (pRecord) {
-            if (pRecord.vIdx < currentV) mAlpha = 0;
+            if (pRecord.vIdx < currentV) mAlpha = 0; // Already cleaned
             else if (pRecord.vIdx === currentV && G.gameState === 'VALVE_CUTSCENE') {
-                mAlpha = Math.max(0, 1.0 - (G.valveCutsceneTimer / 5.0));
+                mAlpha = Math.max(0, 1.0 - (G.valveCutsceneTimer / 5.0)); // Fading out moss/grime
             } else mAlpha = 0;
         }
 
+        // Moss and Drip particles on the pipes
         if (mAlpha > 0 && (i % 2 === 0 || i % 3 === 0)) {
             ctx.save(); ctx.globalAlpha = mAlpha;
             let my = (i % 2 === 0) ? 200 : 400;
@@ -91,7 +118,7 @@ export function drawSewerParallax(px: number, hpRatio: number) {
                 let mry = my + (m * 4);
                 let mSize = 6 + (m % 3) * 4;
                 ctx.beginPath(); ctx.arc(mx, mry, mSize, 0, Math.PI * 2); ctx.fill();
-                if (m === 2 || m === 4) {
+                if (m === 2 || m === 4) { // Active drip animation
                     ctx.fillStyle = 'rgba(62, 232, 85, 0.4)';
                     ctx.fillRect(mx - 1, mry, 2, 20 + Math.sin(Date.now()*0.002 + m)*10);
                 }
@@ -99,14 +126,21 @@ export function drawSewerParallax(px: number, hpRatio: number) {
             ctx.restore();
         }
 
+        // General ambient pipe drips
         let dripY = 120 + (i%3)*50 + ((Date.now() / (10 + (i%2)*5)) % (canvas.height - 150));
         ctx.fillStyle = hpRatio > 0.5 ? '#3ee855' : (hpRatio > 0.1 ? '#3eb5e8' : '#00bbff'); 
         ctx.fillRect(x + 18, dripY, 3, 10 + (i%4)*5);
     }
+    
+    // Bottom fog/fluid layer
     ctx.fillStyle = hpRatio > 0.5 ? '#07170a' : (hpRatio > 0.1 ? '#071217' : '#040b1a');
     ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
 }
 
+/**
+ * Mine: Vertical support infrastructure for the climbable biome.
+ * @param py Camera Y scroll for vertical parallax
+ */
 export function drawMineParallax(py: number) {
     // 1. Dark Cavern Walls (Depth)
     ctx.fillStyle = '#0a0805';
@@ -126,8 +160,7 @@ export function drawMineParallax(py: number) {
         ctx.fillRect(30, by, 30, 350);
         ctx.fillRect(canvas.width - 60, by, 30, 350);
         
-        // Texture/Detail for posts
-        ctx.fillStyle = '#3d2b1f';
+        ctx.fillStyle = '#3d2b1f'; // Grain detail
         ctx.fillRect(40, by, 5, 350);
         ctx.fillRect(canvas.width - 50, by, 5, 350);
 
@@ -167,6 +200,10 @@ export function drawMineParallax(py: number) {
     }
 }
 
+/**
+ * Factory: Neon wiring and mechanical circuitry.
+ * @param px Camera parallax offset
+ */
 export function drawFactoryParallax(px: number) {
     ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)'; ctx.lineWidth = 4;
     for (let i = 0; i < 9; i++) {
@@ -181,11 +218,20 @@ export function drawFactoryParallax(px: number) {
     }
 }
 
+/**
+ * Goliath Core: Hellish red glow and shifting heavy metal plates.
+ * @param px Camera parallax offset
+ */
 export function drawGoliathParallax(px: number) {
+    // Random screen flicker for tension
     if (Math.random() > 0.95) { ctx.fillStyle = 'rgba(255, 255, 255, 0.25)'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+    
+    // The "Sun" / Heat Core
     let mX = (canvas.width * 0.75 - px) % (canvas.width + 400);
     if (mX < -250) mX += canvas.width + 600;
     ctx.fillStyle = '#db2323'; ctx.beginPath(); ctx.arc(mX, 180, 120, 0, Math.PI * 2); ctx.fill();
+    
+    // Shifting structural shadows
     ctx.fillStyle = 'rgba(43, 2, 2, 0.85)';
     for (let i = 0; i < 7; i++) {
         let cX = ((i * 180) - px * 8 - (Date.now()/12 % canvas.width)) % (canvas.width + 300);
@@ -194,6 +240,9 @@ export function drawGoliathParallax(px: number) {
     }
 }
 
+/**
+ * Slums Secondary Layer: Deep urban background.
+ */
 export function drawSlumsLayer2() {
     let bgOffset1 = -(G.camera.x * 0.2) % 200;
     for (let i = -1; i < canvas.width / 200 + 2; i++) {
@@ -210,3 +259,4 @@ export function drawSlumsLayer2() {
         ctx.beginPath(); ctx.moveTo(x, canvas.height); ctx.lineTo(x + 75, canvas.height - 150); ctx.lineTo(x + 150, canvas.height); ctx.fill();
     }
 }
+

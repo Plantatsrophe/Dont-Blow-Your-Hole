@@ -1,13 +1,19 @@
+/**
+ * FIREBASE DATA LAYER
+ * Handles persistent high-score storage and retrieval via Google Cloud Firestore.
+ * This module is integrated as an ES Module directly from the Firebase CDN.
+ */
 // @ts-ignore
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
 // @ts-ignore
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 import { staticLevels } from './levels.js';
+// Expose static levels for global engine access
 window.staticLevels = staticLevels;
-// ==========================================
-// USER CONFIGURATION REQUIRED:
-// Replace this object with your exact Firebase config snippet from your Firebase Console!
-// ==========================================
+/**
+ * Firebase Project Configuration
+ * Matches the 'bitplatformer-2b284' project environment.
+ */
 const firebaseConfig = {
     apiKey: "AIzaSyA2d_Sp94HwlAyRlZ4q611AxJYUo9ecOcg",
     authDomain: "bitplatformer-2b284.firebaseapp.com",
@@ -16,17 +22,33 @@ const firebaseConfig = {
     messagingSenderId: "872741019987",
     appId: "1:872741019987:web:76cb7846d82dc1888101a6"
 };
-// Initialize Firebase securely
+// Initialize Firebase SDK
+console.log("Firebase initializing for bitplatformer-2b284...");
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-// Simple hashing obfuscator to secure the network payload from basic tampering
+console.log("Firestore initialized successfully.");
+/**
+ * Simple payload obfuscator to deter casual network tampering.
+ * Combines initials, score, and playtime with a server-side secret salt.
+ *
+ * @param initials Player's name string
+ * @param score Final numerical score
+ * @param playtime Total time elapsed in ms
+ * @returns A base64-encoded verification hash
+ */
 function obfuscatePayload(initials, score, playtime) {
     const salt = "8b!t_platform3r_S3cr3t";
     const rawString = `${initials}|${score}|${playtime}|${salt}`;
-    // A basic Base64 encode for simple transmission structure (NOT encryption, just payload formatting)
     return btoa(rawString);
 }
-// Attach universally accessible bindings to the global engine seamlessly
+/**
+ * Submits a new high score to the global 'highscores' collection.
+ * Includes a security hash for backend rule validation.
+ *
+ * @param initials Player initials (MAX 3)
+ * @param score The final game score
+ * @param playtime Play duration for integrity checks
+ */
 window.submitHighScore = async function (initials, score, playtime) {
     try {
         const payloadHash = obfuscatePayload(initials, score, playtime);
@@ -35,7 +57,7 @@ window.submitHighScore = async function (initials, score, playtime) {
             score: Number(score),
             playtimeMs: Number(playtime),
             timestamp: new Date().getTime(),
-            _secHash: payloadHash // Used by backend rules logically to verify integrity
+            _secHash: payloadHash // Used by Firestore Rules for logic-based verification
         });
         console.log("Score explicitly saved to Firebase globally!");
     }
@@ -43,7 +65,14 @@ window.submitHighScore = async function (initials, score, playtime) {
         console.error("Error adding score structurally to Firebase: ", e);
     }
 };
+/**
+ * Retrieves the Top 10 High Scores from the database.
+ * Gracefully defaults to placeholder data if the fetch fails.
+ *
+ * @returns Array of score objects {initials, score}
+ */
 window.fetchHighScores = async function () {
+    console.log("Fetching high scores from Firestore...");
     try {
         const q = query(collection(db, "highscores"), orderBy("score", "desc"), limit(10));
         const querySnapshot = await getDocs(q);
@@ -51,7 +80,8 @@ window.fetchHighScores = async function () {
         querySnapshot.forEach((doc) => {
             scores.push(doc.data());
         });
-        // Ensure we always return exactly 10 slots gracefully for UI rendering
+        console.log(`Fetched ${scores.length} scores successfully.`);
+        // Pad the list with empty slots to keep the UI layout consistent
         while (scores.length < 10) {
             scores.push({ initials: "---", score: 0 });
         }
@@ -59,14 +89,10 @@ window.fetchHighScores = async function () {
     }
     catch (e) {
         console.error("Error natively catching FireStore scores: ", e);
-        // Return dummy gracefully on disconnects
+        // Fallback for offline mode or network errors
         let dummy = [];
         for (let i = 0; i < 10; i++)
             dummy.push({ initials: "---", score: 0 });
         return dummy;
     }
 };
-// Intelligently trigger the global leaderboard redraw exactly when the database bindings resolve natively!
-if (window.refreshLeaderboard) {
-    window.refreshLeaderboard();
-}

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Don't Die</title>
-    <link rel="stylesheet" href="style.css?v=150">
+    <link rel="stylesheet" href="style.css?v=198">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="src/assets/images/icon.svg" type="image/svg+xml">
@@ -13,6 +13,12 @@
 
 <body>
     <div id="app-wrapper">
+        <!-- 
+            PLATFORMER ENGINE VIEWPORT
+            The game uses a fixed 800x600 internal resolution.
+            The CSS (style.css) handles scaling this canvas to fit the browser window 
+            while maintaining the 4:3 aspect ratio and applying CRT filters.
+        -->
         <div id="game-container">
             <!-- Internal resolution of 800x600 -->
             <canvas id="gameCanvas" width="800" height="600"></canvas>
@@ -32,21 +38,21 @@
         </div>
     </div>
 
-    <script type="module" src="src/dist/data/db.js?v=150"></script>
-    <script type="module" src="src/dist/main.js?v=150"></script>
+    <script type="module" src="src/dist/data/db.js?v=198"></script>
+    <script type="module" src="src/dist/main.js?v=198"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 // Force unregister previous versions if we are loading this fresh index.html
                 navigator.serviceWorker.getRegistrations().then(regs => {
                     for(let reg of regs) {
-                        if (!reg.active || !reg.active.scriptURL.includes('v=150')) {
+                        if (!reg.active || !reg.active.scriptURL.includes('v=198')) {
                             reg.unregister();
                             console.log('Unregistered stale service worker.');
                         }
                     }
                 });
-                navigator.serviceWorker.register('./sw.js?v=150')
+                navigator.serviceWorker.register('./sw.js?v=198')
                     .then(reg => console.log('Service Worker registered explicitly!'))
                     .catch(err => console.log('Service Worker registration failed structurally: ', err));
             });

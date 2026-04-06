@@ -2,6 +2,20 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+/**
+ * VERSION SYNC UTILITY
+ * --------------------
+ * This script is executed during 'npm run build' to automate the 
+ * cache-busting lifecycle of the Progressive Web App (PWA).
+ * 
+ * Logic Flow:
+ * 1. Reads the current version (v=XXX) from index.html.
+ * 2. Increments the version integer.
+ * 3. Globally replaces all 'v=XXX' tags in index.html and sw.js.
+ * 4. Regenerates the CACHE_NAME and Timestamp in sw.js to 
+ *    trigger a Service Worker update on the client.
+ */
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

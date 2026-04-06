@@ -1,4 +1,5 @@
 {
+  "//": "DONT DIE - TSCONFIG: Target ESNext for native Module support in modern browsers",
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
