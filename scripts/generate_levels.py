@@ -1,5 +1,29 @@
 import random
 
+"""
+DONT DIE - PROCEDURAL LEVEL GENERATOR
+-------------------------------------
+This script generates the 100-level 'staticLevels' manifest found in 
+src/data/levels.js. It uses 5 distinct biome algorithms that scale 
+in difficulty (hazard density, jump precision) as the player progresses.
+
+Tile Key:
+- '0': Empty
+- '1': Solid Wall/Floor
+- '2': Ladder Shaft
+- '3': Floor Spike
+- '4': Gear (Loot)
+- '5': Goal Portal
+- '6': Ladder Top / Platform
+- '7': Player Spawn
+- '8': Patrolling Bot
+- 'B': Major Boss
+- 'V': Boss Valve / Target
+- 'L': Laser Sniper Bot
+- 'A': Acid (Hazard)
+- 'W': World Border (Auto-injected by Parser)
+"""
+
 def generate_slums(i, difficulty):
     if (i + 1) % 20 == 0:
         level = [["0"] * 100 for _ in range(15)]

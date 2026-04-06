@@ -1,3 +1,6 @@
+/**
+ * Basic 2D Rectangle interface for collision math.
+ */
 export interface IRect {
     x: number;
     y: number;
@@ -5,42 +8,55 @@ export interface IRect {
     height: number;
 }
 
+/**
+ * Valid states for the top-level game controller.
+ */
 export type GameState = 'START' | 'INTRO' | 'INSTRUCTIONS' | 'PLAYING' | 'DYING' | 'LEVEL_CLEAR' | 'VALVE_CUTSCENE' | 'GAMEOVER' | 'WIN' | 'CREDITS' | 'ENTER_INITIALS' | 'CREDITS_CUTSCENE';
 
+/**
+ * Camera viewport coordinates in world-space.
+ */
 export interface ICamera {
     x: number;
     y: number;
 }
 
+/**
+ * Main Player Entity Interface.
+ * Tracks physics, input state, and lifecycle (lives/score).
+ */
 export interface IPlayer {
     x: number;
     y: number;
-    startX: number;
-    startY: number;
+    startX: number; // Respawn location X
+    startY: number; // Respawn location Y
     width: number;
     height: number;
-    vx: number;
-    vy: number;
-    speed: number;
-    jumpPower: number;
-    gravity: number;
-    walkTimer: number;
+    vx: number; // Horizontal velocity
+    vy: number; // Vertical velocity
+    speed: number; // Maximum horizontal speed
+    jumpPower: number; // Initial vertical 'pop' on jump
+    gravity: number; // Downward acceleration force
+    walkTimer: number; // Animation state accumulator
     isOnGround: boolean;
-    doubleJump: boolean;
-    isClimbing: boolean;
-    riding: IPlatform | null;
-    rideOffsetX: number;
+    doubleJump: boolean; // Flag to permit mid-air jump
+    isClimbing: boolean; // True if attached to a ladder/pipe
+    riding: IPlatform | null; // Reference to the platform the player is currently standing on
+    rideOffsetX: number; // Relative position on the moving platform
     lives: number;
     score: number;
     color: string;
-    lastDir?: number;
-    dyingTimer?: number;
-    portalX?: number;
-    portalY?: number;
-    cutsceneTimer?: number;
-    droppingThrough?: boolean;
+    lastDir?: number; // Last-moved direction (-1 or 1) for sprite flipping
+    dyingTimer?: number; // Accumulator for death animation
+    portalX?: number; // Target X for level-clear warp
+    portalY?: number; // Target Y for level-clear warp
+    cutsceneTimer?: number; // Accumulator for cinematic sequences
+    droppingThrough?: boolean; // Flag to ignore one-way floor collisions
 }
 
+/**
+ * Moving or Static Platform Interface.
+ */
 export interface IPlatform {
     x: number;
     y: number;
@@ -48,13 +64,16 @@ export interface IPlatform {
     height: number;
     vx: number;
     vy: number;
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
-    type: string;
+    minX: number; // Left boundary for patrol
+    maxX: number; // Right boundary for patrol
+    minY: number; // Top boundary for patrol
+    maxY: number; // Bottom boundary for patrol
+    type: string; // e.g., 'moving', 'conveyor', 'one-way'
 }
 
+/**
+ * Base Interface for any object that occupies 2D world space.
+ */
 export interface IEntity {
     x: number;
     y: number;
@@ -64,21 +83,33 @@ export interface IEntity {
     type: string;
 }
 
+/**
+ * Mobile hazard or patrolling bot.
+ */
 export interface IEnemy extends IEntity {
     vx: number;
     vy: number;
-    dir: number;
-    cooldown: number;
+    dir: number; // Movement direction (-1, 0, 1)
+    cooldown: number; // AI action cooldown (e.g., shooting)
 }
 
+/**
+ * Collectible loot or environmental trigger.
+ */
 export interface IItem extends IEntity {
     collected: boolean;
 }
 
+/**
+ * Fast-moving projectile hazard.
+ */
 export interface ILaser extends IEntity {
     vx: number;
 }
 
+/**
+ * Visual-only effect with a limited lifespan.
+ */
 export interface IParticle extends IEntity {
     vx: number;
     vy: number;
@@ -86,67 +117,80 @@ export interface IParticle extends IEntity {
     life: number;
     maxLife: number;
     color?: string;
-    qx?: number;
-    qy?: number;
+    qx?: number; // Quad-split coordinate X (for destruction effects)
+    qy?: number; // Quad-split coordinate Y
     flip?: boolean;
 }
 
+/**
+ * Major boss encounter entity with multi-phase state.
+ */
 export interface IBoss extends IEntity {
     hp: number;
     maxHp?: number;
     phase: number;
     timer: number;
-    hurtTimer: number;
-    vibrateX: number;
-    isSinking?: boolean;
-    isDying?: boolean;
-    triggered?: boolean;
-    throwsLeft?: number;
+    hurtTimer: number; // Visual feedback window for taking damage
+    vibrateX: number; // Shake offset for damage feedback
+    isSinking?: boolean; // Death-spiral state for Septicus
+    isDying?: boolean; // Final explosion state
+    triggered?: boolean; // Has the player entered the arena?
+    throwsLeft?: number; // Masticator bomb count
     startX?: number;
     startY?: number;
     vx: number;
     vy: number;
     hasSeenPlayer: boolean;
-    squash: number;
+    squash: number; // Scale factor for landing impact
     squashTimer: number;
-    projs?: any[];
+    projs?: any[]; // Dynamic list of secondary boss hazards
 }
 
+/**
+ * Destructible block hazard used in Masticator fight.
+ */
 export interface IBomb extends IEntity {
     active: boolean;
     vx: number;
     vy: number;
-    col: number;
-    row: number;
+    col: number; // Grid coordinate X in the level map
+    row: number; // Grid coordinate Y in the level map
 }
 
+/**
+ * Metadata for a level definition.
+ */
 export interface ILevel {
     level: number;
-    biome: string;
+    biome: string; // 'sewer', 'mine', 'factory', etc.
     isBoss: boolean;
-    map: string[];
+    map: string[]; // Raw ASCII or string-encoded tile data
 }
 
+/**
+ * THE UNIVERSAL DATA STORE
+ * IGlobals defines the shape of the 'G' object used for shared state.
+ */
 export interface IGlobals {
     gameState: GameState;
     activeValvePos: { x: number, y: number } | null;
     purifiedValves: { x: number, y: number }[];
     valveCutsceneTimer: number;
-    introY: number;
+    introY: number; // Global scroll position for the intro sequence
     timer: number;
     timerAcc: number;
     winTimer: number;
-    enemyWalkTimer: number;
+    enemyWalkTimer: number; // Shared timer to sync bot animation frames
     currentLevel: number;
-    initials: string[];
-    initialIndex: number;
+    initials: string[]; // High score name input buffer
+    initialIndex: number; // Cursor in initials input
     gameStartTime: number;
     highScores: { name: string, score: number }[];
     isMusicPlaying: boolean;
     spacePressed: boolean;
     mapRows: number;
     mapCols: number;
-    map: number[][]; // Grid of tile IDs
+    map: number[][]; // Decoded tile ID grid
     items: IItem[];
     enemies: IEnemy[];
     lasers: ILaser[];
@@ -159,12 +203,15 @@ export interface IGlobals {
     acidPurified: boolean;
     cleanedPipes: any[]; 
     audioCtx: AudioContext | null;
-    _chk: number;
-    nextLaserIndex: number;
-    nextParticleIndex: number;
+    _chk: number; // Score integrity check sum
+    nextLaserIndex: number; // Cursor for circular projectile buffer
+    nextParticleIndex: number; // Cursor for circular particle buffer
     checkpointPos: { x: number, y: number } | null;
 }
 
+/**
+ * Window augmentations for global engine access and development tools.
+ */
 declare global {
     interface Window {
         G: IGlobals;
@@ -173,11 +220,14 @@ declare global {
         saveScore: () => Promise<void>;
         parseMap: (fullReset?: boolean) => void;
         resetPlayerPosition: () => void;
+        
+        // Debug/Cheat Hooks:
         skipLevel: (n: number) => void;
         goToLevel: (n: number) => void;
         nextLevel: () => void;
         addLives: (n: number) => void;
         godMode: (on?: boolean) => void;
+        
         staticLevels: ILevel[];
         logoImg?: HTMLImageElement;
         logoOsc?: HTMLCanvasElement;
@@ -185,3 +235,4 @@ declare global {
         submitHighScore?: (initials: string, score: number, playtime: number) => Promise<void>;
     }
 }
+

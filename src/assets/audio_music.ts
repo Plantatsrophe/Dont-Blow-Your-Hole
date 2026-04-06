@@ -1,11 +1,24 @@
+/**
+ * PROCEDURAL MUSIC ENGINE
+ * -----------------------
+ * A real-time synthesizer that plays the game's background score.
+ * Uses a loop-based scheduler with a triangle-wave melody and square-wave bass.
+ * No external MP3/OGG files are used; all music is generated on-the-fly.
+ */
+
 import { G } from '../core/globals.js';
 
+// --- SCHEDULING STATE ---
 let nextNoteTime = 0;
 let currentNoteIndex = 0;
 const tempo = 125;
 const secondsPerBeat = 60.0 / tempo;
-const stepTime = secondsPerBeat / 4;
+const stepTime = secondsPerBeat / 4; // 16th Note resolution
 
+/**
+ * FREQUENCY TABLE
+ * Mapping of note names to Hz values.
+ */
 const notes: { [key: string]: number } = {
     'E2': 82.41, 'F2': 87.31, 'G2': 98.00, 'G#2': 103.83, 'A2': 110.00, 'B2': 123.47,
     'C3': 130.81, 'D3': 146.83, 'E3': 164.81, 'F3': 174.61, 'G3': 196.00, 'A3': 220.00, 'B3': 246.94,
@@ -13,6 +26,7 @@ const notes: { [key: string]: number } = {
     'C5': 523.25, 'D5': 587.33, 'E5': 659.25, '-1': 0
 };
 
+// COMPOSITION: Retro Industrial Loop
 const bassPattern = [
     'A2','A2','C3','A2', 'D3','A2','E3','A2',  'A2','A2','C3','A2', 'G3','A2','E3','C3',
     'F2','F2','A2','F2', 'C3','F2','A2','F2',  'F2','F2','A2','F2', 'C3','F2','A2','C3',
@@ -27,8 +41,13 @@ const melodyPattern = [
     '-1','E4','-1','G#4', '-1','B4','-1','E5',  '-1','D5','-1','C5', '-1','B4','-1','G#4'
 ];
 
+/**
+ * Triggers precise oscillators for a specific beat division.
+ */
 function scheduleNote(beatNumber: number, time: number) {
     if (!G.audioCtx) return;
+    
+    // --- BASS LAYER (Square Wave) ---
     let bass = bassPattern[beatNumber % bassPattern.length];
     if (bass !== '-1') {
         let osc = G.audioCtx.createOscillator(); let gain = G.audioCtx.createGain();
@@ -37,6 +56,8 @@ function scheduleNote(beatNumber: number, time: number) {
         gain.gain.setValueAtTime(0.025, time); gain.gain.exponentialRampToValueAtTime(0.001, time + (stepTime * 0.8));
         osc.start(time); osc.stop(time + stepTime);
     }
+    
+    // --- MELODY LAYER (Triangle Wave) ---
     let mel = melodyPattern[beatNumber % melodyPattern.length];
     if (mel !== '-1') {
         let osc = G.audioCtx.createOscillator(); let gain = G.audioCtx.createGain();
@@ -47,21 +68,28 @@ function scheduleNote(beatNumber: number, time: number) {
     }
 }
 
+/**
+ * The high-precision clock loop. 
+ * Looks ahead 100ms to ensure continuous audio streaming without jitter.
+ */
 function musicScheduler() {
     if (!G.isMusicPlaying || !G.audioCtx) return;
+    
     while (nextNoteTime < G.audioCtx.currentTime + 0.1) {
         scheduleNote(currentNoteIndex, nextNoteTime);
         nextNoteTime += stepTime; currentNoteIndex++;
     }
-    setTimeout(musicScheduler, 25);
+    setTimeout(musicScheduler, 25); // Poll the scheduler every 25ms
 }
 
+/** Starts the procedural music loop. */
 export function startBackgroundMusic() {
     if (!G.audioCtx || G.isMusicPlaying) return;
     G.isMusicPlaying = true; nextNoteTime = G.audioCtx.currentTime + 0.05;
     musicScheduler();
 }
 
+/** Stops the procedural music loop. */
 export function stopBackgroundMusic() {
     G.isMusicPlaying = false;
 }

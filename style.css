@@ -1,3 +1,15 @@
+/**
+ * DONT DIE - CORE STYLESHEET
+ * --------------------------
+ * Manages the visual presentation, CRT retro emulation filters, 
+ * and responsive scaling for the 800x600 game engine.
+ * 
+ * Design Tokens:
+ * - Font: 'Press Start 2P' (Retro Pixel Font)
+ * - Background: #111 (Deep Charcoal)
+ * - Highlights: #3498db (Soft Blue)
+ */
+
 body, html {
     margin: 0;
     padding: 0;
