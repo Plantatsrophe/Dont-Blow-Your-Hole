@@ -19,6 +19,8 @@ import './core/input.js';
  */
 parseMap();
 resetPlayerPosition();
+if (window.refreshLeaderboard)
+    window.refreshLeaderboard();
 /**
  * GLOBAL DEBUG INTERFACE
  * ----------------------
