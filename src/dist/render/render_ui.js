@@ -11,14 +11,27 @@ import { G, player, canvas, ctx } from '../core/globals.js';
  * Also displays the dynamic boss health bar during active boss encounters.
  */
 export function renderHUD() {
-    ctx.fillStyle = 'white';
+    ctx.save();
+    // 1. Hybrid HUD Background Band
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(0, 0, canvas.width, 40);
+    // 2. Hybrid Outlined Text Style
     ctx.font = '14px "Press Start 2P"';
     ctx.textAlign = 'left';
-    // Core Stats
-    ctx.fillText('SCORE: ' + player.score, 20, 30);
-    ctx.fillText('LEVEL: ' + (G.currentLevel + 1), 250, 30);
-    ctx.fillText('TIME: ' + G.timer, 450, 30);
-    ctx.fillText('LIVES: ' + player.lives, 650, 30);
+    ctx.textBaseline = 'top';
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.fillStyle = 'white';
+    const stats = [
+        { label: 'SCORE: ' + player.score, x: 20 },
+        { label: 'LEVEL: ' + (G.currentLevel + 1), x: 250 },
+        { label: 'TIME: ' + G.timer, x: 450 },
+        { label: 'LIVES: ' + player.lives, x: 650 }
+    ];
+    stats.forEach(s => {
+        ctx.strokeText(s.label, s.x, 12);
+        ctx.fillText(s.label, s.x, 12);
+    });
     // Boss Health Bar: Rendered at the bottom center when a boss is active.
     if (G.boss && G.boss.active && G.boss.hp > 0 && G.gameState !== 'CREDITS_CUTSCENE' && G.gameState !== 'CREDITS') {
         const maxHp = G.boss.maxHp || 10;
@@ -26,11 +39,17 @@ export function renderHUD() {
         ctx.fillRect(canvas.width / 2 - 200, canvas.height - 40, 400, 20);
         ctx.fillStyle = 'red';
         ctx.fillRect(canvas.width / 2 - 198, canvas.height - 38, Math.max(0, (G.boss.hp / maxHp)) * 396, 16);
-        ctx.fillStyle = 'white';
         ctx.font = '10px "Press Start 2P"';
         ctx.textAlign = 'center';
-        ctx.fillText(G.boss.type.toUpperCase(), canvas.width / 2, canvas.height - 25);
+        ctx.textBaseline = 'middle'; // Reset for boss bar center
+        const bossName = G.boss.type.toUpperCase();
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.strokeText(bossName, canvas.width / 2, canvas.height - 29);
+        ctx.fillStyle = 'white';
+        ctx.fillText(bossName, canvas.width / 2, canvas.height - 29);
     }
+    ctx.restore(); // Critical Reset
 }
 /**
  * Handles full-screen state overlays for Game Over, Win, and Initial Entry.

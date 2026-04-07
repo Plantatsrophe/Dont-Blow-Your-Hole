@@ -6,7 +6,7 @@
  * relative to the camera to create a 3D sense of scale in a 2D world.
  */
 import { G, canvas, ctx } from '../core/globals.js';
-import { drawSlumsParallax, drawSewerParallax, drawMineParallax, drawFactoryParallax, drawGoliathParallax, drawSlumsLayer2 } from './render_biomes.js';
+import { drawSlumsParallax, drawSewerParallax, drawMineParallax, renderVirtualBackground, drawGoliathParallax, drawSlumsLayer2 } from './render_biomes.js';
 /**
  * Renders the primary background layers (Sky & Far Parallax).
  * Switches logic based on the current Biome ID.
@@ -37,9 +37,9 @@ export function renderParallax() {
         skyGradient.addColorStop(0, '#0a0805');
         skyGradient.addColorStop(1, '#261a12');
     }
-    else if (bId === 3) { // Factory: Industrial steel-blue
-        skyGradient.addColorStop(0, '#050f14');
-        skyGradient.addColorStop(1, '#1a4159');
+    else if (bId === 3) { // Virtual: Glitchy digital mainframe
+        skyGradient.addColorStop(0, '#0a0a1a');
+        skyGradient.addColorStop(1, '#0a0a1a');
     }
     else if (bId === 4) { // Goliath: Hellish reds
         skyGradient.addColorStop(0, '#2b0202');
@@ -60,7 +60,7 @@ export function renderParallax() {
     else if (bId === 2)
         drawMineParallax(camera.y * 0.4); // Mines use vertical parallax
     else if (bId === 3)
-        drawFactoryParallax(camera.x * 0.15);
+        renderVirtualBackground(camera.x, camera.y);
     else if (bId === 4)
         drawGoliathParallax(camera.x * 0.05);
 }

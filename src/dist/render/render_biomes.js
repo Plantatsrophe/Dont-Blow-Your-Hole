@@ -213,29 +213,82 @@ export function drawMineParallax(py) {
     }
 }
 /**
- * Factory: Neon wiring and mechanical circuitry.
- * @param px Camera parallax offset
+ * renderVirtualBackground: High-dynamic "Blocky Circuitry" background.
+ * Features an infinite parallax grid, glitching data artifacts, and screen-tear effects.
+ *
+ * @param px Camera X parallax offset
+ * @param py Camera Y parallax offset
  */
-export function drawFactoryParallax(px) {
-    ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
-    ctx.lineWidth = 4;
-    for (let i = 0; i < 9; i++) {
-        let sY = 50 + i * 50;
-        let sX = ((i * 140) - px) % (canvas.width + 300);
-        if (sX < -150)
-            sX += canvas.width + 400;
-        ctx.beginPath();
-        ctx.moveTo(sX, sY);
-        ctx.lineTo(sX + 60, sY);
-        ctx.lineTo(sX + 100, sY + (i % 2 === 0 ? 40 : -40));
-        ctx.lineTo(sX + 220, sY + (i % 2 === 0 ? 40 : -40));
-        ctx.stroke();
-        let glow = 0.3 + Math.abs(Math.sin(Date.now() / 250 + i)) * 0.7;
-        ctx.fillStyle = `rgba(0, 255, 255, ${glow})`;
-        ctx.beginPath();
-        ctx.arc(sX + 220, sY + (i % 2 === 0 ? 40 : -40), 8, 0, Math.PI * 2);
-        ctx.fill();
+export function renderVirtualBackground(px, py) {
+    ctx.save();
+    // Layer 1: Infinite Parallax Grid
+    const gridSize = 120;
+    const offsetX = Math.floor(-(px * 0.5) % gridSize);
+    const offsetY = Math.floor(-(py * 0.2) % gridSize);
+    ctx.strokeStyle = 'rgba(0, 255, 255, 0.4)'; // Increased from 0.2
+    ctx.lineWidth = 3; // Increased from 2
+    ctx.beginPath();
+    // Infinite wrapping logic to prevent seams at level boundaries
+    for (let x = offsetX; x < canvas.width; x += gridSize) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
     }
+    for (let y = offsetY; y < canvas.height; y += gridSize) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+    }
+    ctx.stroke();
+    // Layer 2: Moving Data Blocks (Glitch Artifacts)
+    for (let i = 0; i < 12; i++) {
+        // Lowered threshold from 0.8 to 0.6 for higher frequency
+        let pulse = Math.sin(Date.now() * 0.006 + i * 1.7);
+        if (pulse > 0.6) {
+            let color = (i % 2 === 0) ? '#ff00ff' : '#00ffff';
+            ctx.fillStyle = color;
+            ctx.globalAlpha = Math.min(1.0, (pulse - 0.6) * 3.0);
+            // Deterministic positions based on camera movement and index
+            let bx = Math.floor((i * 213 + px * 0.7) % (canvas.width + 200)) - 100;
+            let by = Math.floor((i * 77 + py * 0.3) % (canvas.height + 200)) - 100;
+            let bw = (i % 4 === 0) ? 64 : 24; // Some blocks are horizontally stretched
+            let bh = (i % 4 === 0) ? 16 : 24;
+            ctx.fillRect(bx, by, bw, bh);
+        }
+    }
+    ctx.globalAlpha = 1.0;
+    // Layer 3: Macro-Block Displacement (The Screen Tear)
+    // Runs at ~1% probability for rare, high-impact glitch feel
+    if (Math.random() > 0.985) {
+        const sourceX = Math.floor(Math.random() * (canvas.width - 200));
+        const sourceY = Math.floor(Math.random() * (canvas.height - 100));
+        const w = 200 + Math.floor(Math.random() * 200);
+        const h = 50 + Math.floor(Math.random() * 100);
+        const offset = (Math.random() > 0.5 ? 30 : -30);
+        ctx.drawImage(ctx.canvas, sourceX, sourceY, w, h, Math.floor(sourceX + offset), Math.floor(sourceY + offset), w, h);
+    }
+    // DYNAMIC STATUS LABEL: "ONLINE" / "OFFLINE" Glitch Cycle
+    const time = Date.now();
+    const cycle = (time / 12000) % 1; // 12 second cycle (slower overall heartbeat)
+    const isGlitching = cycle > 0.80; // Glitch for the last 20% (longer read time)
+    let statusText = "ONLINE";
+    let statusColor = "#00ffff";
+    let textX = canvas.width / 2; // Keep horizontally centered
+    let textY = 100; // Restored to previous height
+    if (isGlitching) {
+        // Slowed down flicker frequency from 0.05 to 0.01 for readability
+        const flicker = Math.sin(time * 0.01) > 0;
+        statusText = flicker ? "OFFLINE" : "ONLINE";
+        statusColor = flicker ? "#ff00ff" : "#ffffff";
+        // Reduced position jitter for better legibility
+        textX += (Math.random() - 0.5) * 2;
+        textY += (Math.random() - 0.5) * 2;
+    }
+    ctx.fillStyle = statusColor;
+    ctx.font = "20px 'Press Start 2P'";
+    ctx.textAlign = "center";
+    ctx.fillText(`VIRTUAL SYSTEM ${statusText}`, textX, textY);
+    // Reset alignment for subsequent font operations if any
+    ctx.textAlign = "left";
+    ctx.restore();
 }
 /**
  * Goliath Core: Hellish red glow and shifting heavy metal plates.

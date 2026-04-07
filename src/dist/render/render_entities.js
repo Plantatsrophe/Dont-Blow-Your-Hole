@@ -50,9 +50,12 @@ export function renderEntities() {
     // --- 2. ITEMS & INTERACTABLES ---
     for (let i of items) {
         if (i.type === 'checkpoint') { // Checkpoint Referee
-            let isActive = player.startX === i.x + 8 && player.startY === i.y - 2;
-            drawSprite(ctx, sprRef, i.x, i.y + 7, i.width, i.height, isActive || (Math.floor(Date.now() / 400) % 2 === 0));
-            drawGlow(ctx, i.x + 16, i.y + 16, isActive ? 40 : 20, isActive ? 'rgba(10, 255, 100, 0.6)' : 'rgba(255, 255, 255, 0.3)');
+            const isActive = G.checkpointPos && G.checkpointPos.x === i.x + 8 && G.checkpointPos.y === i.y - 2;
+            // Stop movement (flipping) when activated
+            const flip = isActive ? false : (Math.floor(Date.now() / 400) % 2 === 0);
+            drawSprite(ctx, sprRef, i.x, i.y + 7, i.width, i.height, flip);
+            // Slight green glow for activated checkpoints
+            drawGlow(ctx, i.x + 16, i.y + 16, isActive ? 35 : 20, isActive ? 'rgba(50, 255, 100, 0.5)' : 'rgba(255, 255, 255, 0.2)');
         }
         else if (i.type === 'valve') { // Septicus Purification Valve
             let isPurifying = (activeValvePos && activeValvePos.x === i.x && activeValvePos.y === i.y);

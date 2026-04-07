@@ -22,6 +22,9 @@ export function parseMap(resetEntities = true) {
         G.checkpointPos = null;
         lastLevel = G.currentLevel;
     }
+    // Clear dynamic Virtual biome hazards
+    G.corruptedSectors = [];
+    G.malwareNodes = [];
     let currentMapData = staticLevels[G.currentLevel].map;
     G.mapRows = currentMapData.length;
     G.mapCols = currentMapData[0].length;
@@ -53,6 +56,7 @@ export function parseMap(resetEntities = true) {
                 char = 'W';
             // --- TILE MAPPING ---
             let tile = parseInt(char, 10);
+            let biomeId = Math.floor(G.currentLevel / 20) % 5;
             if (char === 'H')
                 tile = 11; // Hotdog (Life)
             else if (char === 'C')
@@ -61,8 +65,19 @@ export function parseMap(resetEntities = true) {
                 tile = 15; // Acid/Hazards
             else if (char === 'W')
                 tile = 16; // Wall / Border
+            // --- VIRTUAL BIOME DYNAMIC HAZARDS ---
+            // If in the Virtual biome, Tile 3 (Spike) and 15 (Acid) are dynamic hazards, not static.
+            if (biomeId === 3 && (tile === 3 || tile === 15)) {
+                if (tile === 3) {
+                    G.corruptedSectors.push({ x: col * TILE_SIZE, y: row * TILE_SIZE, width: TILE_SIZE, height: TILE_SIZE, isActive: false, timer: 1.5, toggleInterval: 1.5, type: 'sector' });
+                }
+                else {
+                    G.malwareNodes.push({ x: col * TILE_SIZE + 20, y: row * TILE_SIZE + 20, width: 0, height: 0, radius: 8, maxRadius: 64, state: 'IDLE', triggerDistance: 96, cooldownTimer: 0, type: 'node' });
+                }
+                rowData.push(0);
+            }
             // --- ENTITY SPAWNING ---
-            if (tile === 4) { // Gear (Loot)
+            else if (tile === 4) { // Gear (Loot)
                 if (resetEntities)
                     G.items.push({ x: col * TILE_SIZE + 8, y: row * TILE_SIZE + 8, width: 24, height: 24, collected: false, type: 'gear' });
                 rowData.push(0); // Empty space in physics grid

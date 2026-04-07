@@ -112,8 +112,8 @@ export function updateBoss(dt: number) {
         updateSepticus(boss, dt, bDyn);
     } else if (boss.type === 'auh-gr') {
         updateAuhGr(boss, dt);
-    } else if (boss.type === 'core') {
-        // Core Boss (Level 79) - Shoots rapid-fire straight lasers directly at the player
+    } else if (boss.type === 'glitch') {
+        // Glitch Boss (Level 79) - Shoots rapid-fire straight lasers directly at the player
         if (boss.timer > 1.5) { 
             boss.timer = 0; 
             let l = getNextLaser(); l.active = true; l.width = 16; l.height = 8; 

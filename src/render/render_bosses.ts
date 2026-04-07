@@ -6,7 +6,7 @@
  */
 
 import { G, ctx, TILE_SIZE, particlePool } from '../core/globals.js';
-import { sprSepticus1, sprSepticus2, sprSepticus3, sprSepticus4, sprSepticus5, sprManhole, sprAuhGr1, sprAuhGr2, sprAuhGr3 } from '../assets/assets.js';
+import { sprSepticus1, sprSepticus2, sprSepticus3, sprSepticus4, sprSepticus5, sprManhole, sprAuhGr1, sprAuhGr2, sprAuhGr3, sprGlitch1, sprGlitch2, sprGlitch3, sprGlitch4 } from '../assets/assets.js';
 import { drawSprite, drawGlow } from './render_utils.js';
 import type { IBoss } from '../types.js';
 
@@ -108,11 +108,21 @@ export function renderBoss() {
         ctx.save();
         drawSprite(ctx, frames[frameIdx], boss.x, boss.y, boss.width, boss.height, false, 48); // Scaled from its 48-pixel source
         ctx.restore();
-    } else if (boss.type === 'core') {
-        // Core: Industrial reactor with cyan glow
-        ctx.fillStyle = '#111'; ctx.fillRect(boss.x, boss.y, boss.width, boss.height); ctx.fillStyle = '#0ff';
-        drawGlow(ctx, boss.x + boss.width/2, boss.y + boss.height/2, 100, 'rgba(0, 255, 255, 0.5)'); 
-        ctx.fillRect(boss.x + 20, boss.y + 20, boss.width - 40, boss.height - 40);
+    } else if (boss.type === 'glitch') {
+        // Glitch: Rider on Virtual Steed (64x64)
+        const frames = [sprGlitch1, sprGlitch2, sprGlitch3, sprGlitch4];
+        const frameIdx = Math.floor(G.timerAcc * 10) % frames.length; // 10 FPS gallop
+        const dir = boss.vx < 0 ? -1 : 1;
+        
+        ctx.save();
+        // Shift sprite slightly based on direction for lean
+        const lean = dir === 1 ? 0 : 0; 
+        drawSprite(ctx, frames[frameIdx], boss.x + lean, boss.y, boss.width, boss.height, dir < 0, 64);
+        
+        // Atmospheric Cyan Glow around the core muzzle area (approx right side if facing right)
+        const glowX = dir === 1 ? boss.x + boss.width - 8 : boss.x + 8;
+        drawGlow(ctx, glowX, boss.y + boss.height * 0.6, 40, 'rgba(0, 255, 255, 0.4)');
+        ctx.restore();
     } else if (boss.type === 'goliath') {
         // Goliath: Final fire/lava boss (Deep red)
         ctx.fillStyle = '#550000'; ctx.fillRect(boss.x, boss.y, boss.width, boss.height); 

@@ -116,7 +116,9 @@ export const G: IGlobals = {
     _chk: 0x5f3759df, // Shadow score checksum pivot
     nextLaserIndex: 0,
     nextParticleIndex: 0,
-    checkpointPos: null
+    checkpointPos: null,
+    corruptedSectors: [],
+    malwareNodes: []
 };
 
 /**

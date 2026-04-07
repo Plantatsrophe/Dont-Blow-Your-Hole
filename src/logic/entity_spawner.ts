@@ -98,14 +98,14 @@ export function spawnMovingPlatform(char: string, row: number, col: number, curr
 
 /**
  * Initializes a boss encounter based on the current level biome.
- * Biomes: 0=Sewer, 1=Factory, 2=Mine, 3=Core, 4=Goliath
+ * Biomes: 0=Slums, 1=Sewer, 2=Mine, 3=Virtual, 4=Goliath
  * 
  * @param col Spawn column (X)
  * @param row Spawn row (Y)
  */
 export function spawnBoss(col: number, row: number) {
     let biome = Math.floor(G.currentLevel / 20) % 5;
-    let bType = ['masticator','septicus','auh-gr','core','goliath'][biome] as any;
+    let bType = ['masticator','septicus','auh-gr','glitch','goliath'][biome] as any;
     
     // Masticator spawns exactly on the tile; others spawn dropped slightly
     let sY = (bType === 'masticator') ? row * TILE_SIZE + 1 : row * TILE_SIZE - 40;

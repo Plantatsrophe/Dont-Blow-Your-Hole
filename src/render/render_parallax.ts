@@ -9,7 +9,7 @@
 import { G, canvas, ctx } from '../core/globals.js';
 import { 
     drawSlumsParallax, drawSewerParallax, drawMineParallax, 
-    drawFactoryParallax, drawGoliathParallax, drawSlumsLayer2 
+    renderVirtualBackground, drawGoliathParallax, drawSlumsLayer2 
 } from './render_biomes.js';
 
 /**
@@ -39,8 +39,8 @@ export function renderParallax() {
         skyGradient.addColorStop(1, cDeep);
     } else if (bId === 2) { // Mine: Earthy browns
         skyGradient.addColorStop(0, '#0a0805'); skyGradient.addColorStop(1, '#261a12');
-    } else if (bId === 3) { // Factory: Industrial steel-blue
-        skyGradient.addColorStop(0, '#050f14'); skyGradient.addColorStop(1, '#1a4159');
+    } else if (bId === 3) { // Virtual: Glitchy digital mainframe
+        skyGradient.addColorStop(0, '#0a0a1a'); skyGradient.addColorStop(1, '#0a0a1a');
     } else if (bId === 4) { // Goliath: Hellish reds
         skyGradient.addColorStop(0, '#2b0202'); skyGradient.addColorStop(1, '#7a0505');
     } else { // Slums: Sunset urban oranges
@@ -55,7 +55,7 @@ export function renderParallax() {
     if (bId === 0) drawSlumsParallax(camera.x * 0.2);
     else if (bId === 1) drawSewerParallax(camera.x * 0.3, hpRatio);
     else if (bId === 2) drawMineParallax(camera.y * 0.4); // Mines use vertical parallax
-    else if (bId === 3) drawFactoryParallax(camera.x * 0.15);
+    else if (bId === 3) renderVirtualBackground(camera.x, camera.y);
     else if (bId === 4) drawGoliathParallax(camera.x * 0.05);
 }
 

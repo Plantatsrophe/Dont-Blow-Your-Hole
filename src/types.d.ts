@@ -160,12 +160,35 @@ export interface IBomb extends IEntity {
 }
 
 /**
+ * Corrupted Memory Sector hazard for the Virtual biome.
+ * Toggles between active (deadly) and inactive states.
+ */
+export interface ICorruptedSector extends IEntity {
+    isActive: boolean;
+    timer: number;
+    toggleInterval: number;
+}
+
+/**
+ * Malware Node hazard for the Virtual biome.
+ * Expands a deadly circle when the player gets too close.
+ */
+export interface IMalwareNode extends IEntity {
+    radius: number;
+    maxRadius: number;
+    state: 'IDLE' | 'EXPANDING' | 'COOLDOWN';
+    triggerDistance: number;
+    cooldownTimer: number;
+}
+
+/**
  * Metadata for a level definition.
  */
 export interface ILevel {
     level: number;
-    biome: string; // 'sewer', 'mine', 'factory', etc.
+    biome: string; // 'sewer', 'mine', 'virtual', etc.
     isBoss: boolean;
+    bossName?: string;
     map: string[]; // Raw ASCII or string-encoded tile data
 }
 
@@ -209,6 +232,8 @@ export interface IGlobals {
     nextLaserIndex: number; // Cursor for circular projectile buffer
     nextParticleIndex: number; // Cursor for circular particle buffer
     checkpointPos: { x: number, y: number } | null;
+    corruptedSectors: ICorruptedSector[];
+    malwareNodes: IMalwareNode[];
 }
 
 /**

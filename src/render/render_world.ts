@@ -156,11 +156,12 @@ export function preRenderMap() {
                     if (row === 0 || row === mapRows - 1) offscreenMapCtx.fillRect(tx, ty + 12, TILE_SIZE, 16); 
                     if (col === 0 || col === mapCols - 1) offscreenMapCtx.fillRect(tx + 12, ty, 16, TILE_SIZE);
                     offscreenMapCtx.strokeStyle = '#1a120b'; offscreenMapCtx.lineWidth = 2; offscreenMapCtx.strokeRect(tx, ty, TILE_SIZE, TILE_SIZE);
-                } else if (bId === 3) { // Lab: Neon mainframe
-                    offscreenMapCtx.fillStyle = '#050505'; offscreenMapCtx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
-                    offscreenMapCtx.strokeStyle = '#00bbff'; offscreenMapCtx.lineWidth = 1; offscreenMapCtx.strokeRect(tx + 5, ty + 5, TILE_SIZE - 10, TILE_SIZE - 10);
-                    offscreenMapCtx.fillStyle = '#00bbff'; offscreenMapCtx.shadowBlur = 10; offscreenMapCtx.shadowColor = '#00bbff';
-                    offscreenMapCtx.fillRect(tx + 12, ty + 18, 16, 4); offscreenMapCtx.shadowBlur = 0;
+                    // Static geometry for Virtual biome handled in two-pass logic below the loop
+                    // We only fill the background for non-HUD tiles to allow parallax transparency
+                    if (ty >= 40) {
+                        offscreenMapCtx.fillStyle = '#0a0a1a';
+                        offscreenMapCtx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
+                    }
                 } else { // Goliath/Void: Abstract cyber-hell
                     offscreenMapCtx.fillStyle = '#0a000a'; offscreenMapCtx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
                     offscreenMapCtx.strokeStyle = '#ff00ff'; offscreenMapCtx.lineWidth = 1; offscreenMapCtx.strokeRect(tx + 2, ty + 2, TILE_SIZE - 4, TILE_SIZE - 4);
@@ -169,6 +170,30 @@ export function preRenderMap() {
             }
         }
     }
+
+    // --- PASS 2: VIRTUAL BIOME NEON BORDERS ---
+    // Specifically for bId 3 (Virtual), we apply a glowing neon border pass over the solid backgrounds
+    if (bId === 3) {
+        offscreenMapCtx.save();
+        offscreenMapCtx.strokeStyle = '#00ffff';
+        offscreenMapCtx.lineWidth = 2;
+        offscreenMapCtx.shadowBlur = 8;
+        offscreenMapCtx.shadowColor = '#00ffff';
+        offscreenMapCtx.globalCompositeOperation = 'lighter';
+        
+        for (let row = 0; row < mapRows; row++) {
+            for (let col = 0; col < mapCols; col++) {
+                let tile = map[row][col], tx = col * TILE_SIZE, ty = row * TILE_SIZE;
+                // HUD Zone Cleanup: Do not draw glowing borders in the top HUD area
+                if (ty < 40) continue;
+                if (tile === 1 || tile === 6 || tile === 16) {
+                    offscreenMapCtx.strokeRect(tx + 1, ty + 1, TILE_SIZE - 2, TILE_SIZE - 2);
+                }
+            }
+        }
+        offscreenMapCtx.restore(); // Critical: Reset shadowBlur and compositeOperation
+    }
+
     G.isMapCached = true;
 }
 
@@ -196,6 +221,77 @@ export function renderAnimatedTiles() {
                 drawSprite(ctx, sprPortal, tx + (TILE_SIZE - pW)/2, ty + (TILE_SIZE - pH)/2, pW, pH, false);
             }
         }
+    }
+    renderVirtualHazards(); // Call dynamic hazard renderer
+}
+
+/**
+ * Renders the dynamic Virtual-biome hazards (Sectors and Nodes).
+ * Applies magenta neon effects with additive blending.
+ */
+export function renderVirtualHazards() {
+    if (Math.floor(G.currentLevel / 20) % 5 !== 3) return;
+
+    const { corruptedSectors, malwareNodes, camera } = G;
+
+    // 1. Corrupted Memory Sectors
+    for (let s of corruptedSectors) {
+        // Culling: Skip if far outside camera view
+        if (s.x + s.width < camera.x || s.x > camera.x + canvas.width || s.y + s.height < camera.y || s.y > camera.y + canvas.height) continue;
+        
+        ctx.save();
+        ctx.strokeStyle = '#ff00ff';
+        ctx.lineWidth = 2;
+        if (s.isActive) {
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ff00ff';
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.fillStyle = 'rgba(255, 0, 255, 0.2)';
+            ctx.fillRect(s.x, s.y, s.width, s.height);
+        } else {
+            ctx.globalAlpha = 0.3; // De-emphasize inactive sectors
+        }
+        ctx.strokeRect(s.x + 2, s.y + 2, s.width - 4, s.height - 4);
+        
+        // Draw internal "X" circuit pattern
+        ctx.beginPath();
+        ctx.moveTo(s.x + 4, s.y + 4); ctx.lineTo(s.x + s.width - 4, s.y + s.height - 4);
+        ctx.moveTo(s.x + s.width - 4, s.y + 4); ctx.lineTo(s.x + 4, s.y + s.height - 4);
+        ctx.stroke();
+        
+        ctx.restore(); // Safety: shadows and compositeOperation reset
+    }
+
+    // 2. Malware Nodes (Starbursts)
+    for (let n of malwareNodes) {
+        // Culling
+        if (n.x + n.maxRadius < camera.x || n.x - n.maxRadius > camera.x + canvas.width || n.y + n.maxRadius < camera.y || n.y - n.maxRadius > camera.y + canvas.height) continue;
+
+        ctx.save();
+        ctx.translate(n.x, n.y);
+        ctx.strokeStyle = '#ff00ff';
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = '#ff00ff';
+        ctx.globalCompositeOperation = 'lighter';
+        
+        // Dynamic Starburst Shape
+        let spikes = 8;
+        let rot = Date.now() * 0.004;
+        ctx.beginPath();
+        for (let i = 0; i < spikes * 2; i++) {
+            let r = (i % 2 === 0) ? n.radius : n.radius * 0.4;
+            let angle = (i / spikes) * Math.PI + rot;
+            ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+        }
+        ctx.closePath();
+        ctx.stroke();
+        
+        if (n.state === 'EXPANDING') {
+            ctx.fillStyle = 'rgba(255, 0, 255, 0.4)';
+            ctx.fill();
+        }
+        
+        ctx.restore(); // Safety
     }
 }
 

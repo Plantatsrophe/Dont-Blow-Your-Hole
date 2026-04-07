@@ -9,3 +9,4 @@ export * from './sprites_enemies.js';
 export * from './sprites_bosses.js';
 export * from './sprites_biomes.js';
 export * from './sprites_auhgr.js';
+export * from './sprites_glitch.js';
