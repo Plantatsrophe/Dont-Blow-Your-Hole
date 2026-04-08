@@ -193,11 +193,20 @@ export function preRenderMap() {
                 drawGlow(offscreenMapCtx, tx + TILE_SIZE / 2, ty + TILE_SIZE / 2 + 4, 30, 'rgba(255, 30, 0, 0.3)');
             }
             else if (tile === 15) {
-                offscreenMapCtx.fillStyle = G.acidPurified ? '#003366' : '#0a210f';
-                offscreenMapCtx.fillRect(tx, ty + 12, TILE_SIZE, TILE_SIZE - 12);
-                offscreenMapCtx.fillStyle = G.acidPurified ? '#1e90ff' : '#1b5c21';
-                offscreenMapCtx.fillRect(tx, ty + 12, TILE_SIZE, 4);
-                drawGlow(offscreenMapCtx, tx + TILE_SIZE / 2, ty + 16, 20, G.acidPurified ? 'rgba(0, 187, 255, 0.4)' : 'rgba(62, 232, 85, 0.4)');
+                if (bId === 4) { // H311 Lava
+                    offscreenMapCtx.fillStyle = '#441100'; // Deep magma base
+                    offscreenMapCtx.fillRect(tx, ty + 10, TILE_SIZE, TILE_SIZE - 10);
+                    offscreenMapCtx.fillStyle = '#ff4400'; // Hot molten surface
+                    offscreenMapCtx.fillRect(tx, ty + 10, TILE_SIZE, 4);
+                    drawGlow(offscreenMapCtx, tx + TILE_SIZE / 2, ty + 12, 30, 'rgba(255, 68, 0, 0.4)');
+                }
+                else {
+                    offscreenMapCtx.fillStyle = G.acidPurified ? '#003366' : '#0a210f';
+                    offscreenMapCtx.fillRect(tx, ty + 12, TILE_SIZE, TILE_SIZE - 12);
+                    offscreenMapCtx.fillStyle = G.acidPurified ? '#1e90ff' : '#1b5c21';
+                    offscreenMapCtx.fillRect(tx, ty + 12, TILE_SIZE, 4);
+                    drawGlow(offscreenMapCtx, tx + TILE_SIZE / 2, ty + 16, 20, G.acidPurified ? 'rgba(0, 187, 255, 0.4)' : 'rgba(62, 232, 85, 0.4)');
+                }
             }
             else if (tile === 16) {
                 if (bId === 0) {

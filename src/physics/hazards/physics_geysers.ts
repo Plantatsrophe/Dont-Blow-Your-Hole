@@ -20,7 +20,7 @@ export function updateGeysers(dt: number) {
         if (geyser.state === 'dormant') {
             if (geyser.timer <= 0) {
                 geyser.state = 'warning';
-                geyser.timer = 0.5;
+                geyser.timer = 1.0; // Increased from 0.5s to 1.0s for better reaction time
             }
         } else if (geyser.state === 'warning') {
             // Continuous particle emission for warning feedback
@@ -46,10 +46,10 @@ export function updateGeysers(dt: number) {
             // Create deadly AABB extending 5 tiles high (Base + 4 tiles up)
             // Math: y coordinate is base Y minus 4 tiles to push it 'up' the screen
             const hitbox = { 
-                x: geyser.x + 5, 
-                y: geyser.y - (TILE_SIZE * 4), 
-                width: TILE_SIZE - 10, 
-                height: TILE_SIZE * 5 
+                x: geyser.x + 10, 
+                y: geyser.y - (TILE_SIZE * 4) + 15, 
+                width: TILE_SIZE - 20, 
+                height: (TILE_SIZE * 4) - 5 // Ends at the lava surface (y + 10)
             };
 
             if (checkRectCollision(player, hitbox)) {

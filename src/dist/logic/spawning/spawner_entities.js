@@ -60,11 +60,6 @@ export function spawnEntityAt(char, tile, row, col, resetEntities, biomeId, map)
             G.items.push({ x: col * TILE_SIZE, y: row * TILE_SIZE, width: 32, height: 32, collected: false, type: 'valve' });
         return true;
     }
-    else if (char === 'D') { // Detonator
-        if (resetEntities && biomeId === 4)
-            G.items.push({ x: col * TILE_SIZE, y: row * TILE_SIZE, width: 32, height: 32, collected: false, type: 'detonator' });
-        return true;
-    }
     else if (char === 'M') { // Bomb
         if (resetEntities)
             G.bombs.push({ active: false, x: col * TILE_SIZE + 4, y: row * TILE_SIZE, width: 32, height: 32, vx: 0, vy: 0, col, row, type: 'bomb' });
@@ -77,7 +72,12 @@ export function spawnEntityAt(char, tile, row, col, resetEntities, biomeId, map)
     }
     else if (char === 'O') { // Demon Portal
         if (resetEntities)
-            G.demonPortals.push({ x: col * TILE_SIZE, y: row * TILE_SIZE, width: 32, height: 32, timer: 3.0, activeImp: null, type: 'portal', active: true });
+            G.demonPortals.push({
+                x: col * TILE_SIZE, y: row * TILE_SIZE, width: 32, height: 32,
+                timer: 3.0, activeImp: null, type: 'portal', active: true,
+                spawnLimit: 3 + Math.floor(Math.random() * 3), // 3, 4, or 5
+                spawnsSoFar: 0
+            });
         return true;
     }
     return false;

@@ -9,16 +9,25 @@ let lastLevel = -1;
  * Iterates through the raw ASCII map and populates the physics grid and entities.
  */
 export function parseMap(resetEntities = true) {
+    G.biomeId = Math.floor(G.currentLevel / 20) % 5;
+    if (G.biomeId === 4) {
+        G.nextRiftTimer = 2.0 + Math.random() * 2.0; // Dynamic rift start for H311
+    }
+    else {
+        G.nextRiftTimer = 5.0;
+    }
     if (G.currentLevel !== lastLevel) {
         G.cleanedPipes = [];
         G.checkpointPos = null;
         lastLevel = G.currentLevel;
     }
     G.timer = staticLevels[G.currentLevel].timer ?? 60;
-    G.corruptedSectors = [];
-    G.malwareNodes = [];
-    G.geysers = [];
-    G.demonPortals = [];
+    if (resetEntities) {
+        G.geysers = [];
+        G.demonPortals = [];
+        G.corruptedSectors = [];
+        G.malwareNodes = [];
+    }
     reflectorPool.length = 0;
     let currentMapData = staticLevels[G.currentLevel].map;
     G.mapRows = currentMapData.length;
@@ -63,6 +72,19 @@ export function parseMap(resetEntities = true) {
                 else
                     G.malwareNodes.push({ x: col * TILE_SIZE + 20, y: row * TILE_SIZE + 20, width: 0, height: 0, radius: 8, maxRadius: 64, state: 'IDLE', triggerDistance: 96, cooldownTimer: 0, type: 'node' });
                 rowData.push(0);
+            }
+            else if (biomeId === 4 && tile === 3) {
+                // --- H311 HAZARD CONVERSION ---
+                // Spikes are replaced with vertical geysers every 4 tiles, 
+                // and roiling Lava Pits (Tile 15) elsewhere.
+                if (col % 4 === 0) {
+                    if (resetEntities)
+                        G.geysers.push({ x: col * TILE_SIZE, y: row * TILE_SIZE, state: 'dormant', timer: 2.0 });
+                    rowData.push(0);
+                }
+                else {
+                    rowData.push(15);
+                }
             }
             else if (char === '7' || (row === 8 && col === 1 && !spawnFound)) {
                 if (!G.checkpointPos) {

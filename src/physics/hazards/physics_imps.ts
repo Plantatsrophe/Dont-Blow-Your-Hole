@@ -20,7 +20,7 @@ export function updatePortals(dt: number) {
                 const imp: any = {
                     type: 'bloodImp',
                     x: portal.x + (portal.width / 2) - 12,
-                    y: portal.y + 40, // Spawn offset below portal
+                    y: portal.y + 10, // Spawn closer to the lowered portal base
                     width: 24,
                     height: 24,
                     vx: 0,
@@ -32,36 +32,26 @@ export function updatePortals(dt: number) {
                 };
                 G.enemies.push(imp);
                 portal.activeImp = imp;
-                portal.timer = 3.0; // Reset timer
+                portal.timer = 1.0 + Math.random() * 2.0; // Faster frequency for survival
+                portal.spawnsSoFar++;
+                
+                // --- VOID COLLAPSE CHECK ---
+                if (portal.spawnsSoFar >= portal.spawnLimit) {
+                    triggerPortalCollapse(portal, i);
+                    return;
+                }
             }
         }
 
-        // --- COLLISION ---
+        // --- COLLISION (BOUNCE ONLY) ---
         if (checkRectCollision(player, portal)) {
-            // Generous stomp check (top 15 pixels)
+            // Indestructible: Stomping provides a height boost but does not close the rift.
             if (player.vy > 0 && player.y + player.height < portal.y + 15) {
-                portal.active = false;
                 player.y = portal.y - player.height;
-                player.vy = -400;
+                player.vy = -400; // Standard bounce
                 player.isOnGround = false;
                 player.doubleJump = false;
                 playSound('stomp');
-                
-                // Portal explosion
-                for (let j = 0; j < 15; j++) {
-                    const p = getNextParticle();
-                    p.active = true;
-                    p.type = 'normal';
-                    p.size = 4 + Math.random() * 6;
-                    p.x = portal.x + Math.random() * portal.width;
-                    p.y = portal.y + Math.random() * portal.height;
-                    p.vx = (Math.random() - 0.5) * 300;
-                    p.vy = (Math.random() - 0.5) * 300;
-                    p.life = 0.5 + Math.random() * 0.5;
-                    p.maxLife = p.life;
-                    p.color = '#aa00ff';
-                }
-                G.demonPortals.splice(i, 1);
             } else {
                 playerDeath();
             }
@@ -167,4 +157,24 @@ function killImp(imp: any, index: number) {
         p.color = '#cc0000';
     }
     G.enemies.splice(index, 1);
+}
+
+function triggerPortalCollapse(portal: any, index: number) {
+    portal.active = false;
+    // Massive Void Explosion
+    for (let j = 0; j < 25; j++) {
+        const p = getNextParticle();
+        p.active = true;
+        p.type = 'normal';
+        p.size = 6 + Math.random() * 8;
+        p.x = portal.x + portal.width / 2;
+        p.y = portal.y + portal.height / 2;
+        p.vx = (Math.random() - 0.5) * 400;
+        p.vy = (Math.random() - 0.5) * 400;
+        p.life = 0.8 + Math.random() * 0.4;
+        p.maxLife = p.life;
+        p.color = '#aa00ff';
+    }
+    playSound('stomp'); // Use stomp sound for rumble or replace with explosion if available
+    G.demonPortals.splice(index, 1);
 }

@@ -9,6 +9,7 @@ import { updateVirtualHazards } from '../hazards/physics_virtual_hazards.js';
 import { updateCrumblingBlocks } from '../hazards/physics_crumbling.js';
 import { updateGeysers } from '../hazards/physics_geysers.js';
 import { updatePortals, updateImps } from '../hazards/physics_imps.js';
+import { updateDynamicRifts } from '../hazards/physics_h311_rifts.js';
 /**
  * The master physics loop executed every frame.
  * Handles the player movement state machine, environment collisions, moving platforms,
@@ -94,7 +95,8 @@ export function updatePhysics(dt) {
     for (let t of clashing) {
         if (t.type === 3 && checkRectCollision(player, { x: t.rect.x + 8, y: t.rect.y + 20, width: 24, height: 20 }))
             hitSpike = true;
-        if (t.type === 15)
+        // Lava (Tile 15) Hitbox: 10px safe zone at top, 4px inset on sides
+        if (t.type === 15 && checkRectCollision(player, { x: t.rect.x + 4, y: t.rect.y + 10, width: 24, height: 22 }))
             hitSpike = true;
         if (t.type === 5) {
             hitGoal = true;
@@ -104,7 +106,9 @@ export function updatePhysics(dt) {
     }
     if (hitSpike) {
         playerDeath();
-        return;
+        // Only return if player actually died (prevents freeze in God Mode)
+        if (G.gameState === 'DYING')
+            return;
     }
     if (hitGoal && G.gameState !== 'LEVEL_CLEAR') {
         G.gameState = 'LEVEL_CLEAR';
@@ -240,6 +244,7 @@ export function updatePhysics(dt) {
     updateGeysers(dt);
     updatePortals(dt);
     updateImps(dt);
+    updateDynamicRifts(dt);
     if ((player.isOnGround || player.riding) && player.jumpBufferTimer > 0)
         handleJump();
 }

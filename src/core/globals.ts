@@ -88,12 +88,15 @@ If there even is a show anymore...`;
  */
 export const G: IGlobals = {
     gameState: 'START',
+    biomeId: 0,
     activeValvePos: null, // Target for the camera during Octo-Boss transitions
     purifiedValves: [],
     valveCutsceneTimer: 0,
     introY: 0,
     timer: 60, // Level countdown timer
     timerAcc: 0, // Micro-accumulator for sub-second timing
+    nextProjectileTimer: 0,
+    nextRiftTimer: 0,
     winTimer: 0,
     enemyWalkTimer: 0,
     currentLevel: 0,

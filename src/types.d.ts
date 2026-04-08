@@ -67,6 +67,7 @@ export interface IPlatform {
     height: number;
     vx: number;
     vy: number;
+    // Determine target column near player (shifted forward into path)
     minX: number; // Left boundary for patrol
     maxX: number; // Right boundary for patrol
     minY: number; // Top boundary for patrol
@@ -220,6 +221,8 @@ export interface IMalwareNode extends IEntity {
 export interface IDemonPortal extends IEntity {
     timer: number;
     activeImp: IEnemy | null;
+    spawnLimit: number; // Randomly 3, 4, or 5
+    spawnsSoFar: number;
 }
 
 /**
@@ -261,12 +264,15 @@ export interface ILevel {
  */
 export interface IGlobals {
     gameState: GameState;
+    biomeId: number; // 0: Mine, 1: Slums, 2: Sewer, 3: Virtual, 4: H311
     activeValvePos: { x: number, y: number } | null;
     purifiedValves: { x: number, y: number }[];
     valveCutsceneTimer: number;
     introY: number; // Global scroll position for the intro sequence
     timer: number;
     timerAcc: number;
+    nextProjectileTimer: number;
+    nextRiftTimer: number; // For H311 dynamic spawning
     winTimer: number;
     enemyWalkTimer: number; // Shared timer to sync bot animation frames
     currentLevel: number;
