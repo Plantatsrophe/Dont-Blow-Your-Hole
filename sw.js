@@ -10,8 +10,8 @@
  * timestamps and v-params in this file upon every successful build.
  */
 
-// Cache-Busting Timestamp: 2026-04-08 03:14:54
-const CACHE_NAME = 'platformer-cache-v308';
+// Cache-Busting Timestamp: 2026-04-08 03:17:05
+const CACHE_NAME = 'platformer-cache-v309';
 
 /**
  * Manifest of all static assets required for a full offline experience.
@@ -19,44 +19,44 @@ const CACHE_NAME = 'platformer-cache-v308';
  * caches when the underlying source code changes.
  */
 const ASSETS_TO_CACHE = [
-  './?v=308',
-  './index.html?v=308',
-  './manifest.json?v=308',
-  './src/assets/images/icon.svg?v=308',
-  './style.css?v=308',
-  './src/dist/assets/assets.js?v=308',
-  './src/dist/assets/audio.js?v=308',
-  './src/dist/data/db.js?v=308',
-  './src/dist/core/globals.js?v=308',
-  './src/dist/data/levels.js?v=308',
-  './src/dist/core/physics.js?v=308',
-  './src/dist/render/render.js?v=308',
-  './src/dist/render/render_parallax.js?v=308',
-  './src/dist/render/render_menus.js?v=308',
-  './src/dist/render/render_world.js?v=308',
-  './src/dist/render/render_entities.js?v=308',
-  './src/dist/render/render_bosses.js?v=308',
-  './src/dist/render/render_player.js?v=308',
-  './src/dist/render/render_ui.js?v=308',
-  './src/dist/render/render_utils.js?v=308',
-  './src/dist/render/render_biomes.js?v=308',
-  './src/dist/core/input.js?v=308',
-  './src/dist/logic/spawner.js?v=308',
-  './src/dist/logic/entity_spawner.js?v=308',
-  './src/dist/core/game.js?v=308',
-  './src/dist/main.js?v=308',
-  './src/assets/images/logo.png?v=308',
-  './src/dist/assets/sprites_hero.js?v=308',
-  './src/dist/assets/sprites_enemies.js?v=308',
-  './src/dist/assets/sprites_bosses.js?v=308',
-  './src/dist/assets/sprites_biomes.js?v=308',
-  './src/dist/core/physics_utils.js?v=308',
-  './src/dist/core/physics_boss.js?v=308',
-  './src/dist/core/input_utils.js?v=308',
-  './src/dist/core/input_touch.js?v=308',
-  './src/dist/assets/audio_music.js?v=308',
-  './src/dist/assets/audio_sfx.js?v=308',
-  './src/dist/core/spatial_grid.js?v=308'
+  './?v=309',
+  './index.html?v=309',
+  './manifest.json?v=309',
+  './src/assets/images/icon.svg?v=309',
+  './style.css?v=309',
+  './src/dist/assets/assets.js?v=309',
+  './src/dist/assets/audio.js?v=309',
+  './src/dist/data/db.js?v=309',
+  './src/dist/core/globals.js?v=309',
+  './src/dist/data/levels.js?v=309',
+  './src/dist/core/physics.js?v=309',
+  './src/dist/render/render.js?v=309',
+  './src/dist/render/render_parallax.js?v=309',
+  './src/dist/render/render_menus.js?v=309',
+  './src/dist/render/render_world.js?v=309',
+  './src/dist/render/render_entities.js?v=309',
+  './src/dist/render/render_bosses.js?v=309',
+  './src/dist/render/render_player.js?v=309',
+  './src/dist/render/render_ui.js?v=309',
+  './src/dist/render/render_utils.js?v=309',
+  './src/dist/render/render_biomes.js?v=309',
+  './src/dist/core/input.js?v=309',
+  './src/dist/logic/spawner.js?v=309',
+  './src/dist/logic/entity_spawner.js?v=309',
+  './src/dist/core/game.js?v=309',
+  './src/dist/main.js?v=309',
+  './src/assets/images/logo.png?v=309',
+  './src/dist/assets/sprites_hero.js?v=309',
+  './src/dist/assets/sprites_enemies.js?v=309',
+  './src/dist/assets/sprites_bosses.js?v=309',
+  './src/dist/assets/sprites_biomes.js?v=309',
+  './src/dist/core/physics_utils.js?v=309',
+  './src/dist/core/physics_boss.js?v=309',
+  './src/dist/core/input_utils.js?v=309',
+  './src/dist/core/input_touch.js?v=309',
+  './src/dist/assets/audio_music.js?v=309',
+  './src/dist/assets/audio_sfx.js?v=309',
+  './src/dist/core/spatial_grid.js?v=309'
 ];
 
 /**
@@ -96,7 +96,7 @@ self.addEventListener('activate', (e) => {
  * Intercepts network requests.
  * It follows a "Cache-First" approach: if a file is in the cache, it's served instantly.
  * The 'ignoreSearch: true' flag is critical to match URLs that have versioned query 
- * strings like ?v=308.
+ * strings like ?v=309.
  */
 self.addEventListener('fetch', (e) => {
   e.respondWith(
