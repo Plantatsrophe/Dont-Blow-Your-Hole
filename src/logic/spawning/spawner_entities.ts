@@ -13,7 +13,24 @@ export function spawnEntityAt(char: string, tile: number, row: number, col: numb
         if (resetEntities) G.items.push({ x: col*TILE_SIZE+8, y: row*TILE_SIZE+8, width: 24, height: 24, collected: false, type: 'hotdog' });
         return true;
     } else if (tile === 14) { // Checkpoint
-        if (resetEntities) G.items.push({ x: col*TILE_SIZE, y: row*TILE_SIZE, width: 32, height: 32, collected: false, type: 'checkpoint' });
+        let targetCol = col;
+        let targetRow = row;
+
+        // --- H311 BIOME OVERRIDE ---
+        // Relocate checkpoints to map center (Col 100) to ensure balanced progression pacing
+        if (biomeId === 4) {
+            targetCol = Math.floor(map[0].length / 2);
+            // Height Correction Tool: Search for the nearest solid ground at the midpoint
+            // to ensure the checkpoint isn't floating above magma.
+            for (let r = 0; r < map.length; r++) {
+                if (map[r][targetCol] === '1') {
+                    targetRow = r - 1; 
+                    break;
+                }
+            }
+        }
+
+        if (resetEntities) G.items.push({ x: targetCol*TILE_SIZE, y: targetRow*TILE_SIZE, width: 32, height: 32, collected: false, type: 'checkpoint' });
         return true;
     } else if (char === 'U' || char === 'P' || tile === 6) { // Moving Platforms
         if (resetEntities) spawnMovingPlatform(char, row, col, map);

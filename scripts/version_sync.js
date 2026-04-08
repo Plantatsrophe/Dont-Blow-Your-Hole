@@ -47,7 +47,43 @@ try {
     if (fs.existsSync(swJsPath)) {
         let swJs = fs.readFileSync(swJsPath, 'utf8');
         
-        // Update all v=XXX in the manifest as well
+        // --- MANIFEST AUTOMATION ---
+        // Dynamically crawl the dist folder to ensure every script is cached
+        const distPath = path.resolve(__dirname, '../src/dist');
+        const getFilesRecursive = (dir) => {
+            let results = [];
+            const list = fs.readdirSync(dir);
+            list.forEach(file => {
+                const fullPath = path.join(dir, file);
+                const stat = fs.statSync(fullPath);
+                if (stat && stat.isDirectory()) {
+                    results = results.concat(getFilesRecursive(fullPath));
+                } else if (file.endsWith('.js')) {
+                    const relPath = './' + path.relative(path.resolve(__dirname, '..'), fullPath).replace(/\\/g, '/');
+                    results.push(relPath);
+                }
+            });
+            return results;
+        };
+
+        const dynamicAssets = getFilesRecursive(distPath);
+        const staticAssets = [
+            './',
+            './index.html',
+            './manifest.json',
+            './style.css',
+            './src/assets/images/icon.svg',
+            './src/assets/images/logo.png'
+        ];
+
+        const allAssets = [...staticAssets, ...dynamicAssets].map(path => `  '${path}?v=${nextVersion}'`);
+        const manifestString = allAssets.join(',\n');
+        
+        // Inject into the array between markers
+        const manifestRegex = /\/\* --- MANIFEST START --- \*\/[\s\S]*?\/\* --- MANIFEST END --- \*\//;
+        swJs = swJs.replace(manifestRegex, `/* --- MANIFEST START --- */\n${manifestString}\n/* --- MANIFEST END --- */`);
+
+        // Update all v=XXX in the rest of the file
         swJs = swJs.replace(/v=\d+/g, nextTag);
 
         // Update Cache Name Pattern
@@ -59,7 +95,7 @@ try {
         swJs = swJs.replace(/\/\/ Cache-Busting Timestamp: .+/g, `// Cache-Busting Timestamp: ${timestamp}`);
 
         fs.writeFileSync(swJsPath, swJs);
-        console.log(`[Version Sync] Updated sw.js (manifest versions, cache name, and timestamp)`);
+        console.log(`[Version Sync] Updated sw.js with ${dynamicAssets.length} dynamic assets and ${staticAssets.length} static assets.`);
     } else {
         console.warn(`[Version Sync] Warning: sw.js not found at ${swJsPath}`);
     }
