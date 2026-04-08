@@ -8,8 +8,10 @@
 
 ## How to Play
 1. Fire up `index.html` in any modern browser.
-2. Smash **Enter** to skip the intro (if you've got the guts).
-3. Reach the exit portal in each level. Don't touch the red stuff.
+2. Smash **Enter** to start (if you've got the guts).
+3. Stomp enemies, avoid obstacles. 
+4. Reach the exit portal in each level before time runs out.
+5. Don't Die.
 
 ### The Controls
 *   **Move:** `W,A,S,D` or `Arrow Keys`
@@ -25,7 +27,7 @@ We've built five distinct zones, each with its own special brand of misery:
 2.  **Toxic Sewers (LVL 20-39)**: Watch your step in the green sludge. This biome introduced our **Valve Purification** mechanics—clean the pipes or pay the price.
 3.  **The Deep Mines (LVL 40-59)**: Verticality is the name of the game here. We pushed the engine to handle massive vertical scrolls and moving elevator platforms.
 4.  **Virtual Mainframe (LVL 60-79)**: Neon-soaked digital madness. Watch out for specialized hazards and the **Glitch effects** that'll mess with your vision.
-5.  **The Factory / Goliath (LVL 80-99)**: The final gauntlet. High heat, fast lasers, and no room for error.
+5.  **Goliath (LVL 80-99)**: The final gauntlet. High heat, fast lasers, and no room for error.
 
 ---
 
