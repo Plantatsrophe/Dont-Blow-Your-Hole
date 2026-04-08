@@ -6,6 +6,9 @@ import { updateBombs } from '../hazards/physics_bombs.js';
 import { handleJump } from '../../core/input/input_utils.js';
 import { updateDeathState, updateLevelClearState, updateValveCutsceneState } from '../states/physics_states.js';
 import { updateVirtualHazards } from '../hazards/physics_virtual_hazards.js';
+import { updateCrumblingBlocks } from '../hazards/physics_crumbling.js';
+import { updateGeysers } from '../hazards/physics_geysers.js';
+import { updatePortals, updateImps } from '../hazards/physics_imps.js';
 /**
  * The master physics loop executed every frame.
  * Handles the player movement state machine, environment collisions, moving platforms,
@@ -14,6 +17,9 @@ import { updateVirtualHazards } from '../hazards/physics_virtual_hazards.js';
  * @param dt Delta time for framerate independent momentum
  */
 export function updatePhysics(dt) {
+    // --- ASH BLOCKS (CRUMBLING TERRAIN) ---
+    // Processed first to maintain grounded state during transition
+    updateCrumblingBlocks(dt);
     // --- TICK JUMP STATE TIMERS ---
     if (player.isOnGround)
         player.coyoteTimer = 0.05;
@@ -184,6 +190,26 @@ export function updatePhysics(dt) {
                 }
             }
         }
+        else if (t.type === 8) { // Ash Block (Crumbling)
+            if (player.vy >= 0 && player.y - player.vy * dt + player.height <= t.rect.y + 0.1) {
+                // Remove tile and replace with dynamic entity
+                G.map[t.row][t.col] = 0;
+                G.isMapCached = false;
+                G.crumblingBlocks.push({
+                    x: t.rect.x,
+                    y: t.rect.y,
+                    timer: 0.4,
+                    active: true,
+                    row: t.row,
+                    col: t.col
+                });
+                // Set grounded state for current frame
+                player.y = t.rect.y - player.height;
+                player.isOnGround = true;
+                player.doubleJump = false;
+                player.vy = 0;
+            }
+        }
         else if (t.type === 6 || t.type === 2 || t.type === 9) {
             if ((!player.isClimbing || t.type === 6) && !keys.ArrowDown && player.vy >= 0 && player.y - player.vy * dt + player.height <= t.rect.y + 0.1) {
                 player.y = t.rect.y - player.height;
@@ -211,6 +237,9 @@ export function updatePhysics(dt) {
     updateBoss(dt);
     updateBombs(dt);
     updateVirtualHazards(dt);
+    updateGeysers(dt);
+    updatePortals(dt);
+    updateImps(dt);
     if ((player.isOnGround || player.riding) && player.jumpBufferTimer > 0)
         handleJump();
 }

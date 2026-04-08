@@ -36,6 +36,12 @@ export function spawnEntityAt(char: string, tile: number, row: number, col: numb
     } else if (char === 'M') { // Bomb
         if (resetEntities) G.bombs.push({ active:false, x:col*TILE_SIZE+4, y:row*TILE_SIZE, width:32, height:32, vx:0, vy:0, col, row, type:'bomb' });
         return true;
+    } else if (char === 'Y') { // Geyser
+        if (resetEntities) G.geysers.push({ x: col * TILE_SIZE, y: row * TILE_SIZE, state: 'dormant', timer: 2.0 });
+        return true;
+    } else if (char === 'O') { // Demon Portal
+        if (resetEntities) G.demonPortals.push({ x: col * TILE_SIZE, y: row * TILE_SIZE, width: 32, height: 32, timer: 3.0, activeImp: null, type: 'portal', active: true });
+        return true;
     }
     return false;
 }

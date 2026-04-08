@@ -215,6 +215,36 @@ export interface IMalwareNode extends IEntity {
 }
 
 /**
+ * Demon Portal hazard/spawner for the H311 biome.
+ */
+export interface IDemonPortal extends IEntity {
+    timer: number;
+    activeImp: IEnemy | null;
+}
+
+/**
+ * Brimstone Geyser hazard for the H311 biome.
+ */
+export interface IGeyser {
+    x: number;
+    y: number;
+    state: 'dormant' | 'warning' | 'erupting';
+    timer: number;
+}
+
+/**
+ * Ash Block (Crumbling Terrain) entity.
+ */
+export interface ICrumblingBlock {
+    x: number;
+    y: number;
+    timer: number;
+    active: boolean;
+    row: number;
+    col: number;
+}
+
+/**
  * Metadata for a level definition.
  */
 export interface ILevel {
@@ -268,6 +298,9 @@ export interface IGlobals {
     corruptedSectors: ICorruptedSector[];
     malwareNodes: IMalwareNode[];
     reflectors: IReflector[]; // Environmental mirror nodes
+    crumblingBlocks: ICrumblingBlock[];
+    geysers: IGeyser[];
+    demonPortals: IDemonPortal[];
 }
 
 /**

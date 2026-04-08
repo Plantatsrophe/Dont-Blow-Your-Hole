@@ -12,11 +12,13 @@
 import { G, canvas, ctx, offscreenMapCanvas } from '../core/globals.js';
 import { renderParallax, renderParallaxLayer2 } from './environment/render_parallax.js';
 import { renderStartScreen, renderIntroScreen, renderInstructions } from './screens/render_menus.js';
-import { renderConduits, preRenderMap, renderAnimatedTiles } from './environment/render_world.js';
+import { renderConduits, preRenderMap, renderAnimatedTiles, renderCrumblingBlocks } from './environment/render_world.js';
 import { renderEntities } from './actors/render_entities.js';
 import { renderBoss } from './bosses/render_bosses.js';
 import { renderPlayer, renderPlayerCutscene } from './actors/render_player.js';
 import { renderHUD, renderOverlays, renderCredits, renderShareButton } from './screens/render_ui.js';
+import { renderGeysers } from './elements/render_geysers.js';
+import { renderPortals, renderImps } from './elements/render_imps.js';
 
 /**
  * Main render function called by the game loop.
@@ -45,6 +47,10 @@ export function render() {
     preRenderMap(); // Draws the static map from the offscreen canvas cache
     ctx.drawImage(offscreenMapCanvas, 0, 0);
     renderAnimatedTiles();
+    renderCrumblingBlocks();
+    renderGeysers(); // Z-Order: Behind entities and player
+    renderPortals();
+    renderImps();
     
     // Render all active dynamic entities
     renderEntities(); // Bots, Items, Projectiles, Particles

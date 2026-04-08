@@ -23,8 +23,8 @@ export function renderBoss() {
     else if (boss.type === 'glitch') {
         drawGlitch(boss);
     }
-    else if (boss.type === 'goliath') {
-        // Goliath: Final fire/lava boss (Deep red)
+    else if (boss.type === 'baphometron') {
+        // Baphometron: Final fire/lava boss (Deep red)
         ctx.fillStyle = '#550000';
         ctx.fillRect(boss.x, boss.y, boss.width, boss.height);
         ctx.fillStyle = '#ffaa00';

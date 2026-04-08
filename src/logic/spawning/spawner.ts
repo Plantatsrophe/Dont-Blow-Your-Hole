@@ -16,7 +16,7 @@ export function parseMap(resetEntities = true) {
     }
 
     G.timer = staticLevels[G.currentLevel].timer ?? 60;
-    G.corruptedSectors = []; G.malwareNodes = [];
+    G.corruptedSectors = []; G.malwareNodes = []; G.geysers = []; G.demonPortals = [];
     reflectorPool.length = 0;
     
     let currentMapData = staticLevels[G.currentLevel].map;

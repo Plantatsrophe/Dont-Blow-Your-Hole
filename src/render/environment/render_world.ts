@@ -35,3 +35,35 @@ export function renderAnimatedTiles() {
     }
     renderVirtualHazards(); // Call dynamic hazard renderer
 }
+
+/**
+ * Draws active crumbling blocks with a shaking effect.
+ */
+export function renderCrumblingBlocks() {
+    for (let block of G.crumblingBlocks) {
+        if (!block.active) continue;
+
+        // Apply visual horizontal shake
+        let shake = Math.random() * 4 - 2;
+        let bx = block.x + shake;
+        let by = block.y;
+
+        // Draw charred gray block texture
+        ctx.fillStyle = '#444444'; 
+        ctx.fillRect(bx, by, TILE_SIZE, TILE_SIZE);
+
+        // Add some charred details (speckles)
+        ctx.fillStyle = '#222222';
+        for (let i = 0; i < 4; i++) {
+            let sx = bx + 5 + Math.random() * (TILE_SIZE - 10);
+            let sy = by + 5 + Math.random() * (TILE_SIZE - 10);
+            ctx.fillRect(sx, sy, 4, 4);
+        }
+
+        // Dark border for definition
+        ctx.strokeStyle = '#222222';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(bx + 1, by + 1, TILE_SIZE - 2, TILE_SIZE - 2);
+    }
+}
+

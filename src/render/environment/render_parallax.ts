@@ -9,7 +9,7 @@
 import { G, canvas, ctx } from '../../core/globals.js';
 import { 
     drawSlumsParallax, drawSewerParallax, drawMineParallax, 
-    renderVirtualBackground, drawGoliathParallax, drawSlumsLayer2 
+    renderVirtualBackground, drawH311Parallax, drawSlumsLayer2 
 } from './render_biomes.js';
 
 /**
@@ -41,7 +41,7 @@ export function renderParallax() {
         skyGradient.addColorStop(0, '#0a0805'); skyGradient.addColorStop(1, '#261a12');
     } else if (bId === 3) { // Virtual: Glitchy digital mainframe
         skyGradient.addColorStop(0, '#0a0a1a'); skyGradient.addColorStop(1, '#0a0a1a');
-    } else if (bId === 4) { // Goliath: Hellish reds
+    } else if (bId === 4) { // H311: Hellish reds
         skyGradient.addColorStop(0, '#2b0202'); skyGradient.addColorStop(1, '#7a0505');
     } else { // Slums: Sunset urban oranges
         skyGradient.addColorStop(0, '#0a0a1a'); skyGradient.addColorStop(1, '#a34110');
@@ -56,7 +56,7 @@ export function renderParallax() {
     else if (bId === 1) drawSewerParallax(camera.x * 0.3, hpRatio);
     else if (bId === 2) drawMineParallax(camera.y * 0.4); // Mines use vertical parallax
     else if (bId === 3) renderVirtualBackground(camera.x, camera.y);
-    else if (bId === 4) drawGoliathParallax(camera.x * 0.05);
+    else if (bId === 4) drawH311Parallax(camera.x * 0.05);
 }
 
 /**

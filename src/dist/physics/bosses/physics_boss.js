@@ -5,7 +5,7 @@ import { updateAuhGr } from './physics_boss_auhgr.js';
 import { updateMasticator } from './physics_boss_masticator.js';
 import { updateSepticus } from './physics_boss_septicus.js';
 import { updateGlitch } from './physics_boss_glitch.js';
-import { updateGoliath } from './physics_boss_goliath.js';
+import { updateBaphometron } from './physics_boss_baphometron.js';
 /**
  * Triggers the spectacular destruction sequence for any defeated boss.
  * Cleans up entity state, unlocks exits/valves, and mutates the current map
@@ -56,7 +56,7 @@ export function bossExplode() {
             it.collected = true;
     }
     // General map mutation unlocking the pathway strictly upwards
-    if (boss.type !== 'goliath') {
+    if (boss.type !== 'baphometron') {
         let pCol = Math.floor((boss.x + boss.width / 2) / TILE_SIZE);
         let pRow = Math.floor((boss.y + boss.height) / TILE_SIZE);
         // For Septicus, we punch open a specialized hole in the ceiling (Row 5 - 10)
@@ -134,8 +134,8 @@ export function updateBoss(dt) {
         case 'glitch':
             updateGlitch(boss, dt);
             break;
-        case 'goliath':
-            updateGoliath(boss, dt);
+        case 'baphometron':
+            updateBaphometron(boss, dt);
             break;
     }
 }

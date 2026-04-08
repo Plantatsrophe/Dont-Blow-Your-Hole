@@ -6,7 +6,7 @@
  * relative to the camera to create a 3D sense of scale in a 2D world.
  */
 import { G, canvas, ctx } from '../../core/globals.js';
-import { drawSlumsParallax, drawSewerParallax, drawMineParallax, renderVirtualBackground, drawGoliathParallax, drawSlumsLayer2 } from './render_biomes.js';
+import { drawSlumsParallax, drawSewerParallax, drawMineParallax, renderVirtualBackground, drawH311Parallax, drawSlumsLayer2 } from './render_biomes.js';
 /**
  * Renders the primary background layers (Sky & Far Parallax).
  * Switches logic based on the current Biome ID.
@@ -41,7 +41,7 @@ export function renderParallax() {
         skyGradient.addColorStop(0, '#0a0a1a');
         skyGradient.addColorStop(1, '#0a0a1a');
     }
-    else if (bId === 4) { // Goliath: Hellish reds
+    else if (bId === 4) { // H311: Hellish reds
         skyGradient.addColorStop(0, '#2b0202');
         skyGradient.addColorStop(1, '#7a0505');
     }
@@ -62,7 +62,7 @@ export function renderParallax() {
     else if (bId === 3)
         renderVirtualBackground(camera.x, camera.y);
     else if (bId === 4)
-        drawGoliathParallax(camera.x * 0.05);
+        drawH311Parallax(camera.x * 0.05);
 }
 /**
  * Renders secondary, closer background layers for added depth.

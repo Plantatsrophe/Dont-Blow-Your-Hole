@@ -114,7 +114,10 @@ export const G = {
     checkpointPos: null,
     corruptedSectors: [],
     malwareNodes: [],
-    reflectors: reflectorPool
+    reflectors: reflectorPool,
+    crumblingBlocks: [],
+    geysers: [],
+    demonPortals: []
 };
 /**
  * Score Integrity Salt

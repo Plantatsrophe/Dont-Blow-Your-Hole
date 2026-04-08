@@ -125,7 +125,10 @@ export const G: IGlobals = {
     checkpointPos: null,
     corruptedSectors: [],
     malwareNodes: [],
-    reflectors: reflectorPool
+    reflectors: reflectorPool,
+    crumblingBlocks: [],
+    geysers: [],
+    demonPortals: []
 };
 
 /**
