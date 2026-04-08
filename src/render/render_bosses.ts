@@ -6,7 +6,7 @@
  */
 
 import { G, ctx, TILE_SIZE, particlePool, player } from '../core/globals.js';
-import { sprSepticus1, sprSepticus2, sprSepticus3, sprSepticus4, sprSepticus5, sprManhole, sprAuhGr1, sprAuhGr2, sprAuhGr3, sprGlitch1, sprGlitch2, sprGlitch3, sprGlitch4 } from '../assets/assets.js';
+import { sprSepticus1, sprSepticus2, sprSepticus3, sprSepticus4, sprSepticus5, sprManhole, sprAuhGr1, sprAuhGr2, sprAuhGr3, sprGlitch1, sprGlitch2, sprGlitch3, sprGlitch4, sprGlitch5 } from '../assets/assets.js';
 import { drawSprite, drawGlow } from './render_utils.js';
 import type { IBoss } from '../types.js';
 
@@ -61,7 +61,7 @@ export function drawMasticator(boss: IBoss) {
  * Generic Procedural Fiber Rendering
  * Draws multiple glow-strands for a given trail of points.
  */
-function drawFiberStrands(points: {x:number, y:number}[] | undefined, strandCount: number, colorHue: number, isFlipped: boolean, alpha: number = 0.8, boss?: IBoss, isMedusa: boolean = false, broadness: number = 1.0, tallness: number = 0.0, baseSpread: number = 0.0) {
+function drawFiberStrands(points: {x:number, y:number}[] | undefined, strandCount: number, colorHue: number, isFlipped: boolean, alpha: number = 0.8, boss?: IBoss, isMedusa: boolean = false, broadness: number = 1.0, tallness: number = 0.0, baseSpread: number = 0.0, isVertical: boolean = false) {
     if (!points || points.length < 2) return;
     
     ctx.save();
@@ -118,8 +118,8 @@ function drawFiberStrands(points: {x:number, y:number}[] | undefined, strandCoun
             // Broadness scales rendering spread across strands
             // baseSpread creates a flat offset even at j=0 so strands root from multiple distinct points
             const spread = (i - strandCount/2) * (baseSpread + broadness * (j * 0.5));
-            let drawX = p.x + spread; 
-            let drawY = p.y - (j * tallness); // tallness pulls hair vertically visually
+            let drawX = p.x + (isVertical ? 0 : spread); 
+            let drawY = p.y - (j * tallness) + (isVertical ? spread : 0); 
             
             if (j === 0) ctx.moveTo(drawX, drawY);
             else ctx.lineTo(drawX, drawY);
@@ -200,11 +200,11 @@ export function renderBoss() {
         drawFiberStrands(boss.hairTrail2, 5, time + 20, isFlipped, 0.9, boss, true, 0.5); 
         
         // Mane and Tail for Steed (Broad mane, long tail)
-        // Mane: Narrower (0.6) and shorter height (tallness 1.0), with robust base spread (2.5) to sprout from multiple neck points
-        drawFiberStrands(boss.maneTrail, 8, 180, isFlipped, 0.8, undefined, false, 0.6, 1.0, 2.5);  
+        // Mane: Narrower (0.2) and shorter height (tallness 1.0), with tightened base spread (0.5) stacked vertically (true)
+        drawFiberStrands(boss.maneTrail, 8, 180, isFlipped, 0.8, undefined, false, 0.2, 1.0, 0.5, true);  
         drawFiberStrands(boss.tailTrail, 6, 260, isFlipped, 0.9, undefined, false, 1.2);      // Extended rump tail
         
-        const frames = [sprGlitch1, sprGlitch2, sprGlitch3, sprGlitch4];
+        const frames = [sprGlitch1, sprGlitch2, sprGlitch3, sprGlitch4, sprGlitch5];
         const frameIdx = Math.floor(G.timerAcc * 10) % frames.length; // 10 FPS gallop
         
         ctx.save();
@@ -212,21 +212,50 @@ export function renderBoss() {
         const lean = dir === 1 ? 0 : 0; 
         drawSprite(ctx, frames[frameIdx], boss.x + lean, boss.y, boss.width, boss.height, dir < 0, 64);
         
-        // --- ADD ORBS OF LIGHT IN NEGATIVE SPACE ---
-        // Coordinates match the hair-gap anchors (hX1, hX2, hY1 from physics_boss)
-        const gapX1 = boss.x + (isFlipped ? 65 : 13);
-        const gapX2 = boss.x + (isFlipped ? 37 : 41);
-        const gapY = boss.y + 12;
-        
-        const pulse = Math.sin(time * 0.05) * 5;
-        
-        // Inner intense white core
-        drawGlow(ctx, gapX1, gapY, 15 + pulse, 'rgba(255, 255, 255, 0.9)');
-        drawGlow(ctx, gapX2, gapY, 15 + pulse, 'rgba(255, 255, 255, 0.9)');
-        
-        // Outer colorful halos (Cyan / Magenta)
-        drawGlow(ctx, gapX1, gapY, 35 + pulse, 'rgba(0, 255, 255, 0.6)');
-        drawGlow(ctx, gapX2, gapY, 35 + pulse, 'rgba(255, 0, 255, 0.6)');
+        // --- THE SINGULARITY: HIGH-INTENSITY DASH TELEGRAPH ---
+        if (boss.state === 'TELEGRAPH_DASH') {
+            const intensity = Math.min(1.0, boss.timer / 1.0); // Build over 1.0s
+            const time = Date.now();
+            
+            ctx.save();
+            ctx.translate(boss.x + boss.width/2, boss.y + boss.height/2);
+            
+            // 1. CHROMATIC ABERRATION CAPSULE
+            // Overlapping layers of cyan and red to create a "splitting reality" look
+            ctx.globalCompositeOperation = 'lighter';
+            
+            // Cyan Layer (Left shifted)
+            drawGlow(ctx, -10 * intensity, 0, 80 * intensity, 'rgba(0, 255, 255, 0.4)', intensity);
+            // Red Layer (Right shifted)
+            drawGlow(ctx, 10 * intensity, 0, 80 * intensity, 'rgba(255, 0, 0, 0.4)', intensity);
+            // White Core (Center)
+            drawGlow(ctx, 0, 0, 50 * intensity, 'rgba(255, 255, 255, 0.8)', intensity);
+
+            // 2. THE ACCELERATOR: Rotating Energy Ring
+            // Faster rotation and thicker stroke as intensity builds
+            const rotSpeed = time * 0.01 * (1 + intensity * 3);
+            ctx.rotate(rotSpeed);
+            
+            ctx.setLineDash([10, 5]);
+            ctx.lineDashOffset = -time * 0.1;
+            ctx.strokeStyle = `hsl(${(time * 0.2) % 360}, 100%, 70%)`;
+            ctx.lineWidth = 4 + intensity * 8;
+            
+            ctx.beginPath();
+            ctx.arc(0, 0, 60 + intensity * 20, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Inner pulsing ring
+            ctx.setLineDash([]);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = intensity * 0.5;
+            ctx.beginPath();
+            ctx.arc(0, 0, 40 + Math.sin(time*0.1)*10, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
 
         // Atmospheric Cyan Glow around the core muzzle area (approx right side if facing right)
         const glowX = dir === 1 ? boss.x + boss.width - 8 : boss.x + 8;

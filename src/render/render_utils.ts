@@ -53,6 +53,7 @@ export function drawSprite(ctx: CanvasRenderingContext2D, spr: number[], x: numb
  * Decouples alpha from the color string to prevent perceptual shrinking during fades.
  */
 export function drawGlow(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, colorStr: string, alpha: number = 1.0) {
+    if (radius <= 0) return;
     const key = `${Math.floor(radius)}_${colorStr}`;
     let cached = GLOW_CACHE.get(key);
     

@@ -79,8 +79,66 @@ export function renderEntities() {
     // --- 4. PROJECTILES (Lasers) ---
     for (let l of laserPool) {
         if (!l.active) continue;
-        drawGlow(ctx, l.x + 8, l.y + 2, 30, 'rgba(255, 0, 0, 0.6)');
-        drawSprite(ctx, sprLaser, l.x - 4, l.y - 10, 24, 24, l.vx < 0);
+        
+        ctx.save();
+        if (l.reflectionPhase === 'ABSORBING') {
+            // ABSORPTION ANIMATION: The laser shrinks and pulses as it enters the mirror
+            let scale = Math.max(0, (l.beamTimer || 0) / 0.2);
+            ctx.globalCompositeOperation = 'lighter';
+            
+            // Sucking-in glow effect
+            drawGlow(ctx, l.x, l.y, 25 * scale, 'rgba(0, 255, 255, 0.8)');
+            
+            // Shrinking laser "seed"
+            ctx.fillStyle = '#ffffff';
+            ctx.translate(l.x, l.y);
+            ctx.rotate(Date.now() * 0.01); // Spin as it gets sucked in
+            ctx.fillRect(-8 * scale, -2 * scale, 16 * scale, 4 * scale);
+        } else if (l.reflectionPhase === 'FIRING') {
+            // FIRING ANIMATION: High-intensity "Flashlight" hitscan beam
+            const alpha = Math.max(0, (l.beamTimer || 0) / 0.4);
+            ctx.globalCompositeOperation = 'lighter';
+            
+            // 1. Wide Atmospheric Glow
+            ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.3})`;
+            ctx.lineWidth = 15;
+            ctx.beginPath(); ctx.moveTo(l.x, l.y); ctx.lineTo(l.targetX!, l.targetY!); ctx.stroke();
+            
+            // 2. Main Energy Beam
+            ctx.strokeStyle = `rgba(0, 255, 255, ${alpha * 0.7})`;
+            ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.moveTo(l.x, l.y); ctx.lineTo(l.targetX!, l.targetY!); ctx.stroke();
+            
+            // 3. Blinding White Core
+            ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(l.x, l.y); ctx.lineTo(l.targetX!, l.targetY!); ctx.stroke();
+            
+            // Muzzle Flash at Reflector
+            drawGlow(ctx, l.x, l.y, 50 * alpha, 'rgba(0, 255, 255, 0.6)');
+            
+            // Impact Flare on Boss
+            drawGlow(ctx, l.targetX!, l.targetY!, 40 * alpha, 'rgba(255, 255, 255, 0.8)');
+        } else if (l.hue !== undefined) {
+            // Rainbow Cyber Laser: High-intensity glowing line
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = `hsl(${l.hue}, 100%, 60%)`;
+            
+            // Draw a bright white core
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(l.x, l.y, 16, 4);
+            
+            // Draw a glowing HSL border
+            ctx.strokeStyle = `hsl(${l.hue}, 100%, 60%)`;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(l.x, l.y, 16, 4);
+        } else {
+            // Standard Laser: Traditional Sprite-based rendering
+            drawGlow(ctx, l.x + 8, l.y + 2, 30, 'rgba(255, 0, 0, 0.6)');
+            drawSprite(ctx, sprLaser, l.x - 4, l.y - 10, 24, 24, l.vx < 0);
+        }
+        ctx.restore();
     }
 
     // --- 5. BOMB HAZARDS (Masticator Arena) ---
@@ -112,6 +170,66 @@ export function renderEntities() {
         } else { // Standard Pixel/Debris
             ctx.fillStyle = p.color || `rgb(180, 180, 180)`; 
             ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size); 
+        }
+        ctx.restore();
+    }
+
+    // --- 7. REFLECTOR NODES (Level 79) ---
+    for (let r of G.reflectors) {
+        if (!r.active) continue;
+        
+        ctx.save();
+        if (r.isUsable) {
+            // ACTIVE STATE: High-intensity cyan glow for the cyber-prism
+            ctx.globalCompositeOperation = 'lighter';
+            drawGlow(ctx, r.x + r.width/2, r.y + r.height/2, r.width + 10, 'rgba(0, 255, 255, 0.4)');
+            
+            // Draw the prism (Cyber-Diamond shape)
+            ctx.beginPath();
+            ctx.moveTo(r.x + r.width / 2, r.y);
+            ctx.lineTo(r.x + r.width, r.y + r.height / 2);
+            ctx.lineTo(r.x + r.width / 2, r.y + r.height);
+            ctx.lineTo(r.x, r.y + r.height / 2);
+            ctx.closePath();
+            
+            ctx.fillStyle = 'rgba(0, 150, 255, 0.3)';
+            ctx.fill();
+            
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Inner highlight stroke for premium look
+            ctx.beginPath();
+            ctx.moveTo(r.x + r.width / 2, r.y + 6);
+            ctx.lineTo(r.x + r.width - 6, r.y + r.height / 2);
+            ctx.lineTo(r.x + r.width / 2, r.y + r.height - 6);
+            ctx.lineTo(r.x + 6, r.y + r.height / 2);
+            ctx.closePath();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        } else {
+            // POWERED DOWN STATE: Dim, gray, semi-transparent outline
+            ctx.globalAlpha = 0.3;
+            ctx.beginPath();
+            ctx.moveTo(r.x + r.width / 2, r.y);
+            ctx.lineTo(r.x + r.width, r.y + r.height / 2);
+            ctx.lineTo(r.x + r.width / 2, r.y + r.height);
+            ctx.lineTo(r.x, r.y + r.height / 2);
+            ctx.closePath();
+            
+            ctx.strokeStyle = '#888888';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // Static grid-shading to indicate "Offline"
+            ctx.beginPath();
+            ctx.moveTo(r.x + 10, r.y + r.height / 2);
+            ctx.lineTo(r.x + r.width - 10, r.y + r.height / 2);
+            ctx.moveTo(r.x + r.width / 2, r.y + 10);
+            ctx.lineTo(r.x + r.width / 2, r.y + r.height - 10);
+            ctx.stroke();
         }
         ctx.restore();
     }

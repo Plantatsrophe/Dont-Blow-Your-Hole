@@ -3,6 +3,7 @@ import { staticLevels } from '../data/levels.js';
 import { playSound } from '../assets/audio.js';
 import { parseMap, resetPlayerPosition, resetFullGame } from '../logic/spawner.js';
 import { updatePhysics } from './physics.js';
+import { updateBombs, updateLasers } from './physics_weapons.js';
 import { checkRectCollision, playerDeath } from './physics_utils.js';
 import { bossExplode } from './physics_boss.js';
 import { render } from '../render/render.js';
@@ -111,7 +112,11 @@ function updateGame(dt: number) {
         p.life -= dt; p.size *= 0.95;
         if (p.life <= 0) p.active = false;
     }
-    
+
+    // Weapons: Handle projectile motion for lasers and bombs
+    updateLasers(dt);
+    updateBombs(dt);
+
     if (G.gameState !== 'PLAYING') return;
     
     const boss = G.boss;
@@ -236,16 +241,6 @@ function updateGame(dt: number) {
         }
     }
 
-    // Hazards: Update active lasers
-    for (let l of laserPool) {
-        if (!l.active) continue;
-        l.x += l.vx * dt;
-        l.y += (l.vy || 0) * dt;
-        let hitWall = false;
-        for (let t of getCollidingTiles(l)) { if (t.type === 1) hitWall = true; }
-        if (hitWall || l.x < 0 || l.x > G.mapCols * TILE_SIZE || l.y < 0 || l.y > G.mapRows * TILE_SIZE) { l.active = false; continue; }
-        if (checkRectCollision(player, l)) { playerDeath(); return; }
-    }
 }
 
 let lastTime = 0;

@@ -1,4 +1,4 @@
-import { G, player, keys, TILE_SIZE, offscreenMapCanvas } from '../core/globals.js';
+import { G, player, keys, TILE_SIZE, offscreenMapCanvas, reflectorPool, laserPool, particlePool } from '../core/globals.js';
 import { staticLevels } from '../data/levels.js';
 import { spawnMovingPlatform, spawnBoss } from './entity_spawner.js';
 /**
@@ -22,9 +22,12 @@ export function parseMap(resetEntities = true) {
         G.checkpointPos = null;
         lastLevel = G.currentLevel;
     }
+    // Initialize Level Timer from metadata or default to 60s
+    G.timer = staticLevels[G.currentLevel].timer ?? 60;
     // Clear dynamic Virtual biome hazards
     G.corruptedSectors = [];
     G.malwareNodes = [];
+    reflectorPool.length = 0; // Clear mirror nodes from previous maps
     let currentMapData = staticLevels[G.currentLevel].map;
     G.mapRows = currentMapData.length;
     G.mapCols = currentMapData[0].length;
@@ -32,14 +35,16 @@ export function parseMap(resetEntities = true) {
     if (resetEntities) {
         G.items = [];
         G.enemies = [];
-        G.lasers = [];
         G.platforms = [];
         G.bombs = [];
+        for (let l of laserPool)
+            l.active = false;
         // Default Boss State
         G.boss = { active: false, timer: 0, hp: 0, phase: 0, hurtTimer: 0, vibrateX: 0, vx: 0, vy: 0, hasSeenPlayer: false, x: 0, y: 0, width: 0, height: 0, type: 'boss', squash: 1, squashTimer: 0 };
         G.purifiedValves = [];
     }
-    G.particles = [];
+    for (let p of particlePool)
+        p.active = false;
     G.isMapCached = false; // Trigger offscreen re-render
     G.acidPurified = false;
     // Resize offscreen drawing buffer to match map dimensions
@@ -117,8 +122,9 @@ export function parseMap(resetEntities = true) {
                 rowData.push(0);
             }
             else if (char === 'B') { // Major Boss
-                if (resetEntities)
+                if (resetEntities) {
                     spawnBoss(col, row);
+                }
                 rowData.push(0);
             }
             else if (char === 'V') { // Septicus Valve
@@ -142,6 +148,53 @@ export function parseMap(resetEntities = true) {
             }
         }
         G.map.push(rowData);
+    }
+    // --- POST-PARSE SPECIALS: LEVEL 79 (GLITCH) PROCEDURAL ARENA ---
+    // We execute this AFTER G.map is fully built to guarantee every tile placement succeeds.
+    if (G.currentLevel === 79) {
+        // 1. Spawning Reflectors (World Coordinates)
+        reflectorPool.length = 0;
+        reflectorPool.push({ x: 800, y: 200, width: 40, height: 40, active: true, isUsable: true }, { x: 2000, y: 100, width: 40, height: 40, active: true, isUsable: true }, { x: 3200, y: 200, width: 40, height: 40, active: true, isUsable: true });
+        let curX = 100; // Starting position (Spawn)
+        let curRow = 7;
+        // --- RESCUE PATH: Guaranteed route from floor back to Start Platform ---
+        if (G.map[12])
+            G.map[12][4] = 1; // Low step
+        if (G.map[10])
+            G.map[10][6] = 1; // Mid step
+        // Define anchor targets for the procedural path
+        const targets = [
+            { x: 800, row: 7 }, // Bottom-Left Reflector area
+            { x: 2000, row: 4 }, // Top-Center Reflector area
+            { x: 3200, row: 7 }, // Bottom-Right Reflector area
+            { x: 3800, row: 10 } // Exit area
+        ];
+        for (let target of targets) {
+            // "Walk" from current position to the target anchor
+            while (curX < target.x - 60) {
+                // Short, safe steps for higher platform density (110-150px)
+                curX += 110 + Math.random() * 40;
+                // Gradually steer Row towards target height
+                let rowDiff = target.row - curRow;
+                let move = (rowDiff === 0) ? (Math.floor(Math.random() * 3) - 1) : Math.sign(rowDiff);
+                curRow = Math.max(4, Math.min(12, curRow + move));
+                let col = Math.floor(curX / TILE_SIZE);
+                if (G.map[curRow] && G.map[curRow][col] !== undefined) {
+                    G.map[curRow][col] = 1; // 1-tile stepping stone
+                }
+            }
+            // At the target anchor, if it's a reflector, build the wide combat platform
+            let col = Math.floor(target.x / TILE_SIZE);
+            if (G.map[target.row]) {
+                for (let i = -1; i <= 2; i++) {
+                    if (G.map[target.row][col + i] !== undefined)
+                        G.map[target.row][col + i] = 1;
+                }
+            }
+            // Advance walk state to the anchor point for the next leg
+            curX = target.x;
+            curRow = target.row;
+        }
     }
 }
 /**

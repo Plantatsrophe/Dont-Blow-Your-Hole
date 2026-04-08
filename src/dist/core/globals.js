@@ -20,12 +20,17 @@ export const TILE_SIZE = 40;
  * Pre-allocating objects prevents memory fragmentation and reduces
  * Garbage Collection (GC) overhead during high-action sequences.
  */
-export const laserPool = Array.from({ length: 50 }, () => ({ active: false, x: 0, y: 0, vx: 0, width: 16, height: 8, type: 'laser' }));
+export const laserPool = Array.from({ length: 50 }, () => ({ active: false, x: 0, y: 0, vx: 0, vy: 0, timer: 0, width: 16, height: 8, type: 'laser' }));
 /**
  * Global particle pool. Supporting up to 500 concurrent particles
  * for dense destruction sequences.
  */
 export const particlePool = Array.from({ length: 500 }, () => ({ active: false, type: '', x: 0, y: 0, vx: 0, vy: 0, size: 0, life: 0, maxLife: 0, width: 0, height: 0 }));
+/**
+ * Environmental Reflector Pool
+ * Populated by level loader for Level 79.
+ */
+export const reflectorPool = [];
 /**
  * Persistent Player Data
  * Mutate these properties directly; never reassign the 'player' variable
@@ -92,7 +97,7 @@ export const G = {
     map: [], // 2D grid of tile IDs
     items: [],
     enemies: [],
-    lasers: [],
+    lasers: laserPool,
     particles: [],
     platforms: [],
     bombs: [],
@@ -108,7 +113,8 @@ export const G = {
     nextParticleIndex: 0,
     checkpointPos: null,
     corruptedSectors: [],
-    malwareNodes: []
+    malwareNodes: [],
+    reflectors: reflectorPool
 };
 /**
  * Score Integrity Salt

@@ -262,12 +262,13 @@ export function renderVirtualBackground(px: number, py: number) {
     // DYNAMIC STATUS LABEL: "ONLINE" / "OFFLINE" Glitch Cycle
     const time = Date.now();
     const cycle = (time / 12000) % 1; // 12 second cycle (slower overall heartbeat)
-    const isGlitching = cycle > 0.80; // Glitch for the last 20% (longer read time)
-    
-    let statusText = "ONLINE";
-    let statusColor = "#00ffff";
+    const isBossDefeated = G.currentLevel === 79 && G.boss && !G.boss.active && G.boss.hp <= 0;
+
+    let statusText = isBossDefeated ? "OFFLINE" : "ONLINE";
+    let statusColor = isBossDefeated ? "#ff00ff" : "#00ffff"; // Magenta if offline
     let textX = canvas.width / 2; // Keep horizontally centered
     let textY = 100; // Restored to previous height
+    const isGlitching = !isBossDefeated && cycle > 0.80; // Only glitch while online
 
     if (isGlitching) {
         // Slowed down flicker frequency from 0.05 to 0.01 for readability

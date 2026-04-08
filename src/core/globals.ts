@@ -1,4 +1,4 @@
-import type { IGlobals, IPlayer, ILaser, IParticle } from '../types.js';
+import type { IGlobals, IPlayer, ILaser, IParticle, IReflector } from '../types.js';
 
 /**
  * Immutable Graphics Constants
@@ -25,13 +25,19 @@ export const TILE_SIZE = 40;
  * Pre-allocating objects prevents memory fragmentation and reduces 
  * Garbage Collection (GC) overhead during high-action sequences.
  */
-export const laserPool: ILaser[] = Array.from({length: 50}, () => ({ active: false, x: 0, y: 0, vx: 0, width: 16, height: 8, type: 'laser' }));
+export const laserPool: ILaser[] = Array.from({length: 50}, () => ({ active: false, x: 0, y: 0, vx: 0, vy: 0, timer: 0, width: 16, height: 8, type: 'laser' }));
 
 /**
  * Global particle pool. Supporting up to 500 concurrent particles 
  * for dense destruction sequences.
  */
 export const particlePool: IParticle[] = Array.from({length: 500}, () => ({ active: false, type: '', x: 0, y: 0, vx: 0, vy: 0, size: 0, life: 0, maxLife: 0, width: 0, height: 0 }));
+
+/**
+ * Environmental Reflector Pool
+ * Populated by level loader for Level 79.
+ */
+export const reflectorPool: IReflector[] = [];
 
 /**
  * Persistent Player Data
@@ -102,7 +108,7 @@ export const G: IGlobals = {
     map: [], // 2D grid of tile IDs
     items: [],
     enemies: [],
-    lasers: [],
+    lasers: laserPool,
     particles: [],
     platforms: [],
     bombs: [],
@@ -118,7 +124,8 @@ export const G: IGlobals = {
     nextParticleIndex: 0,
     checkpointPos: null,
     corruptedSectors: [],
-    malwareNodes: []
+    malwareNodes: [],
+    reflectors: reflectorPool
 };
 
 /**

@@ -48,6 +48,8 @@ export function drawSprite(ctx, spr, x, y, w, h, flipX, gridWidth) {
  * Decouples alpha from the color string to prevent perceptual shrinking during fades.
  */
 export function drawGlow(ctx, x, y, radius, colorStr, alpha = 1.0) {
+    if (radius <= 0)
+        return;
     const key = `${Math.floor(radius)}_${colorStr}`;
     let cached = GLOW_CACHE.get(key);
     if (!cached) {

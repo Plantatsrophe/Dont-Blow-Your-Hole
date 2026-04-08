@@ -92,8 +92,8 @@ export function updatePhysics(dt) {
                             stash.add(`${Math.floor(i.x)},${Math.floor(i.y)}`);
                     }
                 }
-                // Reparse the map to heal any destroyed tiles
-                parseMap(G.currentLevel === 59 ? true : false);
+                // Reparse the map to heal any destroyed tiles or regenerate procedural arena
+                parseMap((G.currentLevel === 59 || G.currentLevel === 79) ? true : false);
                 if (G.currentLevel === 59) {
                     for (let i of G.items) {
                         if (stash.has(`${Math.floor(i.x)},${Math.floor(i.y)}`))

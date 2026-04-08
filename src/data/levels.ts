@@ -449,6 +449,7 @@ export const staticLevels = [
         level: 19,
         biome: "Slums",
         isBoss: true,
+        timer: 90,
         bossName: "Masticator",
         map: [
             "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
@@ -888,6 +889,7 @@ export const staticLevels = [
         level: 39,
         biome: "Sewer",
         isBoss: true,
+        timer: 90,
         bossName: "Septicus",
         map: [
             "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
@@ -2184,6 +2186,7 @@ export const staticLevels = [
         level: 59,
         biome: "Mine",
         isBoss: true,
+        timer: 90,
         bossName: "Auh-Gr",
         map: [
             "11111111111111111111",
@@ -2744,6 +2747,7 @@ export const staticLevels = [
         level: 79,
         biome: "Virtual",
         isBoss: true,
+        timer: 90,
         bossName: "Glitch",
         map: [
             "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
@@ -3185,6 +3189,7 @@ export const staticLevels = [
         level: 99,
         biome: "Goliath",
         isBoss: true,
+        timer: 90,
         bossName: "Goliath",
         map: [
             "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",

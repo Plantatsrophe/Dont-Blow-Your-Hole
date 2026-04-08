@@ -109,6 +109,22 @@ export interface IItem extends IEntity {
 export interface ILaser extends IEntity {
     vx: number;
     vy?: number;
+    hue?: number; // Dynamic rainbow color for Medusa Cyber Lasers
+    timer: number;
+    reflected?: boolean; // Has this laser been bounced by a reflector?
+    reflectionPhase?: 'ABSORBING' | 'FIRING'; // Animation state for mirror reflection
+    beamTimer?: number; // Universal accumulator for the phases
+    targetX?: number; // Beam destination X
+    targetY?: number; // Beam destination Y
+    passThroughTiles?: boolean; // If true, projectile ignores wall geometry
+}
+
+/**
+ * Environmental mirror that bounces lasers back at enemies.
+ */
+export interface IReflector extends IRect {
+    active: boolean;
+    isUsable: boolean; // Can this mirror currently reflect lasers?
 }
 
 /**
@@ -152,6 +168,17 @@ export interface IBoss extends IEntity {
     hairTrail2?: { x: number, y: number }[]; // Movement history for rider hair (Pony Tail 2)
     maneTrail?: { x: number, y: number }[]; // Movement history for steed mane
     tailTrail?: { x: number, y: number }[]; // Movement history for steed tail
+    hairX1?: number; // Persisted lerp position for head hair anchor 1
+    hairX2?: number; // Persisted lerp position for head hair anchor 2
+    hairY1?: number; // Persisted lerp Y for head hair anchor 1
+    hairY2?: number; // Persisted lerp Y for head hair anchor 2
+    maneX?: number; // Persisted lerp X for mane anchor
+    maneY?: number; // Persisted lerp Y for mane anchor
+    tailX?: number; // Persisted lerp X for tail anchor
+    tailY?: number; // Persisted lerp Y for tail anchor
+    lastFlipped?: boolean; // Tracking for direction flip events
+    state?: string; // AI State for combat logic (IDLE, DASH, etc.)
+    facingDir?: number; // Current facing direction (-1 or 1) for combat target lock
 }
 
 /**
@@ -240,6 +267,7 @@ export interface IGlobals {
     checkpointPos: { x: number, y: number } | null;
     corruptedSectors: ICorruptedSector[];
     malwareNodes: IMalwareNode[];
+    reflectors: IReflector[]; // Environmental mirror nodes
 }
 
 /**
