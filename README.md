@@ -61,4 +61,4 @@ We've recently gutted the engine and rebuilt it from the ground up to be modular
 *   **Firebase Integration**: Secure global high-scores with integrity checksums to keep the cheaters at bay.
 
 
-*Good luck, pilot. You're gonna need it.*
+*Good luck, mutant. You're gonna need it.*
