@@ -25,6 +25,10 @@ export function renderStartScreen() {
     renderLeaderboard();
     renderMenuDecorations();
     
+    ctx.fillStyle = '#aaaaaa';
+    ctx.font = '10px "Press Start 2P", sans-serif';
+    ctx.fillText('BETA VERSION', canvas.width / 2, canvas.height - 15);
+    
     ctx.restore();
 }
 
